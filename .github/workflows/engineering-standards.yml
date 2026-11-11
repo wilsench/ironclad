@@ -1,0 +1,43 @@
+name: engineering-standards
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  schema-conventions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Report-only on the whole repo: proves the checker runs without
+      # failing the build on existing debt.
+      - name: Report existing violations
+        run: |
+          python scripts/check_schema.py . --json > standards-report.json || true
+          python - <<'PY'
+          import json, pathlib
+          d = json.loads(pathlib.Path("standards-report.json").read_text() or "{}")
+          print(f"{d.get('files',0)} file(s), {d.get('errors',0)} violation(s)")
+          for f in d.get("findings", [])[:50]:
+              print(f"{f['file']}:{f['line']}: [{f['rule']}] {f['msg']}")
+          PY
+
+      # Gate the diff: new violations block the PR, legacy ones do not.
+      - name: Gate changed files
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+          CHANGED=$(git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}"...HEAD \
+            | grep -E '\.(sql|php|prisma)$' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "no schema files changed"
+            exit 0
+          fi
+          echo "checking: $CHANGED"
+          python scripts/check_schema.py $CHANGED --strict
