@@ -6,6 +6,8 @@ Ships a worked policy for the most common drift point: database status fields. T
 
 ## Install
 
+### Hermes Agent
+
 ```bash
 # One skill, no tap required
 hermes skills install <owner>/company-standards-skill/skills/company-engineering-standards
@@ -15,7 +17,20 @@ hermes skills tap add <owner>/company-standards-skill
 hermes skills install company-standards-skill/company-engineering-standards
 ```
 
-Works with any agent that reads the [agentskills.io](https://agentskills.io/specification) `SKILL.md` format, not just Hermes.
+### Any other agent — one command
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/<owner>/company-standards-skill/main/install.sh | bash
+```
+
+Auto-detects `~/.hermes`, `~/.claude`, or `~/.agents` and copies only this skill. Override with `--target hermes|claude|agents` or `--dir /path/to/skills`.
+
+```bash
+# from a local clone, no network
+./install.sh --dir ~/.claude/skills
+```
+
+Works with any agent that reads the [agentskills.io](https://agentskills.io/specification) `SKILL.md` format.
 
 ## What it actually does
 
