@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>company-engineering-standards — skill untuk AI agent</title>
+<style>
+  :root{
+    --ink:#1a1410; --ink-soft:#5b4a3a; --paper:#f4ede0; --paper-2:#fbf6ea;
+    --line:#d9cbb4; --gold:#b08329; --rose:#8c2f39; --green:#2f6b4f;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Iowan Old Style",Georgia,"Times New Roman",serif;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(#1a141008 1px,transparent 1px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:52px 26px 90px}
+  .eyebrow{
+    display:flex;align-items:center;gap:9px;font-family:var(--mono);
+    font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);
+    animation:rise .5s ease both;
+  }
+  .eyebrow i{width:6px;height:6px;background:var(--rose);border-radius:50%;flex:none}
+  h1{
+    font-size:clamp(30px,5.2vw,46px);line-height:1.1;margin:14px 0 0;letter-spacing:-.02em;
+    animation:rise .55s .06s ease both;
+  }
+  h1 em{font-style:italic;color:var(--rose)}
+  .lede{
+    max-width:56ch;margin:16px 0 0;font-size:15px;line-height:1.62;color:var(--ink-soft);
+    animation:rise .55s .12s ease both;
+  }
+  .rule{height:1px;background:var(--line);margin:34px 0 26px}
+  h2{
+    font-size:11px;font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-soft);margin:0 0 14px;font-weight:700;
+  }
+  .cmd{
+    position:relative;background:var(--ink);color:var(--paper-2);
+    font-family:var(--mono);font-size:12.5px;line-height:1.75;
+    padding:16px 54px 16px 18px;border-radius:2px;overflow-x:auto;
+    box-shadow:4px 4px 0 #1a141022;
+  }
+  .cmd .c{color:#b08329}
+  .cmd .d{color:#9d8a74}
+  .copy{
+    position:absolute;top:8px;right:8px;appearance:none;
+    background:#3b2f22;color:#efe3cc;border:1px solid #6b5942;border-radius:2px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;padding:5px 9px;cursor:pointer;
+    transition:background .15s ease,color .15s ease;
+  }
+  .copy:hover{background:var(--gold);color:#1a1410;border-color:var(--gold)}
+  .copy.done{background:var(--green);color:#fff;border-color:var(--green)}
+  .stack{margin-bottom:26px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{
+    background:var(--paper-2);border:1.5px solid var(--ink);border-radius:2px;
+    padding:15px 16px;box-shadow:3px 3px 0 var(--ink);
+  }
+  .card h3{margin:0 0 6px;font-size:14px;letter-spacing:-.01em}
+  .card p{margin:0;font-size:12.8px;line-height:1.55;color:var(--ink-soft)}
+  .card code{font-family:var(--mono);font-size:11.5px;color:var(--rose)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{
+    background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:10px;
+    letter-spacing:.13em;text-transform:uppercase;text-align:left;padding:9px 12px;font-weight:600;
+  }
+  tbody td{padding:9px 12px;border-bottom:1px solid #1a141018;vertical-align:top}
+  tbody tr:nth-child(even) td{background:#f0e8d9aa}
+  td.mono{font-family:var(--mono);font-size:12px;white-space:nowrap;color:var(--rose)}
+  ul.files{list-style:none;padding:0;margin:0;font-size:13px}
+  ul.files li{
+    display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid #1a141014;
+  }
+  ul.files li:last-child{border-bottom:none}
+  ul.files a{color:var(--ink);font-family:var(--mono);font-size:12.5px;text-decoration:none;
+    border-bottom:1px solid var(--gold);padding-bottom:1px}
+  ul.files a:hover{background:var(--gold);color:#1a1410;border-color:transparent}
+  ul.files span{color:var(--ink-soft);font-size:12px}
+  .note{
+    margin-top:30px;padding:14px 16px;border-left:3px solid var(--rose);
+    background:#f6e6e3;font-size:13px;line-height:1.6;color:#4a2024;
+  }
+  .note b{color:var(--rose)}
+  footer{
+    margin-top:44px;padding-top:16px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:#8b7a66;display:flex;flex-wrap:wrap;gap:8px 18px;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  @media (max-width:640px){
+    .wrap{padding:32px 18px 64px}
+    .cmd{font-size:11.5px;padding:14px 14px 44px 14px}
+    .copy{top:auto;bottom:8px;right:8px}
+    thead th{padding:8px 9px}
+    tbody td{padding:8px 9px;font-size:12.5px}
+    td.mono{white-space:normal}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow"><i></i>Skill · agent-agnostic · MIT</div>
+
+  <h1>Aturan engineering perusahaan,<br>dipaksakan oleh <em>mesin</em>.</h1>
+
+  <p class="lede">
+    Satu skill untuk AI coding agent supaya setiap orang di tim membangun aplikasi
+    dengan konvensi yang sama — bukan selera model. Dilengkapi linter yang jalan di CI,
+    karena skill tanpa penegakan akan <em>drift</em> dalam sebulan.
+  </p>
+
+  <div class="rule"></div>
+
+  <div class="stack">
+    <h2>Pasang di Hermes</h2>
+    <div class="cmd"><button class="copy" data-target="c1">SALIN</button><pre id="c1" style="margin:0"><span class="c">$</span> hermes skills install wilsench/company-standards-skill/skills/company-engineering-standards</pre></div>
+  </div>
+
+  <div class="stack">
+    <h2>Pasang di agent lain (Claude Code · Codex · Cursor)</h2>
+    <div class="cmd"><button class="copy" data-target="c2">SALIN</button><pre id="c2" style="margin:0"><span class="c">$</span> curl -fsSL https://raw.githubusercontent.com/wilsench/company-standards-skill/main/install.sh | bash
+<span class="d"># auto-deteksi ~/.hermes · ~/.claude · ~/.agents</span></pre></div>
+  </div>
+
+  <div class="stack">
+    <h2>Pakai di repo kamu</h2>
+    <div class="cmd"><button class="copy" data-target="c3">SALIN</button><pre id="c3" style="margin:0"><span class="c">$</span> python3 scripts/init_standards.py . --with-checker
+<span class="c">$</span> python3 scripts/check_schema.py . --json</pre></div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Tiga lapis — butuh ketiganya</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Kebijakan</h3>
+      <p><code>.agent/standards.md</code> di repo kamu, versi git. Tiap aturan punya ID supaya review bisa mengutipnya.</p>
+    </div>
+    <div class="card">
+      <h3>Prosedur</h3>
+      <p><code>SKILL.md</code> + <code>references/</code>. Tabel keputusan yang harus dilewati agent sebelum menulis DDL.</p>
+    </div>
+    <div class="card">
+      <h3>Penegakan</h3>
+      <p><code>check_schema.py</code> di CI. Ini yang bikin standar bertahan lintas 20 programmer.</p>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Aturan yang ditegakkan</h2>
+  <table>
+    <thead>
+      <tr><th style="width:86px">ID</th><th>Aturan</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="mono">DB-01</td><td>Tidak ada <code>enum</code> native di schema, kecuali dijustifikasi di komentar migrasi</td></tr>
+      <tr><td class="mono">DB-02</td><td>Tidak ada magic number dibandingkan dengan kolom status</td></tr>
+      <tr><td class="mono">DB-03</td><td>Integer status wajib punya FK ke lookup table atau <code>CHECK</code></td></tr>
+      <tr><td class="mono">DB-04</td><td>Label manusia tidak pernah disimpan sebagai nilai status</td></tr>
+      <tr><td class="mono">DB-05</td><td><code>boolean</code> hanya untuk biner sejati</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Soal “00 untuk stok kosong”.</b> Di kolom integer, <code>00</code> itu <code>0</code>.
+    Bentuk dua digit adalah format tampilan, bukan penyimpanan. Yang kamu mau sebenarnya:
+    konstanta bernama + lookup table, supaya angka 7 yang salah ketik ditolak database.
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Isi paket</h2>
+  <ul class="files">
+    <li><a href="README.md">README.md</a> <span>ringkasan, cara pasang, batasan jujur</span></li>
+    <li><a href="skills/company-engineering-standards/SKILL.md">SKILL.md</a> <span>prosedur 6 langkah + pitfalls</span></li>
+    <li><a href="skills/company-engineering-standards/references/database.md">references/database.md</a> <span>tabel keputusan, contoh SQL/TS/PHP</span></li>
+    <li><a href="skills/company-engineering-standards/references/extending.md">references/extending.md</a> <span>menambah domain aturan baru</span></li>
+    <li><a href="skills/company-engineering-standards/templates/standards.md">templates/standards.md</a> <span>policy file untuk repo</span></li>
+    <li><a href="skills/company-engineering-standards/scripts/check_schema.py">scripts/check_schema.py</a> <span>linter SQL · Laravel · Prisma</span></li>
+    <li><a href="skills/company-engineering-standards/scripts/init_standards.py">scripts/init_standards.py</a> <span>bootstrap policy</span></li>
+    <li><a href="examples/bad.sql">examples/bad.sql</a> <span>fixture yang harus gagal</span></li>
+    <li><a href="examples/good.sql">examples/good.sql</a> <span>fixture yang harus lolos</span></li>
+  </ul>
+
+  <footer>
+    <span>Chia Wilsen</span>
+    <span>Hermes Agent</span>
+    <span>MIT</span>
+    <span>v0.2.0</span>
+  </footer>
+
+</div>
+
+<script>
+document.querySelectorAll('.copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var el = document.getElementById(btn.dataset.target);
+    var text = el.innerText.replace(/^\$\s?/gm, '').trim();
+    var done = function () {
+      btn.textContent = 'TERSALIN';
+      btn.classList.add('done');
+      setTimeout(function () {
+        btn.textContent = 'SALIN';
+        btn.classList.remove('done');
+      }, 1600);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else { fallback(); }
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'GAGAL'; }
+      document.body.removeChild(ta);
+    }
+  });
+});
+</script>
+</body>
+</html>
