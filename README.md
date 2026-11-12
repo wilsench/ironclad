@@ -32,6 +32,8 @@ Auto-detects `~/.hermes`, `~/.claude`, or `~/.agents` and copies only this skill
 
 Works with any agent that reads the [agentskills.io](https://agentskills.io/specification) `SKILL.md` format.
 
+Before pushing your own fork, run `./scripts/set-repo-owner.sh <your-github-username>` to rewrite the URLs above. Full publishing steps — including the fine-grained PAT scopes if you want an agent to do the push — are in [PUBLISH.md](PUBLISH.md).
+
 ## What it actually does
 
 Three layers, and you need all three:
