@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ironclad — skill untuk AI agent</title>
+<title>Ironclad — aturan engineering tim, ditegakkan mesin</title>
 <style>
   :root{
     --ink:#1a1410; --ink-soft:#5b4a3a; --paper:#f4ede0; --paper-2:#fbf6ea;
@@ -108,7 +108,7 @@
 
   <div class="eyebrow"><i></i>Skill · agent-agnostic · MIT</div>
 
-  <h1>Aturan engineering perusahaan,<br>dipaksakan oleh <em>mesin</em>.</h1>
+  <h1>Ironclad.<br>Aturan tim, ditegakkan <em>mesin</em>.</h1>
 
   <p class="lede">
     Satu skill untuk AI coding agent supaya setiap orang di tim membangun aplikasi
@@ -166,6 +166,8 @@
       <tr><td class="mono">DB-03</td><td>Integer status wajib punya FK ke lookup table atau <code>CHECK</code></td></tr>
       <tr><td class="mono">DB-04</td><td>Label manusia tidak pernah disimpan sebagai nilai status</td></tr>
       <tr><td class="mono">DB-05</td><td><code>boolean</code> hanya untuk biner sejati</td></tr>
+      <tr><td class="mono">DB-06</td><td>Uang disimpan sebagai <code>bigint</code> satuan terkecil + kode mata uang, tidak pernah <code>float</code></td></tr>
+      <tr><td class="mono">DB-07</td><td>Timestamp wajib membawa zona waktu</td></tr>
     </tbody>
   </table>
 
@@ -177,12 +179,34 @@
 
   <div class="rule"></div>
 
+  <h2>Tingkat penegakan — pilih sekali, ubah kapan saja</h2>
+  <p class="lede" style="margin-bottom:14px">
+    Pilihan disimpan di <code>.agent/standards.yml</code> di repo kamu, bukan di dalam skill.
+    Jadi CI dan semua orang membaca setelan yang sama, dan mengubahnya cukup satu baris PR.
+  </p>
+  <table>
+    <thead>
+      <tr><th style="width:150px">Preset</th><th style="width:96px">Memblokir</th><th>Situasi</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="mono">legacy-friendly</td><td>—</td><td>Repo lama yang sudah punya utang teknis. Semua dilaporkan, tidak ada yang gagal.</td></tr>
+      <tr><td class="mono">balanced</td><td>DB-01 · 02 · 04</td><td><b>Default.</b> Dipilih otomatis kalau tidak ada yang menjawab wizard.</td></tr>
+      <tr><td class="mono">strict</td><td>semua</td><td>Keuangan, kesehatan, sistem yang diaudit.</td></tr>
+    </tbody>
+  </table>
+  <div class="cmd" style="margin-top:14px"><button class="copy" data-target="c4">SALIN</button><pre id="c4" style="margin:0"><span class="c">$</span> python3 scripts/init_standards.py . --preset strict --force
+<span class="c">$</span> python3 scripts/check_schema.py --list-presets</pre></div>
+
+  <div class="rule"></div>
+
   <h2>Isi paket</h2>
   <ul class="files">
     <li><a href="README.md">README.md</a> <span>ringkasan, cara pasang, batasan jujur</span></li>
     <li><a href="skills/ironclad/SKILL.md">SKILL.md</a> <span>prosedur 6 langkah + pitfalls</span></li>
     <li><a href="skills/ironclad/references/database.md">references/database.md</a> <span>tabel keputusan, contoh SQL/TS/PHP</span></li>
+    <li><a href="skills/ironclad/references/presets.md">references/presets.md</a> <span>tiga tingkat penegakan + preset sendiri</span></li>
     <li><a href="skills/ironclad/references/extending.md">references/extending.md</a> <span>menambah domain aturan baru</span></li>
+    <li><a href="skills/ironclad/assets/presets/balanced.yml">assets/presets/balanced.yml</a> <span>default — error / warn / off per aturan</span></li>
     <li><a href="skills/ironclad/templates/standards.md">templates/standards.md</a> <span>policy file untuk repo</span></li>
     <li><a href="skills/ironclad/scripts/check_schema.py">scripts/check_schema.py</a> <span>linter SQL · Laravel · Prisma</span></li>
     <li><a href="skills/ironclad/scripts/init_standards.py">scripts/init_standards.py</a> <span>bootstrap policy</span></li>
@@ -194,7 +218,7 @@
     <span>Chia Wilsen</span>
     <span>Hermes Agent</span>
     <span>MIT</span>
-    <span>v0.2.0</span>
+    <span>v0.3.0</span>
   </footer>
 
 </div>
