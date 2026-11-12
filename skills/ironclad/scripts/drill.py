@@ -293,6 +293,30 @@ def selftest() -> int:
                 why.append("flagging res.status / r.status as schema")
             print(f"  {RED}FAIL{OFF}  DB-02 HTTP handling: {', '.join(why)}")
 
+    # Money: NUMERIC(p,s) is an exact type and was wrongly failed as a float. An
+    # answer that uses it is correct, and telling people otherwise teaches them the
+    # rule is "must be bigint", which it is not.
+    def _money_ok(col_pairs: str) -> bool:
+        with tempfile.TemporaryDirectory() as md:
+            f = Path(md) / "m.sql"
+            f.write_text(
+                "CREATE TABLE ref_order_status (code smallint PRIMARY KEY, label text NOT NULL);\n"
+                "INSERT INTO ref_order_status (code, label) VALUES (10, 'new');\n"
+                "CREATE TABLE orders (id bigint PRIMARY KEY, "
+                "status_code smallint NOT NULL REFERENCES ref_order_status (code), "
+                f"total {col_pairs}, created_at timestamptz NOT NULL DEFAULT now());\n"
+                "-- DB-03\n", encoding="utf-8")
+            return grade(f, "balanced") == 0
+
+    money_cases = {"numeric(12,2)": True, "bigint": True,
+                   "double precision": False, "real": False, "float": False}
+    money_bad = [t for t, want in money_cases.items() if _money_ok(t) != want]
+    if not money_bad:
+        print(f"  {GREEN}PASS{OFF}  money: numeric/bigint pass, binary float fails")
+    else:
+        failures += 1
+        print(f"  {RED}FAIL{OFF}  money typing: wrong verdict for {', '.join(money_bad)}")
+
     # Grading a directory must see every file: a correct answer routinely splits the
     # lookup table and the table that references it across two migrations. Grading
     # only the second file reports "no *_status table" for a right answer, and
@@ -429,9 +453,12 @@ def grade(path: Path, preset: str = "balanced") -> int:
     results.append((seeded, "statuses seeded as data (not schema)",
                     f"{len(inserts)} INSERT statement(s)" if seeded else "no INSERT — statuses may live in the type"))
 
-    # 6. money not float
-    float_money = re.search(r"(total|amount|price|harga|total_amount)[a-z_]*\s+(float|double|real|numeric\s*\(\s*\d+\s*,\s*\d+\s*\))", sql, re.I)
-    results.append((not float_money, "money is integer minor units",
+    # 6. money not binary float. NUMERIC(p,s) is exact and is a correct answer;
+    # flagging it taught people the rule was "must be bigint", which it never was.
+    float_money = re.search(
+        r"(total|amount|price|harga|total_amount)[a-z_]*\s+(float8?|float4|double\s+precision|double|real)\b",
+        sql, re.I)
+    results.append((not float_money, "money is exact, not binary float",
                     float_money.group(0) if float_money else "ok"))
 
     # 7. timezone

@@ -40,10 +40,12 @@ migrations, models). Then:
   becomes the standard. Never add a third while that is open.
 - **no status anywhere yet** → use the house default. Do not ask.
   `status_code SMALLINT NOT NULL` + lookup table (`code` PK, `label`) + FK from the
-  column, codes step by 10 (10, 20, 30), never reused, plus named constants in code.
+  column, plus named constants in code. Any integer codes are fine (10/20/30, 1/2/3)
+  as long as every code exists in the lookup table and is never reused.
   Say "house default: status_code + lookup" in one line, then write it.
 
-Money: integer minor units, never float. Timestamps: `timestamptz`, never naive.
+Money: exact, never binary float — `numeric`/`decimal` with a fixed scale, or integer
+minor units. Timestamps: `timestamptz`, never naive.
 """
 
 # Per-repo: only files this repo owns. Written by `ironclad init`.

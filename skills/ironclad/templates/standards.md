@@ -12,7 +12,9 @@ Status is stored as an **integer code + lookup table + foreign key**:
 status_code SMALLINT NOT NULL REFERENCES order_status(code)
 ```
 
-Codes step by 10 (10, 20, 30) and are never reused. Names live in application
+The code numbers are arbitrary — 1/2/3 and 10/20/30 are both fine. Two rules
+actually matter: every code must exist in the lookup table, and a code is never
+reused for a different meaning once it has shipped. Names live in application
 constants, not as bare numbers in queries.
 
 Adopted: 2026-11-12 · Default for new tables in this team's projects.
@@ -45,5 +47,5 @@ once, that is a decision to make deliberately, not drift into.
 
 ## What this does not cover
 
-Money (integer minor units), timestamps (`timestamptz`), and naming conventions are
-separate decisions. This file answers only the status question.
+Money (`numeric` with a fixed scale, or integer minor units — never binary float),
+timestamps (`timestamptz`), and naming conventions are separate decisions. This file answers only the status question.

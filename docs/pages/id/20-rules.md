@@ -21,7 +21,7 @@ Kolom **Status** di bawah adalah perilaku pada preset `balanced` (default). Pada
 | DB-03 | Integer status wajib punya FK atau `CHECK` | warn |
 | DB-04 | Label manusia tidak pernah disimpan sebagai status | **error** |
 | DB-05 | `boolean` hanya untuk biner sejati | warn |
-| DB-06 | Uang pakai `bigint` satuan terkecil + kode mata uang | warn |
+| DB-06 | Uang harus eksak — `numeric` skala tetap atau `bigint` satuan terkecil, bukan float | warn |
 | DB-07 | Timestamp wajib membawa zona waktu | warn |
 | DB-08 | Satu proyek satu gaya status — tidak campur enum dan integer | warn |
 
@@ -121,22 +121,31 @@ status_code  smallint NOT NULL REFERENCES ref_stock_status(code)
 
 ---
 
-## DB-06 — Uang tidak pernah `float`
+## DB-06 — Uang harus eksak, bukan `float`
 
 ```sql
 -- ✗ ditolak
 total_amount  float
 harga_satuan  double precision
-price         decimal(10,2)   -- juga ditolak: lihat catatan
+price         real
 
--- ✓ diterima
+-- ✓ diterima (dua-duanya sah)
 total_minor   bigint NOT NULL          -- 1250000 = Rp 12.500,00
 currency      char(3) NOT NULL         -- 'IDR'
+
+total_amount  numeric(14,2) NOT NULL   -- presisi tetap, juga eksak
 ```
 
-**Alasan:** `0.1 + 0.2` pada float bukan `0.3`. Untuk satu transaksi selisihnya nol koma nol sekian; untuk laporan bulanan dengan 200.000 baris, itu selisih yang harus dijelaskan ke auditor.
+**Alasan:** `0.1 + 0.2` pada float bukan `0.3`. Untuk satu transaksi selisihnya nol
+koma nol sekian; untuk laporan bulanan dengan 200.000 baris, itu selisih yang harus
+dijelaskan ke auditor.
 
-Menyimpan satuan terkecil sebagai integer membuat semua aritmetika eksak. `decimal` sebenarnya eksak juga, tapi tiap basis data memperlakukannya berbeda dan ORM sering mengubahnya jadi string atau float di perjalanan — integer tidak punya ambiguitas itu.
+`numeric`/`decimal` **juga eksak** dan checker tidak melarangnya — yang dilarang hanya
+binary float (`float`, `real`, `double precision`). Memilih integer satuan terkecil
+atau `numeric` keduanya benar: integer paling aman terhadap pembulatan per-pangkah dan
+perbedaan ORM, `numeric` lebih mudah dibaca dan cocok untuk perhitungan yang butuh
+pecahan (persentase, kurs). Yang tidak boleh: mencampur keduanya dalam satu kolom
+yang sama di dua tempat berbeda.
 
 ---
 

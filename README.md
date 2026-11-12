@@ -103,7 +103,7 @@ DB-02  no magic numbers compared against status fields
 DB-03  status integer must carry a FK or CHECK
 DB-04  never store a human label as the status
 DB-05  boolean only for genuine binaries
-DB-06  money as bigint minor units + currency, never float
+DB-06  money exact (`numeric` fixed scale or bigint minor units), never float
 DB-07  timestamps carry a timezone
 DB-08  one project stores status one way (no enum table beside an integer table)
 ```

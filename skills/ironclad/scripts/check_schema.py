@@ -368,8 +368,8 @@ def check_file(path, cfg):
         if migration:
             m = MONEY_FLOAT.search(line) or MONEY_FLOAT_LARAVEL.search(line)
             if m:
-                add("DB-06", i, f"money column `{m.group(1)}` uses a float type; "
-                                f"use bigint minor units + currency code")
+                add("DB-06", i, f"money column `{m.group(1)}` uses a binary float type; "
+                                f"use numeric/decimal with a fixed scale, or bigint minor units")
 
         # DB-07 — camelCase `*At` is the Laravel/Prisma timestamp convention, not a smell
         if migration:

@@ -193,16 +193,25 @@ status_code smallint NOT NULL REFERENCES ...
 </code></pre></div>
 <p>A boolean is correct only when the domain is genuinely two-valued and expected to
 stay that way: <code>is_active</code>, <code>is_deleted</code>, <code>email_verified</code>.</p>
-<h2 id="db-06-no-money-as-float">DB-06 — no money as float</h2>
+<h2 id="db-06-money-must-be-exact-not-float">DB-06 — money must be exact, not <code>float</code></h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- wrong
-total float
-total double precision
+total        float
+amount       double precision
+price        real
 
--- right
-total_cents bigint NOT NULL          -- or NUMERIC(14,2)
+-- right (both are fine)
+total_cents   bigint NOT NULL          -- 1250000 = 12,500.00
+currency      char(3) NOT NULL         -- 'IDR'
+
+total_amount  numeric(14,2) NOT NULL   -- fixed scale, also exact
 </code></pre></div>
 <p>Binary floating point cannot represent <code>0.10</code>. Sum a thousand rows of <code>float</code> and
 the total is off by real money.</p>
+<p><code>numeric</code>/<code>decimal</code> <strong>are exact</strong> and the checker does not reject them — only binary
+float (<code>float</code>, <code>real</code>, <code>double precision</code>) is flagged. Integer minor units are the
+safest against step-by-step rounding and ORM quirks; <code>numeric</code> is easier to read and
+fits calculations that need fractions (rates, percentages). Either is correct; mixing
+the two for the same column in different places is not.</p>
 <h2 id="db-07-no-timestamp-without-a-timezone">DB-07 — no timestamp without a timezone</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- wrong
 created_at timestamp
@@ -272,7 +281,7 @@ not reassigned, because old review comments would then point at the wrong rule.<
 <li class="lvl2"><a href="#db-03-status-needs-a-lookup-table-and-a-foreign-key">DB-03 — status needs a lookup table and a foreign key</a></li>
 <li class="lvl2"><a href="#db-04-no-human-labels-as-status">DB-04 — no human labels as status</a></li>
 <li class="lvl2"><a href="#db-05-no-boolean-for-a-non-binary-concept">DB-05 — no boolean for a non-binary concept</a></li>
-<li class="lvl2"><a href="#db-06-no-money-as-float">DB-06 — no money as float</a></li>
+<li class="lvl2"><a href="#db-06-money-must-be-exact-not-float">DB-06 — money must be exact, not float</a></li>
 <li class="lvl2"><a href="#db-07-no-timestamp-without-a-timezone">DB-07 — no timestamp without a timezone</a></li>
 <li class="lvl2"><a href="#db-08-one-project-one-status-style">DB-08 — One project, one status style</a></li>
 <li class="lvl2"><a href="#rule-ids-are-permanent">Rule IDs are permanent</a></li></ul>

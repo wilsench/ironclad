@@ -122,7 +122,7 @@
 </tr>
 <tr>
 <td>DB-06</td>
-<td>Uang pakai <code>bigint</code> satuan terkecil + kode mata uang</td>
+<td>Uang harus eksak — <code>numeric</code> skala tetap atau <code>bigint</code> satuan terkecil, bukan float</td>
 <td><span class="sev sev-warn">warn</span></td>
 </tr>
 <tr>
@@ -198,18 +198,27 @@ status_code  smallint NOT NULL REFERENCES ref_stock_status(code)
 <p><strong>Alasan:</strong> <code>is_status</code> menjebak. Hari ini true/false; bulan depan butuh "tertunda", dan kamu menambah <code>is_pending</code>, lalu <code>is_partial</code> — tiga boolean yang saling bertentangan dan tidak ada yang tahu kombinasi mana yang sah.</p>
 <p><strong>Tes cepat:</strong> bisakah kolom ini punya keadaan ketiga dalam dua tahun? Kalau ya, ia bukan boolean.</p>
 <hr />
-<h2 id="db-06-uang-tidak-pernah-float">DB-06 — Uang tidak pernah <code>float</code></h2>
+<h2 id="db-06-uang-harus-eksak-bukan-float">DB-06 — Uang harus eksak, bukan <code>float</code></h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✗ ditolak
 total_amount  float
 harga_satuan  double precision
-price         decimal(10,2)   -- juga ditolak: lihat catatan
+price         real
 
--- ✓ diterima
+-- ✓ diterima (dua-duanya sah)
 total_minor   bigint NOT NULL          -- 1250000 = Rp 12.500,00
 currency      char(3) NOT NULL         -- 'IDR'
+
+total_amount  numeric(14,2) NOT NULL   -- presisi tetap, juga eksak
 </code></pre></div>
-<p><strong>Alasan:</strong> <code>0.1 + 0.2</code> pada float bukan <code>0.3</code>. Untuk satu transaksi selisihnya nol koma nol sekian; untuk laporan bulanan dengan 200.000 baris, itu selisih yang harus dijelaskan ke auditor.</p>
-<p>Menyimpan satuan terkecil sebagai integer membuat semua aritmetika eksak. <code>decimal</code> sebenarnya eksak juga, tapi tiap basis data memperlakukannya berbeda dan ORM sering mengubahnya jadi string atau float di perjalanan — integer tidak punya ambiguitas itu.</p>
+<p><strong>Alasan:</strong> <code>0.1 + 0.2</code> pada float bukan <code>0.3</code>. Untuk satu transaksi selisihnya nol
+koma nol sekian; untuk laporan bulanan dengan 200.000 baris, itu selisih yang harus
+dijelaskan ke auditor.</p>
+<p><code>numeric</code>/<code>decimal</code> <strong>juga eksak</strong> dan checker tidak melarangnya — yang dilarang hanya
+binary float (<code>float</code>, <code>real</code>, <code>double precision</code>). Memilih integer satuan terkecil
+atau <code>numeric</code> keduanya benar: integer paling aman terhadap pembulatan per-pangkah dan
+perbedaan ORM, <code>numeric</code> lebih mudah dibaca dan cocok untuk perhitungan yang butuh
+pecahan (persentase, kurs). Yang tidak boleh: mencampur keduanya dalam satu kolom
+yang sama di dua tempat berbeda.</p>
 <hr />
 <h2 id="db-07-timestamp-membawa-zona-waktu">DB-07 — Timestamp membawa zona waktu</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✗ ditolak
@@ -287,7 +296,7 @@ python3 scripts/check_schema.py examples/bad.sql --preset strict
 <li class="lvl2"><a href="#db-03-integer-status-wajib-punya-fk-atau-check">DB-03 — Integer status wajib punya FK atau CHECK</a></li>
 <li class="lvl2"><a href="#db-04-label-manusia-tidak-pernah-jadi-nilai-status">DB-04 — Label manusia tidak pernah jadi nilai status</a></li>
 <li class="lvl2"><a href="#db-05-boolean-hanya-untuk-biner-sejati">DB-05 — boolean hanya untuk biner sejati</a></li>
-<li class="lvl2"><a href="#db-06-uang-tidak-pernah-float">DB-06 — Uang tidak pernah float</a></li>
+<li class="lvl2"><a href="#db-06-uang-harus-eksak-bukan-float">DB-06 — Uang harus eksak, bukan float</a></li>
 <li class="lvl2"><a href="#db-07-timestamp-membawa-zona-waktu">DB-07 — Timestamp membawa zona waktu</a></li>
 <li class="lvl2"><a href="#db-08-satu-proyek-satu-gaya-status">DB-08 — Satu proyek, satu gaya status</a></li>
 <li class="lvl2"><a href="#uji-sendiri">Uji sendiri</a></li></ul>

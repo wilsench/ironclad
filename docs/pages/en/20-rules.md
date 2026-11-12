@@ -100,19 +100,29 @@ status_code smallint NOT NULL REFERENCES ...
 A boolean is correct only when the domain is genuinely two-valued and expected to
 stay that way: `is_active`, `is_deleted`, `email_verified`.
 
-## DB-06 — no money as float
+## DB-06 — money must be exact, not `float`
 
 ```sql
 -- wrong
-total float
-total double precision
+total        float
+amount       double precision
+price        real
 
--- right
-total_cents bigint NOT NULL          -- or NUMERIC(14,2)
+-- right (both are fine)
+total_cents   bigint NOT NULL          -- 1250000 = 12,500.00
+currency      char(3) NOT NULL         -- 'IDR'
+
+total_amount  numeric(14,2) NOT NULL   -- fixed scale, also exact
 ```
 
 Binary floating point cannot represent `0.10`. Sum a thousand rows of `float` and
 the total is off by real money.
+
+`numeric`/`decimal` **are exact** and the checker does not reject them — only binary
+float (`float`, `real`, `double precision`) is flagged. Integer minor units are the
+safest against step-by-step rounding and ORM quirks; `numeric` is easier to read and
+fits calculations that need fractions (rates, percentages). Either is correct; mixing
+the two for the same column in different places is not.
 
 ## DB-07 — no timestamp without a timezone
 
