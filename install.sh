@@ -14,6 +14,9 @@
 # Options:
 #   --target NAME        which agent (agents|claude|hermes|gemini|opencode|all)
 #   --dir PATH           explicit skills directory (overrides --target)
+#
+# Payload source order: $IRONCLAD_BASE → wilsench.my.id mirror → GitHub.
+# The mirror is tried first so the script and the payload always match.
 #   --project PATH       also bootstrap policy + checker into that repo
 #   --preset NAME        balanced (default) | strict | legacy-friendly
 #   --policy-only        bootstrap .agent/ only, skip the checker
@@ -135,12 +138,16 @@ SOURCE=""
 echo "Fetching ${SKILL_NAME} ..."
 if [ -n "${IRONCLAD_BASE:-}" ]; then
   fetch_from "$IRONCLAD_BASE" "IRONCLAD_BASE" || { echo "failed: $IRONCLAD_BASE" >&2; exit 1; }
+# The published script and the payload must come from the same release.
+# This script is served from the mirror, so try the mirror first; GitHub is the
+# fallback for anyone running a copy of install.sh from the repo itself.
+elif fetch_from "$MIRROR" "wilsench.my.id mirror"; then
+  :
 elif fetch_from "$PRIMARY" "${REPO}@${REF}"; then
   :
 else
-  echo "  GitHub not reachable (repo not published yet or rate-limited) — trying mirror" >&2
-  fetch_from "$MIRROR" "wilsench.my.id mirror" || {
-    echo "failed to fetch from GitHub and from the mirror. Check network, then retry." >&2; exit 1; }
+  echo "failed to fetch from the mirror and from GitHub. Check network, then retry." >&2
+  exit 1
 fi
 echo "  source: ${SOURCE}"
 
