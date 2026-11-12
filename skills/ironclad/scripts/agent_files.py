@@ -55,12 +55,12 @@ TARGETS = [
 # Only installed when the agent's own config dir already exists — we do not create
 # ~/.claude for someone who does not use Claude Code.
 GLOBAL_TARGETS = [
-    (".claude/CLAUDE.md", ".claude", "Claude Code"),
-    (".codex/AGENTS.md", ".codex", "Codex"),
-    (".gemini/GEMINI.md", ".gemini", "Gemini CLI"),
-    (".cursor/rules/ironclad.mdc", ".cursor", "Cursor"),
-    (".config/opencode/AGENTS.md", ".config/opencode", "opencode"),
-    (".agents/AGENTS.md", ".agents", "agents reading the AGENTS.md convention"),
+    (".claude/CLAUDE.md", ".claude", "Claude Code", False),
+    (".codex/AGENTS.md", ".codex", "Codex", False),
+    (".gemini/GEMINI.md", ".gemini", "Gemini CLI", False),
+    (".cursor/rules/ironclad.mdc", ".cursor", "Cursor", False),
+    (".config/opencode/AGENTS.md", ".config/opencode", "opencode", False),
+    (".agents/AGENTS.md", ".agents", "agents reading the AGENTS.md convention", True),
 ]
 
 CURSOR_HEADER = """---
@@ -130,9 +130,10 @@ def main() -> int:
         return 0
 
     if a.glob:
+        written = 0
         home = Path.home()
         only = {s.strip() for s in a.only.split(",")} if a.only else None
-        for rel, marker, who in GLOBAL_TARGETS:
+        for rel, marker, who, generic in GLOBAL_TARGETS:
             if only is not None and rel not in only:
                 continue
             # Do not create a config dir for an agent this machine does not use.
@@ -144,6 +145,11 @@ def main() -> int:
             state = remove(path) if a.remove else upsert(path, BODY, header)
             if not a.quiet and state != "absent":
                 print(f"  {state:14} {rel}  ({who})")
+            if state != "absent" and not generic:
+                written += 1
+        # The installer needs a machine-readable count: with zero agents found it
+        # must not claim the machine is set up.
+        print(f"IRONCLAD_AGENTS_WRITTEN={written}")
         return 0
 
     root = Path(a.project or ".").resolve()

@@ -342,12 +342,17 @@ fi
 # This is what removes the need to run anything in a repo: the rule block goes into
 # each agent's own config dir, which the agent reads at startup wherever you open it.
 # Only agents whose config dir already exists are touched.
+AGENTS_WRITTEN=0
 if [ -z "$NO_AGENT_FILES" ]; then
   echo
-  if ! python3 "$TMP/scripts/agent_files.py" --global; then
+  AF_OUT="$(python3 "$TMP/scripts/agent_files.py" --global 2>&1)" || {
+    echo "$AF_OUT"
     echo "  could not write the standing instruction — the agent will not ask on its own" >&2
     ATTACH_FAILED=1
-  fi
+  }
+  echo "$AF_OUT" | grep -v '^IRONCLAD_AGENTS_WRITTEN='
+  AGENTS_WRITTEN="$(echo "$AF_OUT" | sed -n 's/^IRONCLAD_AGENTS_WRITTEN=//p')"
+  AGENTS_WRITTEN="${AGENTS_WRITTEN:-0}"
 fi
 
 # ---- done -------------------------------------------------------------------
@@ -357,6 +362,16 @@ echo
 if [ -n "${ATTACH_FAILED:-}" ]; then
   echo "WARNING: the skill is installed, but no agent config was written. Until you"
   echo "fix that, the agent will NOT ask on its own. Run: ironclad attach --global"
+elif [ "${AGENTS_WRITTEN:-0}" = "0" ]; then
+  # Nothing was written because no known agent config dir exists. Saying "your agent
+  # now asks" here would be a lie, and the user would not know why it never fires.
+  echo "The skill is installed, but no agent config directory was found, so nothing"
+  echo "was added to any agent. Ironclad recognises:"
+  echo "  ~/.claude  ~/.codex  ~/.gemini  ~/.cursor  ~/.config/opencode  ~/.agents"
+  echo
+  echo "If your agent is not in that list, run it once so it creates its config dir,"
+  echo "then re-run the installer. Or tell the agent to read SKILL.md directly:"
+  echo "  https://wilsench.my.id/ironclad/no-commands/"
 elif [ -z "$NO_AGENT_FILES" ]; then
   echo "Your agent now asks before writing schema, in every repo, with no command"
   echo "from you. If it does not, the agent is not reading its config file — see"
