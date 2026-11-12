@@ -13,7 +13,7 @@ Two minutes. No questions to answer, no files to hand-edit.
 ## 1. Install
 
 ```bash
-npx github:wilsench/ironclad#v0.9.2
+npx github:wilsench/ironclad#v0.9.3
 ```
 
 Done. The skill is in `~/.agents/skills/ironclad/`, the `ironclad` command is in

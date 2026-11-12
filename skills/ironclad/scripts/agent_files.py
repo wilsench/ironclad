@@ -151,6 +151,19 @@ def remove(path: Path) -> str:
 
 
 def detect_installed_mode() -> str | None:
+    """Return "ask" or "house" — which block is already installed here.
+
+    The body string is not returned: a function called detect_installed_mode that
+    returns a 1200-character block is a trap for the next caller (it made `ironclad
+    version` print the whole block where it meant to print one word).
+    """
+    body = detect_installed_body()
+    if body is None:
+        return None
+    return "house" if body is HOUSE_BODY else "ask"
+
+
+def detect_installed_body() -> str | None:
     """Which body is already installed here, read from any global target.
 
     Used so `--mode` is only needed once. Without this, re-running the installer on a
@@ -190,7 +203,7 @@ def main() -> int:
     # must not silently downgrade a team that chose `house`.
     body = HOUSE_BODY if a.mode == "house" else (ASK_BODY if a.mode == "ask" else None)
     if body is None:
-        body = detect_installed_mode() or ASK_BODY
+        body = detect_installed_body() or ASK_BODY
 
     if a.show:
         print(body)

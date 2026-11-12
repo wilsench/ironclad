@@ -166,14 +166,20 @@ case "${1:-}" in
   version|--version|-V)
     printf "ironclad %s\n" "$(sed -n 's/^version: *//p' "$IRONCLAD_HOME/SKILL.md" 2>/dev/null | head -1)"
     printf "skill: %s\n" "$IRONCLAD_HOME"
-    printf "block: %s chars\n" "$(python3 - "$AGENT_FILES" <<'PY' 2>/dev/null
-import re, sys
-try:
-    src = open(sys.argv[1]).read()
-    m = re.search(r'BODY = """(.*?)"""', src, re.S)
-    print(len(m.group(1).strip()) if m else "?")
-except Exception:
-    print("?")
+    # Report the block that is actually installed, not the default one. A `house`
+    # machine used to read 1011 while 1208 chars sat in its CLAUDE.md.
+    printf "mode: %s\n" "$(python3 - "$AGENT_FILES" <<'PY' 2>/dev/null
+import sys, importlib.util
+spec = importlib.util.spec_from_file_location("af", sys.argv[1])
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+print(m.detect_installed_mode() or "ask (default)")
+PY
+)"
+        printf "block: %s chars\n" "$(python3 - "$AGENT_FILES" <<'PY' 2>/dev/null
+import sys, importlib.util
+spec = importlib.util.spec_from_file_location("af", sys.argv[1])
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+print(len((m.detect_installed_body() or m.ASK_BODY).strip()))
 PY
 )"
     ;;

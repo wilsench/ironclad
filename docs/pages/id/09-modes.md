@@ -38,10 +38,10 @@ keputusan kami".
 
 ```bash
 # netral — agent akan bertanya kalau belum ada apa pun
-npx github:wilsench/ironclad#v0.9.2
+npx github:wilsench/ironclad#v0.9.3
 
 # kantor — agent langsung memakai gaya yang disepakati
-npx github:wilsench/ironclad#v0.9.2 --mode house
+npx github:wilsench/ironclad#v0.9.3 --mode house
 ```
 
 Tanpa flag, hasilnya `ask`. Itu disengaja: orang yang menemukan alat ini dari
@@ -74,8 +74,8 @@ Tiga hal yang diperhatikan dari bunyi itu:
 Mode disimpan di berkas, bukan hanya di lingkungan shell. Artinya:
 
 ```bash
-npx github:wilsench/ironclad#v0.9.2 --mode ask     # turunkan jadi netral
-npx github:wilsench/ironclad#v0.9.2 --mode house   # naikkan jadi berpihak
+npx github:wilsench/ironclad#v0.9.3 --mode ask     # turunkan jadi netral
+npx github:wilsench/ironclad#v0.9.3 --mode house   # naikkan jadi berpihak
 ```
 
 Installer membaca mode yang tersimpan lebih dulu. Mesin `house` yang di-install

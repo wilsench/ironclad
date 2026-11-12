@@ -71,7 +71,7 @@ perintah yang menggantung lebih buruk daripada pilihan yang bisa diubah.
 Kalau kamu ingin repo langsung memakai preset tertentu:
 
 ```bash
-npx github:wilsench/ironclad#v0.9.2 --project . --preset strict
+npx github:wilsench/ironclad#v0.9.3 --project . --preset strict
 ```
 
 Atau belakangan, dari dalam repo:

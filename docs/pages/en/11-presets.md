@@ -69,7 +69,7 @@ command is worse than a choice you can change.
 ## Choosing at install time
 
 ```bash
-npx github:wilsench/ironclad#v0.9.2 --project . --preset strict
+npx github:wilsench/ironclad#v0.9.3 --project . --preset strict
 ```
 
 Or later, from inside the repo:
