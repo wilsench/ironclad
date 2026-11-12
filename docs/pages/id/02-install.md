@@ -2,7 +2,7 @@
 title: Pasang di agent
 slug: install
 group: Mulai
-order: 2
+order: 3
 summary: Satu perintah, tanpa pertanyaan. Lalu tiga kata perintah untuk memakainya. Tanpa Python.
 ---
 

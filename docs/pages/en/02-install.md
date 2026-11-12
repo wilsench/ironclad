@@ -2,7 +2,7 @@
 title: Install
 slug: install
 group: Start
-order: 2
+order: 3
 summary: One command, no questions. Then three words to use it. No Python needed.
 ---
 

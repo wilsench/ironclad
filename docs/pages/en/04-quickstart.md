@@ -2,7 +2,7 @@
 title: Quickstart
 slug: quickstart
 group: Start
-order: 4
+order: 5
 summary: Two minutes from nothing to a green checker in one repo, without disturbing anyone else's work.
 ---
 

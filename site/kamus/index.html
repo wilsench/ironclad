@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kamus — Ironclad</title>
+<meta name="description" content="Semua istilah teknis di dokumentasi ini, dijelaskan dengan bahasa sehari-hari. Tidak perlu dibaca berurutan.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/kamus/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/kamus/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/overview/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Bahasa">
+      <a href="/ironclad/kamus/" class="on" aria-current="true">ID</a>
+      <a href="/ironclad/en/overview/">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/kamus/" class="active" aria-current="page">Kamus</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Mulai / <b>Kamus</b></span>
+      <a class="langsw-mini" href="/ironclad/en/overview/" aria-label="Bahasa">EN</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="kamus">Kamus</h1>
+<p>Kalau kamu menemukan kata yang tidak jelas di halaman lain, cari di sini. Urutannya
+tidak penting — ini referensi, bukan bacaan.</p>
+<h2 id="istilah-dasar">Istilah dasar</h2>
+<p><strong>Database</strong> — tempat data disimpan secara permanen. Kalau aplikasi kamu mati dan
+hidup lagi, datanya masih ada karena tersimpan di sini. Bayangkan lemari arsip
+raksasa yang isinya bisa dicari dalam sepersekian detik.</p>
+<p><strong>Tabel</strong> — satu "laci" di dalam lemari itu. Tabel <code>pesanan</code> berisi semua pesanan,
+tabel <code>pelanggan</code> berisi semua pelanggan.</p>
+<p><strong>Kolom</strong> — satu "jenis isian" di dalam tabel. Tabel <code>pesanan</code> punya kolom
+<code>nomor_pesanan</code>, <code>tanggal</code>, <code>total</code>, <code>status</code>.</p>
+<p><strong>Baris</strong> — satu data lengkap. Satu pesanan = satu baris berisi semua kolomnya.</p>
+<p><strong>Schema</strong> — cetak biru tabelnya: tabel apa saja ada, kolom apa saja isinya, tipe
+datanya apa. Bukan datanya, tapi kerangkanya. Seperti denah rumah, bukan perabotnya.</p>
+<h2 id="istilah-yang-muncul-saat-membicarakan-masalah">Istilah yang muncul saat membicarakan masalah</h2>
+<p><strong>Status</strong> — keadaan sesuatu saat ini. Pesanan bisa <code>baru</code>, <code>dibayar</code>, <code>dikirim</code>,
+<code>sampai</code>, <code>dibatalkan</code>. Yang tampak sederhana ini justru sumber masalah paling
+umum.</p>
+<p><strong>Enum</strong> — cara menyimpan status dengan daftar pilihan yang dikunci di dalam
+struktur database. Menambah pilihan baru berarti membongkar struktur — dan di
+server produksi itu bisa membuat situs berhenti melayani beberapa menit. Ironclad
+menyarankan cara lain: lihat <a href="/ironclad/rules/">Aturan DB-01</a>.</p>
+<p><strong>Kode status</strong> — cara menyimpan status sebagai angka, misalnya <code>1</code> untuk <code>baru</code>,
+<code>2</code> untuk <code>dibayar</code>. Lebih fleksibel, tapi berbahaya kalau angkanya tidak punya
+arti yang terdokumentasi.</p>
+<p><strong>Lookup table</strong> — tabel kecil yang mendaftarkan arti setiap kode. Isinya seperti
+kamus: <code>1 = baru</code>, <code>2 = dibayar</code>, <code>3 = dikirim</code>. Fungsinya supaya kode <code>7</code> yang
+tidak pernah didaftarkan <strong>ditolak</strong> oleh database, bukan diterima diam-diam.</p>
+<p><strong>Foreign key (FK)</strong> — aturan yang mengikat satu kolom ke tabel lain. Kalau
+<code>pesanan.status_kode</code> punya FK ke <code>lookup</code> tadi, database menolak menyimpan angka
+yang tidak ada di daftar. Ini yang membuat kode sembarang seperti <code>88</code> atau <code>99</code>
+menjadi aman.</p>
+<p><strong>Migrasi</strong> — berkas berisi perintah untuk mengubah struktur database: menambah
+kolom, mengubah tipe, membuat tabel. Setiap perubahan struktur harus lewat sini,
+supaya bisa diulang di komputer lain dan bisa dibatalkan.</p>
+<p><strong>Produksi</strong> — server yang dipakai pengguna sungguhan. Lawannya <strong>staging</strong> (salinan
+untuk uji coba) dan <strong>lokal</strong> (komputer kamu sendiri).</p>
+<h2 id="istilah-tentang-ai-agent">Istilah tentang AI agent</h2>
+<p><strong>AI coding agent</strong> — program AI yang bisa membaca berkas, menulis kode, dan
+menjalankan perintah di komputermu. Contoh: Claude Code, Codex, Cursor, opencode,
+Antigravity, Hermes.</p>
+<p><strong>Skill</strong> — paket instruksi yang dibaca agent saat mengerjakan tugas tertentu.
+Bentuknya folder berisi berkas <code>SKILL.md</code>. Bukan program, bukan plugin — hanya
+teks yang dibaca.</p>
+<p><strong>Repo (repository)</strong> — folder proyek yang dilacak oleh git, lengkap dengan riwayat
+perubahannya. "Di repo kamu" berarti di folder proyek kamu.</p>
+<p><strong>Commit</strong> — menyimpan perubahan ke riwayat git, dengan catatan kenapa diubah.</p>
+<p><strong>Pull request (PR)</strong> — usulan perubahan yang harus disetujui orang lain sebelum
+masuk ke kode utama. Di sinilah pemeriksaan otomatis biasanya dipasang.</p>
+<p><strong>CI (Continuous Integration)</strong> — robot yang menjalankan pemeriksaan otomatis
+setiap kali ada pull request. Kalau ada yang melanggar aturan, PR-nya diberi tanda
+merah dan tidak bisa digabung.</p>
+<p><strong>Pre-commit hook</strong> — pemeriksaan yang berjalan di komputermu <strong>sebelum</strong> commit
+tersimpan. Lebih cepat daripada menunggu CI, karena kesalahannya ketahuan saat
+kamu masih ingat apa yang kamu tulis.</p>
+<p><strong>TTY</strong> — istilah untuk "terminal yang dipegang manusia". Perintah yang bertanya
+butuh TTY; di dalam CI atau di dalam agent, TTY tidak ada, jadi perintah seperti
+itu akan menggantung. Ironclad sengaja tidak pernah bertanya karena alasan ini.</p>
+<p><strong>PATH</strong> — daftar folder tempat sistem mencari perintah. Kalau <code>ironclad: command
+not found</code>, artinya folder tempat ia dipasang belum ada di daftar itu.</p>
+<h2 id="istilah-khusus-ironclad">Istilah khusus Ironclad</h2>
+<p><strong>Preset</strong> — tingkat seberapa keras aturan ditegakkan. Ada tiga:</p>
+<ul>
+<li><code>legacy-friendly</code> — semua hanya peringatan, tidak pernah menggagalkan build.
+  Untuk repo tua yang sudah punya banyak masalah.</li>
+<li><code>balanced</code> — yang paling berbahaya memblokir, sisanya memperingatkan. Ini default.</li>
+<li><code>strict</code> — semuanya memblokir. Untuk repo baru atau yang sudah bersih.</li>
+</ul>
+<p><strong>Rule ID</strong> — nomor aturan, misalnya <code>DB-04</code>. Dipakai supaya diskusi jadi singkat:
+"ini melanggar DB-04" lebih cepat daripada menjelaskan satu paragraf.</p>
+<p><strong>Checker / linter</strong> — program yang membaca kode dan menunjuk pelanggaran aturan.
+Tidak memperbaiki; hanya menunjuk.</p>
+<p><strong>Gate</strong> — pemeriksaan yang <strong>memblokir</strong>. Bedanya dengan peringatan: peringatan
+bisa diabaikan, gate tidak.</p>
+<p><strong>Finding / temuan</strong> — satu pelanggaran yang ditemukan checker, lengkap dengan
+nama berkas dan nomor baris.</p>
+<p><strong>Exit code</strong> — angka yang dikembalikan program setelah selesai. <code>0</code> berarti
+bersih, <code>1</code> berarti ada pelanggaran, <code>2</code> berarti perintahnya salah pakai. Robot CI
+membaca angka ini, bukan tulisannya.</p>
+<h2 id="istilah-yang-sering-bikin-bingung">Istilah yang sering bikin bingung</h2>
+<p><strong>"Kenapa harus dua perintah? Bukannya satu lebih baik?"</strong>
+Yang pertama memasang alatnya di komputer. Yang kedua memakainya di satu proyek
+tertentu. Satu komputer bisa punya sepuluh proyek dengan aturan berbeda.</p>
+<p><strong>"Apa bedanya skill dan checker?"</strong>
+Skill itu buku aturan yang dibaca AI. Checker itu pemeriksa yang membaca hasil
+kerja. Yang pertama mencegah, yang kedua menangkap.</p>
+<p><strong>"Kalau checker-nya sudah ada, kenapa masih perlu skill?"</strong>
+Karena checker hanya memberi tahu setelah kodenya ditulis. Skill membuat AI
+menulis hal yang benar sejak awal — jauh lebih murah daripada memperbaiki.</p>
+<p><strong>"Apakah ini mengubah kode saya?"</strong>
+Tidak. <code>ironclad check</code> hanya membaca. <code>ironclad init</code> menambah empat berkas baru
+dan tidak menyentuh kode yang sudah ada.</p>
+<p><strong>"Apakah data saya dikirim ke internet?"</strong>
+Tidak. Semua berjalan lokal. Installer mengunduh berkas sekali, lalu selesai.</p>
+<p><strong>"Kalau saya tidak paham istilah teknisnya, apakah saya tetap bisa memakai ini?"</strong>
+Bisa, untuk bagian pemasangan — dua perintah, tidak ada yang perlu dijawab. Untuk
+memutuskan preset mana yang tepat, ajak yang menulis kode. Lihat bagian
+<a href="/ironclad/overview/#kalau-kamu-bukan-yang-menulis-kode">Kalau kamu bukan yang menulis kode</a>.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/overview/"><span>Sebelumnya</span><b>Apa ini, untuk siapa</b></a>
+<a class="next" href="/ironclad/install/"><span>Berikutnya</span><b>Pasang di agent</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#istilah-dasar">Istilah dasar</a></li>
+<li class="lvl2"><a href="#istilah-yang-muncul-saat-membicarakan-masalah">Istilah yang muncul saat membicarakan masalah</a></li>
+<li class="lvl2"><a href="#istilah-tentang-ai-agent">Istilah tentang AI agent</a></li>
+<li class="lvl2"><a href="#istilah-khusus-ironclad">Istilah khusus Ironclad</a></li>
+<li class="lvl2"><a href="#istilah-yang-sering-bikin-bingung">Istilah yang sering bikin bingung</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

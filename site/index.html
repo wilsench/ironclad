@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ikhtisar — Ironclad</title>
-<meta name="description" content="Ironclad memberi setiap AI coding agent satu rulebook yang sama, plus linter yang menegakkannya di CI.">
+<title>Apa ini, untuk siapa — Ironclad</title>
+<meta name="description" content="Penjelasan tanpa jargon — masalah apa yang diselesaikan, apa yang harus kamu lakukan, dan apa yang tidak perlu kamu sentuh.">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/overview/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/overview/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/overview/">
@@ -38,7 +38,8 @@
 
     <nav class="nav" aria-label="Dokumentasi">
       <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
-<li><a href="/ironclad/overview/" class="active" aria-current="page">Ikhtisar</a></li>
+<li><a href="/ironclad/overview/" class="active" aria-current="page">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/kamus/">Kamus</a></li>
 <li><a href="/ironclad/install/">Pasang di agent</a></li>
 <li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
 <li><a href="/ironclad/quickstart/">Quickstart</a></li>
@@ -72,92 +73,156 @@
       <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
         <span></span><span></span>
       </button>
-      <span class="crumb">Mulai / <b>Ikhtisar</b></span>
+      <span class="crumb">Mulai / <b>Apa ini, untuk siapa</b></span>
       <a class="langsw-mini" href="/ironclad/en/overview/" aria-label="Bahasa">EN</a>
       <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
     </header>
 
     <div class="pagegrid">
       <article class="prose">
-        <h1 id="ironclad">Ironclad</h1>
-<p>Aturan engineering tim, ditegakkan mesin — bukan ingatan.</p>
-<p>Sepuluh orang memakai AI agent untuk membangun aplikasi yang sama. Tidak ada yang membaca wiki yang sama. Enam bulan kemudian schema-nya jadi museum selera masing-masing: <code>enum</code> di satu tabel, <code>varchar</code> status di tabel lain, <code>boolean</code> untuk konsep yang punya empat keadaan.</p>
-<p>Ironclad memasang tiga lapis untuk mencegahnya:</p>
+        <h1 id="ironclad-tanpa-jargon">Ironclad, tanpa jargon</h1>
+<p><strong>Ironclad itu buku aturan untuk AI yang menulis kode.</strong> Bukan aplikasi, bukan
+layanan berlangganan — sebuah berkas teks yang dibaca AI sebelum ia mulai bekerja,
+plus pemeriksa yang menolak hasilnya kalau melanggar.</p>
+<p>Kalau kalimat itu belum jelas, ini versi lainnya: <em>kalau tim kamu memakai AI untuk
+membuat aplikasi, Ironclad menjaga hasilnya tetap konsisten — supaya tidak perlu
+dibongkar setahun kemudian.</em></p>
+<p><strong>Ini untuk siapa:</strong></p>
+<ul>
+<li><strong>Kamu programmer</strong> yang memakai AI (Claude, Copilot, Cursor) untuk membuat
+  bagian database. Kamu akan memakai ini setiap hari.</li>
+<li><strong>Kamu bukan programmer</strong>, tapi kamu yang memutuskan apakah tim memakai alat ini.
+  Yang perlu kamu lakukan cuma meneruskannya ke developer, lalu bertanya tiga hal
+  di <a href="#kalau-kamu-bukan-yang-menulis-kode">bagian bawah</a>.</li>
+</ul>
+<p><strong>Yang tidak perlu kamu tahu untuk mulai:</strong> apa itu enum, apa itu foreign key, apa
+itu migrasi. Semua istilah seperti itu ada di <a href="/ironclad/kamus/">Kamus</a>, dan tidak perlu
+dibaca berurutan.</p>
+<h2 id="masalah-yang-diselesaikan">Masalah yang diselesaikan</h2>
+<p>Ini kejadian yang berulang di banyak tim.</p>
+<p>Kamu minta AI — Claude, Copilot, Cursor, apa pun — menambah fitur "pesanan".
+Ia menulis bagian database-nya (tempat data disimpan). Fiturnya jalan. Semua
+senang.</p>
+<p>Enam bulan kemudian, ada tiga masalah yang muncul bersamaan:</p>
+<ul>
+<li>Di satu tabel, status pesanan disimpan sebagai <code>1</code>, <code>2</code>, <code>3</code>. Tidak ada yang
+  ingat <code>2</code> itu apa. Yang menulisnya sudah pindah kerja.</li>
+<li>Di tabel lain, status ditulis sebagai teks: <code>"Sudah dibayar"</code>, <code>"sudah dibayar"</code>,
+  <code>"Sudah Dibayar"</code> — tiga ejaan, dan laporan penjualan jadi salah hitung.</li>
+<li>Klien minta status baru: "ditunda karena cuaca". Untuk menambahkannya, kamu
+  harus mengubah <strong>struktur</strong> database, bukan sekadar menambah data. Di server
+  produksi, itu bisa mengunci tabel — artinya toko tutup beberapa menit.</li>
+</ul>
+<p>Tidak ada satu pun dari ini yang salahnya AI. AI menulis apa yang masuk akal saat
+itu. Yang tidak ada: aturan tertulis yang ia baca sebelum mulai.</p>
+<h2 id="kenapa-ini-mahal-diperbaiki">Kenapa ini mahal diperbaiki</h2>
+<p>Analogi renovasi rumah.</p>
+<p>Kamu bebas memilih warna cat, gagang pintu, atau tata letak furnitur — itu murah
+diubah kapan saja. Tapi pipa air dan instalasi listrik harus mengikuti standar.
+Bukan karena kita suka aturan, tapi karena memperbaikinya berarti membongkar
+dinding.</p>
+<p>Database itu pipa dan listriknya. Tampilan bisa diganti dalam sehari. Struktur
+data yang salah akan menempel bertahun-tahun, dan biayanya naik setiap kali ada
+data baru masuk.</p>
+<p>Ironclad adalah standar bangunan untuk bagian itu — bukan untuk catnya.</p>
+<h2 id="apa-yang-ironclad-lakukan">Apa yang Ironclad lakukan</h2>
+<p>Tiga hal, dan hanya tiga:</p>
+<p><strong>1. Memberi AI buku aturan sebelum ia mulai.</strong>
+Sebuah berkas teks di repo kamu (<code>.agent/standards.md</code>) berisi keputusan yang
+sudah diambil tim: status disimpan bagaimana, uang disimpan bagaimana, tanggal
+disimpan bagaimana. AI membacanya sebelum menulis database.</p>
+<p><strong>2. Menyimpan aturan itu di dalam repo, bukan di kepala orang.</strong>
+Ikut tersimpan di git, ikut ter-review saat ada perubahan. Anggota tim baru —
+manusia atau AI — membaca berkas yang sama.</p>
+<p><strong>3. Memeriksa hasilnya secara otomatis.</strong>
+Sebuah skrip (<code>check_schema.py</code>) membaca kode database dan menunjuk pelanggaran
+dengan nomor aturan. Bisa dijalankan manual, bisa dipasang di CI sehingga pull
+request yang melanggar tidak bisa digabung.</p>
+<p>Poin 1 itu saran. Poin 3 itu penegakan. Kamu butuh keduanya, karena AI yang cuma
+diberi saran akan kadang mengabaikannya, dan pemeriksa tanpa aturan tertulis cuma
+menghasilkan daftar kesalahan yang tidak jelas cara betulkannya.</p>
+<h2 id="apa-yang-harus-kamu-lakukan">Apa yang harus kamu lakukan</h2>
+<p>Dua perintah. Tidak ada yang perlu dijawab, tidak ada konfigurasi.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash"># 1. pasang (sekali per komputer)
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash"># 2. di dalam repo kamu — lihat dulu, tidak mengubah apa pun
+ironclad check
+</code></pre></div>
+<p>Kalau hasilnya masuk akal, jadikan permanen:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad init
+</code></pre></div>
+<p>Selesai. Sekitar dua menit, dan repo kamu belum berubah sampai kamu menjalankan
+perintah ketiga.</p>
+<p>Panduan langkah demi langkah: <a href="/ironclad/quickstart/">Quickstart</a>.</p>
+<h2 id="kalau-kamu-bukan-yang-menulis-kode">Kalau kamu bukan yang menulis kode</h2>
+<p>Kamu tetap bisa memakai ini. Yang perlu kamu lakukan:</p>
+<p><strong>Kirim halaman ini ke developer kamu</strong> — atau ke orang yang mengurus aplikasinya.
+Minta mereka menjalankan dua perintah di atas.</p>
+<p><strong>Ajukan tiga pertanyaan ini</strong> sesudahnya. Jawabannya menunjukkan apakah ini
+benar-benar dipasang atau cuma dijanjikan:</p>
+<ol>
+<li>"Preset apa yang dipakai?" — jawaban yang benar salah satu dari
+   <code>balanced</code>, <code>strict</code>, atau <code>legacy-friendly</code>. Kalau jawabannya "apa itu
+   preset", berarti belum dijalankan.</li>
+<li>"Berapa temuan saat ini?" — angka. Bukan "sudah beres".</li>
+<li>"Apakah pull request yang melanggar benar-benar gagal?" — kalau belum pernah
+   diuji, berarti gate-nya belum terbukti bekerja.</li>
+</ol>
+<p><strong>Yang tidak perlu kamu pelajari:</strong> cara kerja checker, apa itu foreign key, atau
+isi berkas YAML-nya. Itu urusan yang menulis kode.</p>
+<h2 id="yang-tidak-dilakukan-ironclad">Yang tidak dilakukan Ironclad</h2>
+<ul>
+<li><strong>Bukan pengganti programmer.</strong> Ia tidak menulis fitur, tidak memperbaiki bug.</li>
+<li><strong>Bukan pengganti review.</strong> Ia menangkap pola yang salah; ia tidak tahu apakah
+  logika bisnismu benar.</li>
+<li><strong>Bukan alat keamanan.</strong> Tidak memeriksa kebocoran data atau celah akses.</li>
+<li><strong>Tidak mengubah tampilan aplikasi.</strong> Tidak ada hubungannya dengan desain.</li>
+<li><strong>Tidak mengirim data ke mana pun.</strong> Semuanya berjalan di komputermu sendiri.</li>
+</ul>
+<h2 id="batas-jujurnya">Batas jujurnya</h2>
+<ul>
+<li>Pemeriksanya bekerja dengan pencocokan pola, bukan pemahaman. Ia bisa salah
+  menandai kode yang sebenarnya benar, dan bisa melewatkan yang seharusnya
+  ditandai. Manusia tetap lapis terakhir.</li>
+<li>Ia tahu tujuh aturan tentang database. Bukan dua ratus.</li>
+<li>Belum ada pembaruan otomatis. Untuk versi baru, jalankan ulang installer.</li>
+<li>Kalau tim kamu belum pernah pakai AI untuk menulis database, manfaatnya kecil —
+  ini dibuat untuk masalah yang muncul justru karena AI menulis banyak dan cepat.</li>
+</ul>
+<h2 id="arah-selanjutnya">Arah selanjutnya</h2>
 <div class="tablewrap"><table>
 <thead>
 <tr>
-<th>Lapis</th>
-<th>Berkas</th>
-<th>Ditegakkan oleh</th>
+<th>Kalau kamu…</th>
+<th>Baca</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Kebijakan</strong> — apa yang tim mau</td>
-<td><code>.agent/standards.md</code> di repo kamu</td>
-<td>Review + agent</td>
+<td>ingin tahu istilah yang dipakai di sini</td>
+<td><a href="/ironclad/kamus/">Kamus</a></td>
 </tr>
 <tr>
-<td><strong>Prosedur</strong> — bagaimana agent memutuskan</td>
-<td><code>SKILL.md</code> + <code>references/</code></td>
-<td>Agent itu sendiri</td>
+<td>ingin memasang sekarang</td>
+<td><a href="/ironclad/install/">Pasang di agent</a></td>
 </tr>
 <tr>
-<td><strong>Mekanisme</strong> — apa yang bisa diperiksa mesin</td>
-<td><code>scripts/check_schema.py</code></td>
-<td>CI / pre-commit</td>
+<td>ingin melihat langkah lengkapnya</td>
+<td><a href="/ironclad/quickstart/">Quickstart</a></td>
+</tr>
+<tr>
+<td>ingin tahu aturan apa saja yang diperiksa</td>
+<td><a href="/ironclad/rules/">Aturan</a></td>
+</tr>
+<tr>
+<td>ragu ini akan dipakai tim atau tidak</td>
+<td><a href="/ironclad/three-layers/">Tiga lapis</a> — kenapa alat seperti ini sering dicabut</td>
 </tr>
 </tbody>
 </table></div>
-<p>Skill saja hanya nasihat; model bisa mengabaikannya. Checker-nya yang membuat standar bertahan lintas dua puluh programmer.</p>
-<h2 id="pasang-dalam-satu-baris">Pasang dalam satu baris</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
-</code></pre></div>
-<p>Itu memasang skill ke <code>~/.agents/skills/ironclad</code> — dibaca Codex, Cursor, opencode, dan Antigravity. Untuk agent lain:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target hermes
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
-</code></pre></div>
-<p><a href="/ironclad/install/">Tabel lengkap per agent →</a></p>
-<h2 id="lalu-di-repo-kamu">Lalu di repo kamu</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project .
-</code></pre></div>
-<p>Menulis <code>.agent/standards.md</code>, <code>.agent/standards.yml</code>, <code>scripts/check_schema.py</code>, dan <code>scripts/presets/</code>. Commit semuanya, atau anggota tim berikutnya mendapat rulebook yang berbeda.</p>
-<blockquote>
-<p><strong>Python tidak diperlukan untuk memasang atau menulis kebijakan.</strong> Installer-nya bash + curl. Python 3.8+ hanya dibutuhkan saat menjalankan checker — dan checker itu opsional kalau kamu hanya ingin aturannya dibaca agent.</p>
-</blockquote>
-<h2 id="kenapa-kode-integer-bukan-enum">Kenapa kode integer, bukan <code>enum</code></h2>
-<p><code>enum</code> memaksa perubahan nilai lewat migrasi schema. Di MySQL, menambah satu nilai berarti <code>ALTER TABLE</code>, dan pada tabel besar itu mengunci. Sementara status bisnis selalu tumbuh: "dijadwalkan", "menunggu konfirmasi", "ditunda karena cuaca", "dibatalkan sebagian".</p>
-<p>Kode integer dengan lookup table memberi kebebasan itu tanpa kehilangan integritas:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">CREATE TABLE ref_stock_status (
-  code   smallint PRIMARY KEY,
-  label  text NOT NULL
-);
-INSERT INTO ref_stock_status VALUES (88,'Kosong'),(89,'Menipis'),(90,'Tersedia');
-
-CREATE TABLE product_stock (
-  product_id  bigint NOT NULL REFERENCES products(id),
-  status_code smallint NOT NULL DEFAULT 88 REFERENCES ref_stock_status(code)
-);
-</code></pre></div>
-<p>Kode <code>88</code> itu sah — bukan harus berurutan dari nol. Yang membuatnya aman hanya dua hal: <strong>terdaftar di lookup table</strong> (sehingga <code>87</code> ditolak database), dan <strong>konstanta bernama di kode aplikasi</strong> (bukan <code>if (status === 88)</code> yang berserakan).</p>
-<p><a href="/ironclad/rules/">Aturan lengkapnya →</a></p>
-<h2 id="batasan-yang-perlu-kamu-tahu">Batasan yang perlu kamu tahu</h2>
-<ul>
-<li><strong>Checker berbasis regex</strong>, bukan parser SQL. Ia membaca DDL <code>.sql</code>, migration Laravel, dan <code>.prisma</code>. Ia tidak melihat query builder ORM atau SQL yang dirangkai saat runtime.</li>
-<li><strong>Tidak ada auto-update.</strong> <code>hermes skills update</code> memakai URL saat install; agent lain perlu memasang ulang. Belum ada changelog bertanda versi.</li>
-<li><strong>Tiga preset, bukan konfigurasi bebas.</strong> Kamu bisa menulis preset sendiri, tapi tidak ada GUI.</li>
-<li><strong>Cocok untuk database-centric rule</strong>, dan sekarang juga PR/API lewat <code>references/extending.md</code>. Bukan linter sempurna.</li>
-</ul>
-<h2 id="langkah-berikutnya">Langkah berikutnya</h2>
-<ol>
-<li><a href="/ironclad/install/">Pasang di agent kamu</a> — Hermes, Claude Code, Codex, Cursor, opencode, Antigravity</li>
-<li><a href="/ironclad/how-agents-use-it/">Pahami cara agent memakainya</a> — otomatis atau dipanggil manual</li>
-<li><a href="/ironclad/quickstart/">Quickstart 5 menit</a> di satu repo</li>
-<li><a href="/ironclad/presets/">Pilih tingkat penegakan</a> — jangan langsung <code>strict</code></li>
-</ol>
         <nav class="pager" aria-label="Halaman berikutnya">
-          <a class="next" href="/ironclad/install/"><span>Berikutnya</span><b>Pasang di agent</b></a>
+          <a class="next" href="/ironclad/kamus/"><span>Berikutnya</span><b>Kamus</b></a>
         </nav>
         <footer class="docfoot">
           <span>Ironclad v0.5.0-0cff1a72</span>
@@ -168,11 +233,14 @@ CREATE TABLE product_stock (
 
       <aside class="toc" aria-label="Di halaman ini">
         <div class="navlabel"><span>§</span>Di halaman ini</div>
-        <ul><li class="lvl2"><a href="#pasang-dalam-satu-baris">Pasang dalam satu baris</a></li>
-<li class="lvl2"><a href="#lalu-di-repo-kamu">Lalu di repo kamu</a></li>
-<li class="lvl2"><a href="#kenapa-kode-integer-bukan-enum">Kenapa kode integer, bukan enum</a></li>
-<li class="lvl2"><a href="#batasan-yang-perlu-kamu-tahu">Batasan yang perlu kamu tahu</a></li>
-<li class="lvl2"><a href="#langkah-berikutnya">Langkah berikutnya</a></li></ul>
+        <ul><li class="lvl2"><a href="#masalah-yang-diselesaikan">Masalah yang diselesaikan</a></li>
+<li class="lvl2"><a href="#kenapa-ini-mahal-diperbaiki">Kenapa ini mahal diperbaiki</a></li>
+<li class="lvl2"><a href="#apa-yang-ironclad-lakukan">Apa yang Ironclad lakukan</a></li>
+<li class="lvl2"><a href="#apa-yang-harus-kamu-lakukan">Apa yang harus kamu lakukan</a></li>
+<li class="lvl2"><a href="#kalau-kamu-bukan-yang-menulis-kode">Kalau kamu bukan yang menulis kode</a></li>
+<li class="lvl2"><a href="#yang-tidak-dilakukan-ironclad">Yang tidak dilakukan Ironclad</a></li>
+<li class="lvl2"><a href="#batas-jujurnya">Batas jujurnya</a></li>
+<li class="lvl2"><a href="#arah-selanjutnya">Arah selanjutnya</a></li></ul>
       </aside>
     </div>
   </main>

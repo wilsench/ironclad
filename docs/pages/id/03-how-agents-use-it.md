@@ -2,7 +2,7 @@
 title: Cara agent memakainya
 slug: how-agents-use-it
 group: Mulai
-order: 3
+order: 4
 summary: Skill aktif otomatis tanpa perintah, tapi hanya kalau deskripsinya cocok dengan tugas. Ini cara kerjanya dan cara memaksanya.
 ---
 

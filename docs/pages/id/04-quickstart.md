@@ -2,7 +2,7 @@
 title: Quickstart
 slug: quickstart
 group: Mulai
-order: 4
+order: 5
 summary: Dua menit dari nol sampai checker hijau di satu repo, tanpa mengganggu pekerjaan lain.
 ---
 

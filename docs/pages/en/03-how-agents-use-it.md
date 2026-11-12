@@ -2,7 +2,7 @@
 title: How agents use it
 slug: how-agents-use-it
 group: Start
-order: 3
+order: 4
 summary: Skills activate on their own — but only when the description matches the task. Here is how that works and how to force it.
 ---
 

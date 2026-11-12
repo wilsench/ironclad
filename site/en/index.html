@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Overview — Ironclad</title>
-<meta name="description" content="Ironclad gives every AI coding agent the same rulebook, plus a linter that enforces it in CI.">
+<title>What this is, and who it is for — Ironclad</title>
+<meta name="description" content="The plain-language explanation — what problem it solves, what you have to do, and what you never have to touch.">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/en/overview/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/overview/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/overview/">
@@ -38,7 +38,8 @@
 
     <nav class="nav" aria-label="Documentation">
       <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
-<li><a href="/ironclad/en/overview/" class="active" aria-current="page">Overview</a></li>
+<li><a href="/ironclad/en/overview/" class="active" aria-current="page">What this is, and who it is for</a></li>
+<li><a href="/ironclad/en/glossary/">Glossary</a></li>
 <li><a href="/ironclad/en/install/">Install</a></li>
 <li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
 <li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
@@ -72,72 +73,153 @@
       <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span>
       </button>
-      <span class="crumb">Start / <b>Overview</b></span>
+      <span class="crumb">Start / <b>What this is, and who it is for</b></span>
       <a class="langsw-mini" href="/ironclad/overview/" aria-label="Language">ID</a>
       <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
     </header>
 
     <div class="pagegrid">
       <article class="prose">
-        <h1 id="ironclad">Ironclad</h1>
-<p>Engineering rules decay the moment they live in a wiki. Ten people vibe-code the
-same app, nobody reads the same page, and six months later the schema is a museum
-of individual taste: three different ways to store "status", money as a float,
-timestamps without a timezone.</p>
-<p>Ironclad is the answer to that, in three layers:</p>
-<ol>
-<li><strong>A skill</strong> every AI coding agent reads before it writes DDL.</li>
-<li><strong>A policy file</strong> in your repo — <code>.agent/standards.md</code> — so the rules are
-   reviewable, diffable, and the same for the agent and the human.</li>
-<li><strong>A checker</strong> — <code>check_schema.py</code> — that fails CI when someone drifts.</li>
-</ol>
-<p>The skill is advice. The checker is enforcement. You need both, because an agent
-that only has advice will eventually ignore it, and a checker with no advice
-produces violations nobody knows how to fix.</p>
-<h2 id="who-this-is-for">Who this is for</h2>
-<p>Teams where an AI agent writes a meaningful share of the schema, and where
-"we'll clean it up later" has already been said three times.</p>
-<p>It is not a style guide for formatting. It is a small set of decisions that are
-expensive to reverse — <code>enum</code> columns, status stored as prose, money as <code>float</code>,
-naive timestamps — each with a preferred alternative.</p>
-<h2 id="the-one-opinion-that-matters">The one opinion that matters</h2>
-<p>Status is data, and data belongs in a table with a foreign key, not in a column
-type that needs <code>ALTER TABLE</code> to change.</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- what an agent writes when nobody stops it
-status ENUM('pending', 'paid', 'shipped')
-
--- what you want instead
-status_code smallint NOT NULL REFERENCES order_status(code)
-</code></pre></div>
-<p>The knife cuts both ways: you are free to pick any code you like — <code>88</code>, <code>99</code>,
-<code>990</code> — as long as the number is registered in the lookup table and guarded by a
-foreign key. The database rejects unknown codes; the app uses named constants
-instead of bare <code>if (status === 88)</code>.</p>
-<p>See <a href="/ironclad/en/rules/">Rules</a> for all seven.</p>
-<h2 id="what-it-deliberately-does-not-do">What it deliberately does not do</h2>
+        <h1 id="ironclad-without-the-jargon">Ironclad, without the jargon</h1>
+<p><strong>Ironclad is a rulebook for the AI that writes your code.</strong> Not an app, not a
+subscription — a text file the AI reads before it starts, plus a checker that
+rejects the result if it breaks the rules.</p>
+<p>If that is still abstract, here it is another way: <em>if your team uses AI to build
+software, Ironclad keeps the output consistent — so nobody has to tear it apart a
+year later.</em></p>
+<p><strong>Who this is for:</strong></p>
 <ul>
-<li><strong>No GUI.</strong> Rules live in YAML and Markdown, in your repo.</li>
-<li><strong>No cloud service.</strong> The checker is a Python script. It runs offline.</li>
-<li><strong>No formatting opinions.</strong> Use Prettier, Biome, Pint — whatever you already use.</li>
-<li><strong>No autofix.</strong> Fixing a schema is a design decision, not a regex.</li>
+<li><strong>You write code</strong> and use AI (Claude, Copilot, Cursor) for the database part.
+  You will use this daily.</li>
+<li><strong>You do not write code</strong>, but you decide whether the team adopts this. All you
+  have to do is forward it to a developer, then ask three questions
+  <a href="#if-you-are-not-the-one-writing-code">near the bottom</a>.</li>
+</ul>
+<p><strong>What you do not need to know to start:</strong> what an enum is, what a foreign key is,
+what a migration is. Every term like that lives in the <a href="/ironclad/en/glossary/">Glossary</a>, and
+you never have to read it in order.</p>
+<h2 id="the-problem-it-solves">The problem it solves</h2>
+<p>This happens on teams over and over.</p>
+<p>You ask an AI — Claude, Copilot, Cursor, whatever — to add an "orders" feature. It
+writes the database part (where the data lives). The feature works. Everyone is
+happy.</p>
+<p>Six months later, three problems surface at once:</p>
+<ul>
+<li>In one table, order status is stored as <code>1</code>, <code>2</code>, <code>3</code>. Nobody remembers what <code>2</code>
+  means. Whoever wrote it has changed jobs.</li>
+<li>In another table, status is stored as text: <code>"Paid"</code>, <code>"paid"</code>, <code>"PAID"</code> — three
+  spellings, and the sales report now undercounts.</li>
+<li>A client wants a new status: "delayed by weather". To add it, you have to change
+  the database <strong>structure</strong>, not just the data. On a production server that can
+  lock the table — meaning the shop stops serving for a few minutes.</li>
+</ul>
+<p>None of this is the AI's fault. It wrote what made sense at the time. What was
+missing: a written rulebook it reads before it starts.</p>
+<h2 id="why-this-is-expensive-to-fix-later">Why this is expensive to fix later</h2>
+<p>Think of renovating a house.</p>
+<p>You are free to choose paint colours, door handles, furniture layout — those are
+cheap to change any time. But plumbing and wiring have to follow a standard. Not
+because anyone loves rules, but because fixing them means tearing open walls.</p>
+<p>The database is the plumbing. A UI can be replaced in a day. A wrong data structure
+sticks around for years, and the cost rises every time new data lands in it.</p>
+<p>Ironclad is the building code for that part — not for the paint.</p>
+<h2 id="what-ironclad-actually-does">What Ironclad actually does</h2>
+<p>Three things, and only three:</p>
+<p><strong>1. It gives the AI a rulebook before it starts.</strong>
+A text file in your repo (<code>.agent/standards.md</code>) holds decisions the team already
+made: how status is stored, how money is stored, how dates are stored. The AI reads
+it before writing the database.</p>
+<p><strong>2. It keeps those rules in the repo, not in someone's head.</strong>
+It travels with git and gets reviewed when it changes. A new team member — human
+or AI — reads the same file.</p>
+<p><strong>3. It checks the result automatically.</strong>
+A script (<code>check_schema.py</code>) reads the database code and points at violations with
+a rule number. You can run it by hand, or wire it into CI so a pull request that
+violates a rule cannot be merged.</p>
+<p>Point 1 is advice. Point 3 is enforcement. You need both, because an AI that only
+gets advice will sometimes ignore it, and a checker with no written rules just
+produces a list of errors nobody knows how to fix.</p>
+<h2 id="what-you-have-to-do">What you have to do</h2>
+<p>Two commands. Nothing to answer, nothing to configure.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash"># 1. install (once per machine)
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash"># 2. inside your repo — look only, changes nothing
+ironclad check
+</code></pre></div>
+<p>If the result makes sense, make it permanent:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad init
+</code></pre></div>
+<p>That is it. About two minutes, and your repo is untouched until you run the third
+command.</p>
+<p>Step by step: <a href="/ironclad/en/quickstart/">Quickstart</a>.</p>
+<h2 id="if-you-are-not-the-one-writing-code">If you are not the one writing code</h2>
+<p>You can still use this. What you do:</p>
+<p><strong>Send this page to your developer</strong> — or to whoever maintains the app. Ask them to
+run the two commands above.</p>
+<p><strong>Then ask three questions.</strong> The answers show whether this is actually installed
+or merely promised:</p>
+<ol>
+<li>"Which preset are we on?" — the right answer is one of <code>balanced</code>, <code>strict</code>, or
+   <code>legacy-friendly</code>. If the answer is "what's a preset", it has not been run.</li>
+<li>"How many findings right now?" — a number. Not "it's fine".</li>
+<li>"Does a violating pull request actually fail?" — if it was never tested, the gate
+   is unproven.</li>
+</ol>
+<p><strong>What you never need to learn:</strong> how the checker works, what a foreign key is, or
+what is inside the YAML file. That belongs to whoever writes the code.</p>
+<h2 id="what-ironclad-does-not-do">What Ironclad does not do</h2>
+<ul>
+<li><strong>Not a replacement for a programmer.</strong> It does not write features or fix bugs.</li>
+<li><strong>Not a replacement for review.</strong> It catches wrong patterns; it does not know
+  whether your business logic is right.</li>
+<li><strong>Not a security tool.</strong> It does not check for data leaks or access holes.</li>
+<li><strong>Does not change your app's appearance.</strong> Nothing to do with design.</li>
+<li><strong>Does not send data anywhere.</strong> Everything runs on your own machine.</li>
 </ul>
 <h2 id="the-honest-limits">The honest limits</h2>
 <ul>
-<li>The checker is regex-based, not a SQL parser. It can produce false positives
-  and it will miss things a human reviewer would catch. It is a floor, not a
-  ceiling — a human is still the last layer.</li>
-<li>There is no automatic update mechanism yet. Re-run the installer to upgrade.</li>
-<li>It knows seven rules about databases. It is not a security scanner.</li>
+<li>The checker works by pattern matching, not understanding. It can flag code that
+  is actually fine, and it can miss things it should have flagged. A human is still
+  the last layer.</li>
+<li>It knows seven rules about databases. Not two hundred.</li>
+<li>There is no auto-update. For a newer version, re-run the installer.</li>
+<li>If your team has never used AI to write database code, the benefit is small —
+  this is built for a problem that appears precisely because AI writes a lot, fast.</li>
 </ul>
-<h2 id="where-to-go">Where to go</h2>
-<ul>
-<li><a href="/ironclad/en/install/">Install</a> — one command, no Python, no questions</li>
-<li><a href="/ironclad/en/quickstart/">Quickstart</a> — from zero to a green checker in two minutes</li>
-<li><a href="/ironclad/en/presets/">Presets</a> — pick how hard the rules should bite</li>
-<li><a href="/ironclad/en/rules/">Rules</a> — what it actually checks</li>
-</ul>
+<h2 id="where-to-go-next">Where to go next</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>If you want to…</th>
+<th>Read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>look up a term used here</td>
+<td><a href="/ironclad/en/glossary/">Glossary</a></td>
+</tr>
+<tr>
+<td>install right now</td>
+<td><a href="/ironclad/en/install/">Install</a></td>
+</tr>
+<tr>
+<td>see every step</td>
+<td><a href="/ironclad/en/quickstart/">Quickstart</a></td>
+</tr>
+<tr>
+<td>know what it checks</td>
+<td><a href="/ironclad/en/rules/">Rules</a></td>
+</tr>
+<tr>
+<td>worry the team will rip it out</td>
+<td><a href="/ironclad/en/three-layers/">Three layers</a> — why tools like this get abandoned</td>
+</tr>
+</tbody>
+</table></div>
         <nav class="pager" aria-label="Next page">
-          <a class="next" href="/ironclad/en/install/"><span>Next</span><b>Install</b></a>
+          <a class="next" href="/ironclad/en/glossary/"><span>Next</span><b>Glossary</b></a>
         </nav>
         <footer class="docfoot">
           <span>Ironclad v0.5.0-0cff1a72</span>
@@ -148,11 +230,14 @@ instead of bare <code>if (status === 88)</code>.</p>
 
       <aside class="toc" aria-label="On this page">
         <div class="navlabel"><span>§</span>On this page</div>
-        <ul><li class="lvl2"><a href="#who-this-is-for">Who this is for</a></li>
-<li class="lvl2"><a href="#the-one-opinion-that-matters">The one opinion that matters</a></li>
-<li class="lvl2"><a href="#what-it-deliberately-does-not-do">What it deliberately does not do</a></li>
+        <ul><li class="lvl2"><a href="#the-problem-it-solves">The problem it solves</a></li>
+<li class="lvl2"><a href="#why-this-is-expensive-to-fix-later">Why this is expensive to fix later</a></li>
+<li class="lvl2"><a href="#what-ironclad-actually-does">What Ironclad actually does</a></li>
+<li class="lvl2"><a href="#what-you-have-to-do">What you have to do</a></li>
+<li class="lvl2"><a href="#if-you-are-not-the-one-writing-code">If you are not the one writing code</a></li>
+<li class="lvl2"><a href="#what-ironclad-does-not-do">What Ironclad does not do</a></li>
 <li class="lvl2"><a href="#the-honest-limits">The honest limits</a></li>
-<li class="lvl2"><a href="#where-to-go">Where to go</a></li></ul>
+<li class="lvl2"><a href="#where-to-go-next">Where to go next</a></li></ul>
       </aside>
     </div>
   </main>

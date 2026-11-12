@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Glossary — Ironclad</title>
+<meta name="description" content="Every technical term in these docs, explained in everyday language. No need to read in order.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/glossary/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/glossary/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/overview/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/overview/">ID</a>
+      <a href="/ironclad/en/glossary/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">What this is, and who it is for</a></li>
+<li><a href="/ironclad/en/glossary/" class="active" aria-current="page">Glossary</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Start / <b>Glossary</b></span>
+      <a class="langsw-mini" href="/ironclad/overview/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="glossary">Glossary</h1>
+<p>If a word on another page is unclear, it is probably here. Order does not matter —
+this is a reference, not a read-through.</p>
+<h2 id="basic-terms">Basic terms</h2>
+<p><strong>Database</strong> — where data lives permanently. If your app dies and restarts, the
+data is still there. Think of a giant filing cabinet you can search in a fraction
+of a second.</p>
+<p><strong>Table</strong> — one drawer in that cabinet. A <code>orders</code> table holds all orders; a
+<code>customers</code> table holds all customers.</p>
+<p><strong>Column</strong> — one field inside a table. The <code>orders</code> table has <code>order_number</code>,
+<code>date</code>, <code>total</code>, <code>status</code>.</p>
+<p><strong>Row</strong> — one complete record. One order = one row with all its columns filled.</p>
+<p><strong>Schema</strong> — the blueprint of the tables: which tables exist, what columns they
+have, what types those columns are. Not the data — the frame. A house plan, not the
+furniture.</p>
+<h2 id="terms-that-come-up-when-discussing-the-problem">Terms that come up when discussing the problem</h2>
+<p><strong>Status</strong> — the current state of something. An order can be <code>new</code>, <code>paid</code>,
+<code>shipped</code>, <code>delivered</code>, <code>cancelled</code>. This simple thing is the most common source
+of trouble.</p>
+<p><strong>Enum</strong> — a way of storing status as a locked list of choices baked into the
+database structure. Adding a new choice means rebuilding structure — and on a
+production server that can stop the site from serving for a few minutes. Ironclad
+recommends a different approach: see <a href="/ironclad/en/rules/">rule DB-01</a>.</p>
+<p><strong>Status code</strong> — storing status as a number, e.g. <code>1</code> for <code>new</code>, <code>2</code> for <code>paid</code>.
+More flexible, but dangerous when the numbers have no documented meaning.</p>
+<p><strong>Lookup table</strong> — a small table that registers what each code means. It reads like
+a dictionary: <code>1 = new</code>, <code>2 = paid</code>, <code>3 = shipped</code>. Its job is to make sure a code
+like <code>7</code> that was never registered is <strong>rejected</strong> by the database, not silently
+accepted.</p>
+<p><strong>Foreign key (FK)</strong> — a rule tying one column to another table. If
+<code>orders.status_code</code> has an FK to that lookup table, the database refuses to store a
+number that is not on the list. This is what makes arbitrary codes like <code>88</code> or <code>99</code>
+safe.</p>
+<p><strong>Migration</strong> — a file containing commands that change the database structure: add a
+column, change a type, create a table. Every structural change goes through one, so
+it can be replayed on another machine and undone.</p>
+<p><strong>Production</strong> — the server real users use. Its counterparts are <strong>staging</strong> (a copy
+for testing) and <strong>local</strong> (your own computer).</p>
+<h2 id="terms-about-ai-agents">Terms about AI agents</h2>
+<p><strong>AI coding agent</strong> — an AI program that can read files, write code, and run
+commands on your machine. Examples: Claude Code, Codex, Cursor, opencode,
+Antigravity, Hermes.</p>
+<p><strong>Skill</strong> — a package of instructions an agent reads when working on a specific
+task. It is a folder containing <code>SKILL.md</code>. Not a program, not a plugin — just text
+that gets read.</p>
+<p><strong>Repo (repository)</strong> — a project folder tracked by git, along with its change
+history. "In your repo" means in your project folder.</p>
+<p><strong>Commit</strong> — saving changes into the git history, with a note on why.</p>
+<p><strong>Pull request (PR)</strong> — a proposed change that needs someone's approval before it
+joins the main code. This is where automated checks usually live.</p>
+<p><strong>CI (Continuous Integration)</strong> — a robot that runs automated checks whenever a pull
+request appears. If something violates a rule, the PR is marked red and cannot be
+merged.</p>
+<p><strong>Pre-commit hook</strong> — a check that runs on your machine <strong>before</strong> the commit is
+saved. Faster than waiting for CI, because the mistake surfaces while you still
+remember what you were writing.</p>
+<p><strong>TTY</strong> — the term for "a terminal held by a human". A command that asks questions
+needs a TTY; inside CI or inside an agent there is none, so such a command hangs.
+Ironclad never asks, for exactly this reason.</p>
+<p><strong>PATH</strong> — the list of folders the system searches for commands. If you see
+<code>ironclad: command not found</code>, the folder it was installed into is not on that list.</p>
+<h2 id="ironclad-specific-terms">Ironclad-specific terms</h2>
+<p><strong>Preset</strong> — how hard the rules bite. Three exist:</p>
+<ul>
+<li><code>legacy-friendly</code> — everything is a warning, the build never fails. For an old
+  repo that already has problems.</li>
+<li><code>balanced</code> — the most dangerous patterns block, the rest warn. This is the default.</li>
+<li><code>strict</code> — everything blocks. For a new or already-clean repo.</li>
+</ul>
+<p><strong>Rule ID</strong> — a rule's number, e.g. <code>DB-04</code>. It makes discussion short: "this breaks
+DB-04" beats a paragraph of explanation.</p>
+<p><strong>Checker / linter</strong> — a program that reads code and points at rule violations. It
+does not fix anything; it only points.</p>
+<p><strong>Gate</strong> — a check that <strong>blocks</strong>. The difference from a warning: a warning can be
+ignored, a gate cannot.</p>
+<p><strong>Finding</strong> — one violation the checker found, with file name and line number.</p>
+<p><strong>Exit code</strong> — the number a program returns when it finishes. <code>0</code> means clean, <code>1</code>
+means violations, <code>2</code> means the command was misused. CI robots read this number,
+not the prose.</p>
+<h2 id="questions-that-keep-confusing-people">Questions that keep confusing people</h2>
+<p><strong>"Why two commands? Isn't one better?"</strong>
+The first installs the tool on your machine. The second applies it to one specific
+project. One machine can hold ten projects with different rules.</p>
+<p><strong>"What is the difference between the skill and the checker?"</strong>
+The skill is the rulebook the AI reads. The checker inspects the work afterwards.
+The first prevents, the second catches.</p>
+<p><strong>"If the checker exists, why still the skill?"</strong>
+Because the checker only speaks after the code is written. The skill makes the AI
+write the right thing the first time — far cheaper than fixing it.</p>
+<p><strong>"Does this change my code?"</strong>
+No. <code>ironclad check</code> only reads. <code>ironclad init</code> adds four new files and touches
+nothing that already exists.</p>
+<p><strong>"Is my data sent anywhere?"</strong>
+No. Everything runs locally. The installer downloads files once, then stops.</p>
+<p><strong>"If I don't understand the technical terms, can I still use this?"</strong>
+Yes, for installation — two commands, nothing to answer. For choosing a preset,
+bring in whoever writes the code. See <a href="/ironclad/en/overview/#if-you-are-not-the-one-writing-code">If you are not the one writing
+code</a>.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/overview/"><span>Previous</span><b>What this is, and who it is for</b></a>
+<a class="next" href="/ironclad/en/install/"><span>Next</span><b>Install</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#basic-terms">Basic terms</a></li>
+<li class="lvl2"><a href="#terms-that-come-up-when-discussing-the-problem">Terms that come up when discussing the problem</a></li>
+<li class="lvl2"><a href="#terms-about-ai-agents">Terms about AI agents</a></li>
+<li class="lvl2"><a href="#ironclad-specific-terms">Ironclad-specific terms</a></li>
+<li class="lvl2"><a href="#questions-that-keep-confusing-people">Questions that keep confusing people</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>
