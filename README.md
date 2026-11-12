@@ -19,7 +19,7 @@ understanding, the install is enough.
 ## Install
 
 ```bash
-npx github:wilsench/ironclad#v0.10.1
+npx github:wilsench/ironclad#v0.10.2
 ```
 
 Same installer without Node:
@@ -78,6 +78,7 @@ no reinstall.
 | Preset | Blocks the build | Only warns | For |
 |---|---|---|---|
 | `legacy-friendly` | — | everything | a repo that already has debt |
+| `coherence` | DB-08 | the rest | anyone who does not want a style imposed |
 | `balanced` **(default)** | DB-01, DB-02, DB-04 | the rest | normal product work |
 | `strict` | everything | — | finance, health, anything audited |
 
@@ -90,6 +91,19 @@ python3 scripts/check_schema.py --list-presets
 ```
 
 Or just edit `.agent/standards.yml` — one line per rule, `error` / `warn` / `off`. See [presets.md](skills/ironclad/references/presets.md).
+
+## Staying up to date
+
+No daemon, no telemetry. One check you run yourself:
+
+```bash
+ironclad update            # ask once, in plain words
+ironclad update --check    # 0 = current, 10 = newer exists
+ironclad update --mute     # stop asking on this machine
+```
+
+It never blocks, never runs in CI or a pipe, never checks more than once per 24h, and
+never changes the exit code of `ironclad check`. See [docs/update](https://wilsench.my.id/ironclad/update/).
 
 ## Why three layers
 

@@ -1,7 +1,7 @@
 ---
 name: ironclad
 description: "Use when several developers share one database — make sure everyone stores status the same way before the agent writes schema."
-version: 0.10.1
+version: 0.10.2
 author: Chia Wilsen, Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
@@ -161,4 +161,4 @@ preferences nobody on the team asked for.
 - `scripts/check_schema.py` — consistency detector for SQL, Laravel, Prisma
 - `scripts/agent_files.py` — writes/removes the standing instruction block
 - `scripts/drill.py` — `--prompt`, `--grade`, `--selftest`
-- `bin/ironclad` — the `check` / `init` / `preset` / `drill` / `attach` command
+- `bin/ironclad` — the `check` / `init` / `preset` / `drill` / `attach` / `update` command
