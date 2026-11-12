@@ -223,9 +223,10 @@ CREATE TABLE shipments (
   status_code smallint NOT NULL REFERENCES shipment_status(code)
 );
 </code></pre></div>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>a.sql:1: [DB-08] warn  status is stored 2 different ways in this project:
-  enum (a.sql), integer (b.sql) — pick one for the whole project;
-  integer code + lookup is the default
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>a.sql:1: [DB-08] warn
+  status is stored 2 different ways in this project:
+  enum (a.sql), integer (b.sql)
+  pick one for the whole project; integer + lookup is the default
 </code></pre></div>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- right: every table uses the same approach
 CREATE TABLE orders (

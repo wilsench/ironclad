@@ -173,9 +173,10 @@ CREATE TABLE shipments (
 ```
 
 ```
-a.sql:1: [DB-08] warn  status is stored 2 different ways in this project:
-  enum (a.sql), integer (b.sql) — pick one for the whole project;
-  integer code + lookup is the default
+a.sql:1: [DB-08] warn
+  status is stored 2 different ways in this project:
+  enum (a.sql), integer (b.sql)
+  pick one for the whole project; integer + lookup is the default
 ```
 
 ```sql
