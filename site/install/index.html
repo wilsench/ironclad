@@ -83,13 +83,16 @@
     <div class="pagegrid">
       <article class="prose">
         <h1 id="pasang-di-agent-kamu">Pasang di agent kamu</h1>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx wilsench/ironclad
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1
 </code></pre></div>
 <p>Atau, kalau lebih suka tanpa Node:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 </code></pre></div>
 <p>Keduanya menjalankan installer yang sama. Tidak ada pertanyaan, tidak ada menu, tidak
 ada langkah kedua.</p>
+<p>Pakai tag versi (<code>#v0.8.1</code>), bukan <code>main</code>. Tanpa tag, setiap commit baru langsung
+menjadi versi yang dipakai seluruh tim — termasuk commit yang belum diuji. Dengan tag,
+yang kamu gulirkan adalah satu keadaan yang sudah diperiksa. Naik versi = ganti tag.</p>
 <p>Yang dilakukannya:</p>
 <ol>
 <li>menaruh skill di <code>~/.agents/skills/ironclad/</code> — folder yang dibaca Codex, Cursor, opencode, dan Antigravity</li>

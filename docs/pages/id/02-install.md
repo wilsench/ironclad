@@ -9,7 +9,7 @@ summary: Satu perintah, tanpa pertanyaan. Agent langsung bertanya sendiri — ti
 # Pasang di agent kamu
 
 ```bash
-npx wilsench/ironclad
+npx github:wilsench/ironclad#v0.8.1
 ```
 
 Atau, kalau lebih suka tanpa Node:
@@ -20,6 +20,10 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 
 Keduanya menjalankan installer yang sama. Tidak ada pertanyaan, tidak ada menu, tidak
 ada langkah kedua.
+
+Pakai tag versi (`#v0.8.1`), bukan `main`. Tanpa tag, setiap commit baru langsung
+menjadi versi yang dipakai seluruh tim — termasuk commit yang belum diuji. Dengan tag,
+yang kamu gulirkan adalah satu keadaan yang sudah diperiksa. Naik versi = ganti tag.
 
 Yang dilakukannya:
 

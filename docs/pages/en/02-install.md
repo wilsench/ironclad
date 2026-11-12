@@ -9,7 +9,7 @@ summary: One command, no questions. The agent starts asking on its own — no se
 # Install into your agent
 
 ```bash
-npx wilsench/ironclad
+npx github:wilsench/ironclad#v0.8.1
 ```
 
 Or, if you would rather not use Node:
@@ -19,6 +19,10 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
 Both run the same installer. No questions, no menu, no second step.
+
+Use a version tag (`#v0.8.1`), not `main`. Without a tag, every commit you push becomes
+the version your whole team runs — including commits that have not been tested. With a
+tag, you hand out one state you have actually checked. To move forward, change the tag.
 
 What it does:
 

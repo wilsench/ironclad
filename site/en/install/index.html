@@ -83,12 +83,15 @@
     <div class="pagegrid">
       <article class="prose">
         <h1 id="install-into-your-agent">Install into your agent</h1>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx wilsench/ironclad
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1
 </code></pre></div>
 <p>Or, if you would rather not use Node:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 </code></pre></div>
 <p>Both run the same installer. No questions, no menu, no second step.</p>
+<p>Use a version tag (<code>#v0.8.1</code>), not <code>main</code>. Without a tag, every commit you push becomes
+the version your whole team runs — including commits that have not been tested. With a
+tag, you hand out one state you have actually checked. To move forward, change the tag.</p>
 <p>What it does:</p>
 <ol>
 <li>puts the skill in <code>~/.agents/skills/ironclad/</code> — the directory Codex, Cursor,
