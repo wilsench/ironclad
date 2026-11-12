@@ -9,7 +9,7 @@ summary: Satu perintah, tanpa pertanyaan. Agent langsung bertanya sendiri — ti
 # Pasang di agent kamu
 
 ```bash
-npx github:wilsench/ironclad#v0.8.2
+npx github:wilsench/ironclad#v0.8.3
 ```
 
 Atau, kalau lebih suka tanpa Node:
@@ -21,7 +21,7 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 Keduanya menjalankan installer yang sama. Tidak ada pertanyaan, tidak ada menu, tidak
 ada langkah kedua.
 
-Pakai tag versi (`#v0.8.2`), bukan `main`. Tanpa tag, setiap commit baru langsung
+Pakai tag versi (`#v0.8.3`), bukan `main`. Tanpa tag, setiap commit baru langsung
 menjadi versi yang dipakai seluruh tim — termasuk commit yang belum diuji. Dengan tag,
 yang kamu gulirkan adalah satu keadaan yang sudah diperiksa. Naik versi = ganti tag.
 
@@ -74,19 +74,19 @@ Default-nya `~/.agents/skills`. Untuk agent yang punya folder sendiri:
 
 ```bash
 # Claude Code
-npx github:wilsench/ironclad#v0.8.2 --target claude
+npx github:wilsench/ironclad#v0.8.3 --target claude
 
 # Hermes
-npx github:wilsench/ironclad#v0.8.2 --target hermes
+npx github:wilsench/ironclad#v0.8.3 --target hermes
 
 # opencode (native)
-npx github:wilsench/ironclad#v0.8.2 --target opencode
+npx github:wilsench/ironclad#v0.8.3 --target opencode
 
 # Antigravity global
-npx github:wilsench/ironclad#v0.8.2 --target gemini
+npx github:wilsench/ironclad#v0.8.3 --target gemini
 
 # semua yang terpasang di mesin ini
-npx github:wilsench/ironclad#v0.8.2 --all
+npx github:wilsench/ironclad#v0.8.3 --all
 ```
 
 | Agent | Folder |
@@ -101,7 +101,7 @@ npx github:wilsench/ironclad#v0.8.2 --all
 > **Codex tidak punya folder skill global.** Menurut dokumentasi OpenAI, Codex membaca `$CWD/.agents/skills` dan `$CWD/../.agents/skills`. Kalau kamu pengguna Codex, pasang di dalam repo supaya ikut commit:
 >
 > ```bash
-> npx github:wilsench/ironclad#v0.8.2 --dir .agents/skills
+> npx github:wilsench/ironclad#v0.8.3 --dir .agents/skills
 > ```
 
 ## Kalau ingin aturannya ikut repo
@@ -109,7 +109,7 @@ npx github:wilsench/ironclad#v0.8.2 --all
 Ini yang membuat satu tim memakai aturan yang sama — skill ikut git, bukan cuma ada di laptop satu orang:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.2 --dir .agents/skills
+npx github:wilsench/ironclad#v0.8.3 --dir .agents/skills
 git add .agents/skills/ironclad && git commit -m "chore: add ironclad skill"
 ```
 
@@ -118,7 +118,7 @@ git add .agents/skills/ironclad && git commit -m "chore: add ironclad skill"
 Tidak ada pertanyaan sejak awal, jadi tidak ada yang perlu dilewati. Untuk pipeline yang ingin semuanya sekaligus:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.2 --target agents --project . --preset legacy-friendly
+npx github:wilsench/ironclad#v0.8.3 --target agents --project . --preset legacy-friendly
 ```
 
 ## Mencopot
@@ -128,7 +128,7 @@ Ada dua hal yang bisa dicopot, dan keduanya berbeda pemiliknya. Pahami ini dulu 
 **1. Skill-nya** — ada di folder agent kamu, bukan di repo. Satu perintah, membersihkan semua agent sekaligus:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.2 --uninstall
+npx github:wilsench/ironclad#v0.8.3 --uninstall
 ```
 
 Yang dihapus: `~/.agents/skills/ironclad`, `~/.claude/skills/ironclad`, `~/.hermes/skills/ironclad`, `~/.gemini/config/skills/ironclad`, `~/.config/opencode/skills/ironclad`, dan perintah `~/.local/bin/ironclad`. Yang tidak ada akan dilewati, bukan error.
@@ -137,7 +137,7 @@ Yang dihapus: `~/.agents/skills/ironclad`, `~/.claude/skills/ironclad`, `~/.herm
 
 ```bash
 cd repo-kamu
-npx github:wilsench/ironclad#v0.8.2 --uninstall --purge
+npx github:wilsench/ironclad#v0.8.3 --uninstall --purge
 ```
 
 Kalau berkas itu sudah pernah di-commit, purge hanya menghapus dari disk — Git masih melacaknya. Selesaikan dengan commit:

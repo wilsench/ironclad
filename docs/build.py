@@ -18,6 +18,7 @@ Dependency: python3-markdown (build time only).
 import json
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -32,7 +33,22 @@ ASSETS = ROOT / "assets"
 OUT = ROOT.parent / "site"
 AVER = ""  # set in main(): version + content hash for cache-busting
 
-VERSION = "0.5.0"
+def _read_version() -> str:
+    """One source of truth: skills/ironclad/SKILL.md.
+
+    This was a hardcoded string that said 0.5.0 while the shipped skill was 0.8.2,
+    so the docs confidently advertised a version nobody could install. Reading it
+    from the skill means the number cannot drift again — and if it breaks, the build
+    should fail loudly rather than print a stale number.
+    """
+    skill = ROOT.parent / "skills" / "ironclad" / "SKILL.md"
+    for line in skill.read_text(encoding="utf-8").splitlines():
+        if line.startswith("version:"):
+            return line.split(":", 1)[1].strip()
+    raise SystemExit(f"no version: line in {skill}")
+
+
+VERSION = _read_version()
 DEFAULT_LANG = "id"
 LANGS = ["id", "en"]
 
@@ -379,8 +395,33 @@ def build_lang(lang, pages_all):
     return pages
 
 
+def check_version_agreement() -> None:
+    """Fail the build when the three places that name a version disagree.
+
+    The docs once said 0.5.0 while the skill was 0.8.2, and nothing complained —
+    a bad number is worse than a broken build, because people install it.
+    """
+    ver = VERSION
+    pkg = ROOT.parent / "package.json"
+    if pkg.exists():
+        import json
+        n = json.loads(pkg.read_text(encoding="utf-8")).get("version")
+        if n != ver:
+            raise SystemExit(
+                f"version drift: package.json says {n}, skills/ironclad/SKILL.md says {ver}")
+    tag_cmd = ["git", "-C", str(ROOT.parent), "tag", "--points-at", "HEAD"]
+    try:
+        tag = subprocess.run(tag_cmd, capture_output=True, text=True, timeout=5).stdout.split()
+    except Exception:
+        return
+    if tag and f"v{ver}" not in tag:
+        raise SystemExit(
+            f"version drift: HEAD is tagged {', '.join(tag)} but SKILL.md says {ver}")
+
+
 def main():
     global AVER
+    check_version_agreement()
     AVER = asset_ver()
     pages_all = {lang: collect(lang) for lang in LANGS}
     if not any(pages_all.values()):
