@@ -1,7 +1,7 @@
 ---
 name: ironclad
 description: "Use when several developers share one database — keep status/field choices consistent across the team."
-version: 0.4.0
+version: 0.5.0
 author: Chia Wilsen, Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
