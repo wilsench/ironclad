@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Untuk tim — Ironclad</title>
+<meta name="description" content="Cara menggulirkan ke developer lain tanpa menyentuh semua repo sekaligus, dan siapa yang memutuskan saat agent berhenti dan bertanya.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/team/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/team/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/team/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Bahasa">
+      <a href="/ironclad/team/" class="on" aria-current="true">ID</a>
+      <a href="/ironclad/en/team/">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/kamus/">Kamus</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+<li><a href="/ironclad/no-commands/">Cara pakai tanpa command</a></li>
+<li><a href="/ironclad/team/" class="active" aria-current="page">Untuk tim</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-08</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+<li><a href="/ironclad/frameworks/">Laravel, Prisma, dan backend lain</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Mulai / <b>Untuk tim</b></span>
+      <a class="langsw-mini" href="/ironclad/en/team/" aria-label="Bahasa">EN</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="menggulirkan-ke-tim">Menggulirkan ke tim</h1>
+<p>Ironclad bukan aturan yang dipaksakan dari atas. Ia satu perilaku kecil: sebelum
+agent menulis kolom status, ia membaca repo itu dulu, dan berhenti kalau repo-nya
+sudah tidak konsisten. Sisanya — kapan dipakai, di repo mana, dan gaya apa yang jadi
+standar — keputusan kamu.</p>
+<p>Halaman ini urutan yang paling sedikit menimbulkan keributan.</p>
+<h2 id="urutan-yang-disarankan">Urutan yang disarankan</h2>
+<h3 id="1-satu-repo-pilot-bukan-semua">1. Satu repo pilot, bukan semua</h3>
+<p>Pilih repo yang paling sering bermasalah dengan status: yang laporannya butuh
+<code>CASE WHEN</code>, atau yang migrasinya pernah ditambal dua gaya. Jangan yang paling besar,
+dan jangan yang paling sepi.</p>
+<p>Di repo itu, jalankan sekali:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">cd repo-pilot
+ironclad check
+</code></pre></div>
+<p>Itu hanya membaca. Kalau hasilnya bersih, repo itu terlalu rapi untuk jadi pilot —
+pilih yang lain. Pilot yang berguna adalah yang <strong>menghasilkan temuan</strong>.</p>
+<h3 id="2-isi-keputusannya-jangan-biarkan-kosong">2. Isi keputusannya, jangan biarkan kosong</h3>
+<p>Installer sudah menanam default rumah (<code>status_code</code> + lookup + FK) untuk tabel baru.
+Tapi repo pilot biasanya <strong>sudah</strong> punya gaya sendiri, dan gaya repo selalu menang.</p>
+<p>Keputusan yang perlu kamu tulis di <code>.agent/standards.md</code> hanya satu kalimat: proyek
+ini menyimpan status dengan cara apa, dan kenapa. Kalau repo sudah konsisten, cukup
+tulis gaya yang sudah ada — bukan gaya default.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad init      # hanya untuk mengunci keputusan ke git
+</code></pre></div>
+<p>Kalau file yang ditulis masih template kosong, ia akan diganti saat upgrade. Kalau
+sudah kamu isi, ia tidak akan disentuh.</p>
+<h3 id="3-satu-developer-mencoba-dulu">3. Satu developer mencoba dulu</h3>
+<p>Kirim ke <strong>satu</strong> orang, sebaiknya yang memakai agent berbeda darimu. Yang perlu
+mereka lakukan hanya satu perintah:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1
+</code></pre></div>
+<p>Lalu minta mereka buka repo pilot dan bertanya ke agent-nya:</p>
+<blockquote>
+<p>Sebelum bikin kolom status, aturannya apa?</p>
+</blockquote>
+<p>Jawaban yang benar menyebut tiga hal: baca repo dulu, ikuti gaya yang ada, dan kalau
+belum ada pakai <code>status_code</code> + lookup. Kalau agent hanya menjawab "pakai integer"
+tanpa menyebut membaca repo, bloknya tidak termuat.</p>
+<h3 id="4-baru-sebar">4. Baru sebar</h3>
+<p>Setelah satu orang berhasil, sebar perintah yang sama. Tidak ada konfigurasi per
+repo, tidak ada yang perlu di-commit, kecuali kamu memang mau aturannya ikut git
+lewat <code>ironclad init</code>.</p>
+<h2 id="saat-agent-berhenti-dan-bertanya">Saat agent berhenti dan bertanya</h2>
+<p>Ada dua jenis pertanyaan, dan hanya satu yang butuh jawabanmu.</p>
+<p><strong>"Boleh saya tulis sekarang?"</strong> — itu sopan, jawab saja.</p>
+<p><strong>"Repo ini punya dua gaya status, mana yang jadi standar?"</strong> — ini yang penting.
+Agent sengaja berhenti karena memilih sendiri akan menambah gaya ketiga. Jawaban yang
+kamu berikan hari itu menjadi standar repo tersebut. Tulis di <code>.agent/standards.md</code>
+supaya agent berikutnya — dan orang berikutnya — tidak menanyakannya lagi.</p>
+<p>Kalau kamu tidak tahu jawabannya, "ikuti yang paling banyak dipakai" adalah jawaban
+yang sah. Yang tidak sah: diam, lalu membiarkan agent memilih.</p>
+<h2 id="yang-perlu-disepakati-di-awal">Yang perlu disepakati di awal</h2>
+<p>Tiga hal ini tidak ditentukan oleh alat, dan sebaiknya kamu putuskan sebelum menyebar:</p>
+<ul>
+<li><strong>Gaya status untuk repo baru</strong> — default rumah sudah <code>status_code</code> + lookup. Kalau
+  timmu lebih nyaman dengan <code>enum</code> native, ubah sekarang, bukan setelah sepuluh tabel.</li>
+<li><strong>Uang</strong> — <code>numeric(14,2)</code> atau integer satuan terkecil. Dua-duanya sah; yang tidak
+  boleh cuma <code>float</code>.</li>
+<li><strong>Repo lama</strong> — dibiarkan apa adanya, atau diseragamkan perlahan. Rekomendasi:
+  dibiarkan. Menulis ulang skema yang jalan untuk mengejar default adalah cara
+  kehilangan satu akhir pekan dan mendapat satu bug.</li>
+</ul>
+<h2 id="kalau-ada-yang-tidak-bekerja">Kalau ada yang tidak bekerja</h2>
+<p>Sebelum melapor, minta satu hal dari orang itu:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad version
+</code></pre></div>
+<p>Itu menyebut versi skill, lokasinya, dan ukuran blok yang terpasang. Tiga angka itu
+memisahkan hampir semua masalah: versi lama, salah folder, atau blok tidak tertulis.</p>
+<p>Kalau versinya benar tapi agent tetap tidak bertanya, berarti agent itu tidak memuat
+file yang kita tulis. Itu perlu dilaporkan — jangan diasumsikan bekerja.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/no-commands/"><span>Sebelumnya</span><b>Cara pakai tanpa command</b></a>
+<a class="next" href="/ironclad/three-layers/"><span>Berikutnya</span><b>Tiga lapis</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#urutan-yang-disarankan">Urutan yang disarankan</a></li>
+<li class="lvl3"><a href="#1-satu-repo-pilot-bukan-semua">1. Satu repo pilot, bukan semua</a></li>
+<li class="lvl3"><a href="#2-isi-keputusannya-jangan-biarkan-kosong">2. Isi keputusannya, jangan biarkan kosong</a></li>
+<li class="lvl3"><a href="#3-satu-developer-mencoba-dulu">3. Satu developer mencoba dulu</a></li>
+<li class="lvl3"><a href="#4-baru-sebar">4. Baru sebar</a></li>
+<li class="lvl2"><a href="#saat-agent-berhenti-dan-bertanya">Saat agent berhenti dan bertanya</a></li>
+<li class="lvl2"><a href="#yang-perlu-disepakati-di-awal">Yang perlu disepakati di awal</a></li>
+<li class="lvl2"><a href="#kalau-ada-yang-tidak-bekerja">Kalau ada yang tidak bekerja</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

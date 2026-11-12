@@ -39,7 +39,7 @@ If you want certainty, name it: "use the ironclad skill for this migration".
 Install:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+npx github:wilsench/ironclad#v0.8.1
 ```
 
 Then, in a repo:
@@ -59,10 +59,10 @@ opencode, Antigravity. The format is the Agent Skills standard (`SKILL.md`), not
 something Hermes-specific.
 
 ```bash
-… | bash -s -- --all              # everything detected on this machine
-… | bash -s -- --target claude
-… | bash -s -- --target gemini    # Antigravity, global
-… | bash -s -- --target opencode
+npx github:wilsench/ironclad#v0.8.1  --all              # everything detected on this machine
+npx github:wilsench/ironclad#v0.8.1  --target claude
+npx github:wilsench/ironclad#v0.8.1  --target gemini    # Antigravity, global
+npx github:wilsench/ironclad#v0.8.1  --target opencode
 ```
 
 ## Can I use `wilsench/ironclad` directly?
@@ -73,9 +73,9 @@ For Hermes:
 hermes skills install wilsench/ironclad/skills/ironclad
 ```
 
-Other agents have no universal `install <owner>/<repo>` command. The portable path
-is curl to `install.sh` — and that works now, because the installer has a mirror
-on `wilsench.my.id` and does not wait for GitHub.
+Other agents use `npx github:wilsench/ironclad#v0.8.1` — that pulls the package
+straight from the public repo, with nothing published to npm. If the machine has no
+Node, the `install.sh` mirror on `wilsench.my.id` runs the same code.
 
 ## Is `curl | bash` safe?
 

@@ -44,6 +44,7 @@
 <li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
 <li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
 <li><a href="/ironclad/en/no-commands/" class="active" aria-current="page">Using it without commands</a></li>
+<li><a href="/ironclad/en/team/">For your team</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
 <li><a href="/ironclad/en/three-layers/">Three layers</a></li>
@@ -86,14 +87,15 @@
 <p>If you do not want to remember commands, this is the path. Three steps, once, and
 you are done.</p>
 <h2 id="1-install">1. Install</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1
 </code></pre></div>
 <h2 id="2-done-actually-done">2. Done — actually done</h2>
 <p>After step 1 there is <strong>no second step</strong>. The installer already wrote the rules into
 each agent's global config on this machine:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>created  .claude/CLAUDE.md     (Claude Code)
-created  .codex/AGENTS.md      (Codex)
-created  .gemini/GEMINI.md     (Gemini CLI)
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>created  .claude/CLAUDE.md          (Claude Code)
+created  .codex/AGENTS.md           (Codex)
+created  .gemini/AGENTS.md          (Antigravity / agy)
+created  .gemini/GEMINI.md          (Gemini CLI)
 </code></pre></div>
 <p>That is what the agent reads <strong>at the start of every session, in any repo</strong> — with
 nothing for you to run.</p>
@@ -167,7 +169,7 @@ codebase — it does not stop to interrogate you about presets.</p>
 <h2 id="if-you-do-not-want-agentsmd-touched">If you do not want AGENTS.md touched</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad init --no-agent-files
 </code></pre></div>
-<p>Or at install time: <code>curl ... | bash -s -- --no-agent-files</code>.</p>
+<p>Or at install time: <code>npx github:wilsench/ironclad#v0.8.1 --no-agent-files</code>.</p>
 <p>Without that block the agent only knows the rules if it loads the skill — so you
 are back to a world that needs commands. The option exists for repos that already
 maintain their own <code>AGENTS.md</code> and do not want it edited.</p>
@@ -179,7 +181,7 @@ the same file is untouched. Tested: a <code>CLAUDE.md</code> holding office rule
 intact after the Ironclad block is pulled out.</p>
         <nav class="pager" aria-label="Next page">
           <a class="prev" href="/ironclad/en/quickstart/"><span>Previous</span><b>Quickstart</b></a>
-<a class="next" href="/ironclad/en/three-layers/"><span>Next</span><b>Three layers</b></a>
+<a class="next" href="/ironclad/en/team/"><span>Next</span><b>For your team</b></a>
         </nav>
         <footer class="docfoot">
           <span>Ironclad v0.5.0-0cff1a72</span>

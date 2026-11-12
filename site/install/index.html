@@ -44,6 +44,7 @@
 <li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
 <li><a href="/ironclad/quickstart/">Quickstart</a></li>
 <li><a href="/ironclad/no-commands/">Cara pakai tanpa command</a></li>
+<li><a href="/ironclad/team/">Untuk tim</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
 <li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
@@ -126,19 +127,19 @@ berhenti dengan exit 3 dan memberi perintah pemasangannya — bukan mencetak
 <h2 id="agent-lain">Agent lain</h2>
 <p>Default-nya <code>~/.agents/skills</code>. Untuk agent yang punya folder sendiri:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash"># Claude Code
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
+npx github:wilsench/ironclad#v0.8.1 --target claude
 
 # Hermes
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target hermes
+npx github:wilsench/ironclad#v0.8.1 --target hermes
 
 # opencode (native)
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target opencode
+npx github:wilsench/ironclad#v0.8.1 --target opencode
 
 # Antigravity global
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target gemini
+npx github:wilsench/ironclad#v0.8.1 --target gemini
 
 # semua yang terpasang di mesin ini
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
+npx github:wilsench/ironclad#v0.8.1 --all
 </code></pre></div>
 <div class="tablewrap"><table>
 <thead>
@@ -177,27 +178,26 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
 <blockquote>
 <p><strong>Codex tidak punya folder skill global.</strong> Menurut dokumentasi OpenAI, Codex membaca <code>$CWD/.agents/skills</code> dan <code>$CWD/../.agents/skills</code>. Kalau kamu pengguna Codex, pasang di dalam repo supaya ikut commit:</p>
 <p><code>bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills</code></p>
+npx github:wilsench/ironclad#v0.8.1 --dir .agents/skills</code></p>
 </blockquote>
 <h2 id="kalau-ingin-aturannya-ikut-repo">Kalau ingin aturannya ikut repo</h2>
 <p>Ini yang membuat satu tim memakai aturan yang sama — skill ikut git, bukan cuma ada di laptop satu orang:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1 --dir .agents/skills
 git add .agents/skills/ironclad &amp;&amp; git commit -m &quot;chore: add ironclad skill&quot;
 </code></pre></div>
 <h2 id="ci-lewati-semua-pertanyaan">CI: lewati semua pertanyaan</h2>
 <p>Tidak ada pertanyaan sejak awal, jadi tidak ada yang perlu dilewati. Untuk pipeline yang ingin semuanya sekaligus:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh \
-  | bash -s -- --target agents --project . --preset legacy-friendly
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1 --target agents --project . --preset legacy-friendly
 </code></pre></div>
 <h2 id="mencopot">Mencopot</h2>
 <p>Ada dua hal yang bisa dicopot, dan keduanya berbeda pemiliknya. Pahami ini dulu supaya tidak menghapus aturan tim hanya karena ingin mencoba ulang.</p>
 <p><strong>1. Skill-nya</strong> — ada di folder agent kamu, bukan di repo. Satu perintah, membersihkan semua agent sekaligus:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1 --uninstall
 </code></pre></div>
 <p>Yang dihapus: <code>~/.agents/skills/ironclad</code>, <code>~/.claude/skills/ironclad</code>, <code>~/.hermes/skills/ironclad</code>, <code>~/.gemini/config/skills/ironclad</code>, <code>~/.config/opencode/skills/ironclad</code>, dan perintah <code>~/.local/bin/ironclad</code>. Yang tidak ada akan dilewati, bukan error.</p>
 <p><strong>2. Aturan proyek</strong> — <code>.agent/standards.{md,yml}</code>, <code>scripts/check_schema.py</code>, <code>scripts/presets/</code>. Ini <strong>keputusan repo</strong>, bukan milik installer, jadi secara default ia dibiarkan. Kalau memang mau dibuang dari disk:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">cd repo-kamu
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall --purge
+npx github:wilsench/ironclad#v0.8.1 --uninstall --purge
 </code></pre></div>
 <p>Kalau berkas itu sudah pernah di-commit, purge hanya menghapus dari disk — Git masih melacaknya. Selesaikan dengan commit:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">git rm -r .agent scripts

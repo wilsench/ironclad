@@ -113,7 +113,7 @@ Two commands. Nothing to answer.
 
 ```bash
 # 1. install (once per machine)
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+npx github:wilsench/ironclad#v0.8.1
 ```
 
 ```bash

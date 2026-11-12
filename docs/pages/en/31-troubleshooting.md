@@ -92,7 +92,7 @@ It does not read stdin — by design, there is nothing to answer. If you passed
 flags and they were ignored, they must come after `-s --`:
 
 ```bash
-curl -fsSL …/install.sh | bash -s -- --target claude
+npx github:wilsench/ironclad#v0.8.1 --target claude
 ```
 
 Without `-s --`, the arguments go to `bash` itself, which ignores them.
@@ -101,7 +101,7 @@ Without `-s --`, the arguments go to `bash` itself, which ignores them.
 
 ```bash
 IRONCLAD_BASE=https://raw.githubusercontent.com/wilsench/ironclad/main/skills/ironclad \
-  curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+  npx github:wilsench/ironclad#v0.8.1
 ```
 
 `IRONCLAD_BASE` overrides the payload source entirely. Use it for an internal
@@ -115,3 +115,37 @@ Open an issue at <https://github.com/wilsench/ironclad/issues> with:
 - the exact output (exit code included)
 - `python3 --version`
 - which agent, and where the skill is installed
+
+## `ironclad version` still shows an old version after installing
+
+`npx` caches, and without a ref it follows `main` as-is. Check what you actually have:
+
+```bash
+ironclad version
+```
+
+If that is not the version you meant to install:
+
+```bash
+npx --yes github:wilsench/ironclad#v0.8.1 --force
+```
+
+`--force` makes the installer overwrite the existing payload. If it is still stale,
+clear the npm cache: `npm cache clean --force`.
+
+If `ironclad` is not found at all, `~/.local/bin` is not on your `PATH` — the
+installer prints the line to add to `~/.bashrc`.
+
+## The agent does not ask, even though it is installed
+
+Check two things, in order:
+
+1. **Was the block actually written?** The installer prints `created`/`updated` per
+   agent. If it printed "no agent config directory was found", that agent's config
+   directory does not exist yet — launch the agent once, then re-run the installer.
+2. **Does the agent read that file?** For Antigravity/`agy` the global rules live in
+   `~/.gemini/AGENTS.md` and `~/.gemini/GEMINI.md`. For Claude Code, `~/.claude/CLAUDE.md`.
+   If the file is there and the agent stays silent, that agent is not loading it —
+   report it rather than assuming it works.
+
+Repair without reinstalling: `ironclad attach --global`.

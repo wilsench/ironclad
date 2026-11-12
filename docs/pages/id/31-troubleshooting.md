@@ -48,7 +48,7 @@ python3 scripts/check_schema.py --list-presets   # kalau kosong, ini penyebabnya
 **Perbaikan:**
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project . --preset balanced
+npx github:wilsench/ironclad#v0.8.1 --project . --preset balanced
 ```
 
 ## `no .sql/.php/.prisma files found`
@@ -150,3 +150,39 @@ Yang membantu:
 - jalankan checker sebelum commit — model boleh lupa, CI tidak
 
 Yang tidak membantu: menambah teks peringatan di skill. Instruksi bukan penegakan.
+
+## Setelah install, `ironclad version` masih versi lama
+
+`npx` menyimpan cache, dan tanpa tag ia mengikuti `main` apa adanya. Periksa
+versinya dulu:
+
+```bash
+ironclad version
+```
+
+Kalau angkanya bukan versi yang kamu tuju:
+
+```bash
+npx --yes github:wilsench/ironclad#v0.8.1 --force
+```
+
+`--force` membuat installer menimpa payload yang ada. Kalau masih lama, bersihkan
+cache npm: `npm cache clean --force`.
+
+Kalau `ironclad` malah tidak ditemukan, berarti `~/.local/bin` belum ada di `PATH` —
+installer mencetak baris yang perlu ditambahkan ke `~/.bashrc`.
+
+## Agent-nya tidak bertanya padahal sudah install
+
+Cek dua hal, berurutan:
+
+1. **Apakah bloknya benar-benar ditulis?** Installer mencetak `created`/`updated`
+   per agent. Kalau yang tercetak justru "no agent config directory was found",
+   berarti folder konfigurasi agent itu belum ada di mesinmu — buka agent-nya sekali,
+   lalu jalankan installer lagi.
+2. **Apakah agent membaca file itu?** Untuk Antigravity/`agy`, aturan global ada di
+   `~/.gemini/AGENTS.md` dan `~/.gemini/GEMINI.md`. Untuk Claude Code di
+   `~/.claude/CLAUDE.md`. Kalau file ada tapi agent tetap diam, agent itu tidak
+   memuat file tersebut — laporkan, jangan diasumsikan bekerja.
+
+Reparasi tanpa install ulang: `ironclad attach --global`.

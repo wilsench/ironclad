@@ -44,6 +44,7 @@
 <li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
 <li><a href="/ironclad/quickstart/">Quickstart</a></li>
 <li><a href="/ironclad/no-commands/" class="active" aria-current="page">Cara pakai tanpa command</a></li>
+<li><a href="/ironclad/team/">Untuk tim</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
 <li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
@@ -86,14 +87,15 @@
 <p>Kalau kamu tidak ingin mengingat perintah, ini jalurnya. Tiga langkah, sekali,
 lalu selesai.</p>
 <h2 id="1-pasang">1. Pasang</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1
 </code></pre></div>
 <h2 id="2-selesai-benar-benar-selesai">2. Selesai — benar-benar selesai</h2>
 <p>Setelah langkah 1, <strong>tidak ada langkah kedua</strong>. Installer sudah menulis aturan ke
 konfigurasi global tiap agent yang ada di mesinmu:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>created  .claude/CLAUDE.md     (Claude Code)
-created  .codex/AGENTS.md      (Codex)
-created  .gemini/GEMINI.md     (Gemini CLI)
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>created  .claude/CLAUDE.md          (Claude Code)
+created  .codex/AGENTS.md           (Codex)
+created  .gemini/AGENTS.md          (Antigravity / agy)
+created  .gemini/GEMINI.md          (Gemini CLI)
 </code></pre></div>
 <p>Itu yang dibaca agent <strong>di awal setiap sesi, di repo mana pun</strong> — tanpa kamu
 menjalankan apa pun.</p>
@@ -167,7 +169,7 @@ belum ada — bukan memilih diam-diam.</p>
 <h2 id="kalau-tidak-ingin-menyentuh-agentsmd">Kalau tidak ingin menyentuh AGENTS.md</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad init --no-agent-files
 </code></pre></div>
-<p>Atau saat install: <code>curl ... | bash -s -- --no-agent-files</code>.</p>
+<p>Atau saat install: <code>npx github:wilsench/ironclad#v0.8.1 --no-agent-files</code>.</p>
 <p>Tanpa blok itu, agent hanya tahu aturannya kalau ia memuat skill — jadi kamu
 kembali ke dunia yang butuh command. Pilihan ini ada untuk repo yang sudah punya
 <code>AGENTS.md</code> sendiri dan tidak mau dicampuri.</p>
@@ -179,7 +181,7 @@ di berkas yang sama tidak disentuh. Sudah diuji: <code>CLAUDE.md</code> yang ber
 kantor tetap utuh setelah blok Ironclad dicabut.</p>
         <nav class="pager" aria-label="Halaman berikutnya">
           <a class="prev" href="/ironclad/quickstart/"><span>Sebelumnya</span><b>Quickstart</b></a>
-<a class="next" href="/ironclad/three-layers/"><span>Berikutnya</span><b>Tiga lapis</b></a>
+<a class="next" href="/ironclad/team/"><span>Berikutnya</span><b>Untuk tim</b></a>
         </nav>
         <footer class="docfoot">
           <span>Ironclad v0.5.0-0cff1a72</span>

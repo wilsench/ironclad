@@ -13,7 +13,7 @@ Two minutes. No questions to answer, no files to hand-edit.
 ## 1. Install
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+npx github:wilsench/ironclad#v0.8.1
 ```
 
 Done. The skill is in `~/.agents/skills/ironclad/`, the `ironclad` command is in

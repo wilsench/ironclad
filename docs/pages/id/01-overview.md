@@ -119,7 +119,7 @@ Dua perintah. Tidak ada yang perlu dijawab.
 
 ```bash
 # 1. pasang (sekali per komputer)
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+npx github:wilsench/ironclad#v0.8.1
 ```
 
 ```bash

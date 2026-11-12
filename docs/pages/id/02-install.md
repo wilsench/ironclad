@@ -74,19 +74,19 @@ Default-nya `~/.agents/skills`. Untuk agent yang punya folder sendiri:
 
 ```bash
 # Claude Code
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
+npx github:wilsench/ironclad#v0.8.1 --target claude
 
 # Hermes
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target hermes
+npx github:wilsench/ironclad#v0.8.1 --target hermes
 
 # opencode (native)
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target opencode
+npx github:wilsench/ironclad#v0.8.1 --target opencode
 
 # Antigravity global
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target gemini
+npx github:wilsench/ironclad#v0.8.1 --target gemini
 
 # semua yang terpasang di mesin ini
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
+npx github:wilsench/ironclad#v0.8.1 --all
 ```
 
 | Agent | Folder |
@@ -101,7 +101,7 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
 > **Codex tidak punya folder skill global.** Menurut dokumentasi OpenAI, Codex membaca `$CWD/.agents/skills` dan `$CWD/../.agents/skills`. Kalau kamu pengguna Codex, pasang di dalam repo supaya ikut commit:
 >
 > ```bash
-> curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills
+> npx github:wilsench/ironclad#v0.8.1 --dir .agents/skills
 > ```
 
 ## Kalau ingin aturannya ikut repo
@@ -109,7 +109,7 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
 Ini yang membuat satu tim memakai aturan yang sama — skill ikut git, bukan cuma ada di laptop satu orang:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills
+npx github:wilsench/ironclad#v0.8.1 --dir .agents/skills
 git add .agents/skills/ironclad && git commit -m "chore: add ironclad skill"
 ```
 
@@ -118,8 +118,7 @@ git add .agents/skills/ironclad && git commit -m "chore: add ironclad skill"
 Tidak ada pertanyaan sejak awal, jadi tidak ada yang perlu dilewati. Untuk pipeline yang ingin semuanya sekaligus:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh \
-  | bash -s -- --target agents --project . --preset legacy-friendly
+npx github:wilsench/ironclad#v0.8.1 --target agents --project . --preset legacy-friendly
 ```
 
 ## Mencopot
@@ -129,7 +128,7 @@ Ada dua hal yang bisa dicopot, dan keduanya berbeda pemiliknya. Pahami ini dulu 
 **1. Skill-nya** — ada di folder agent kamu, bukan di repo. Satu perintah, membersihkan semua agent sekaligus:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall
+npx github:wilsench/ironclad#v0.8.1 --uninstall
 ```
 
 Yang dihapus: `~/.agents/skills/ironclad`, `~/.claude/skills/ironclad`, `~/.hermes/skills/ironclad`, `~/.gemini/config/skills/ironclad`, `~/.config/opencode/skills/ironclad`, dan perintah `~/.local/bin/ironclad`. Yang tidak ada akan dilewati, bukan error.
@@ -138,7 +137,7 @@ Yang dihapus: `~/.agents/skills/ironclad`, `~/.claude/skills/ironclad`, `~/.herm
 
 ```bash
 cd repo-kamu
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall --purge
+npx github:wilsench/ironclad#v0.8.1 --uninstall --purge
 ```
 
 Kalau berkas itu sudah pernah di-commit, purge hanya menghapus dari disk — Git masih melacaknya. Selesaikan dengan commit:

@@ -76,19 +76,19 @@ The default is `~/.agents/skills`. For agents with their own directory:
 
 ```bash
 # Claude Code
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
+npx github:wilsench/ironclad#v0.8.1 --target claude
 
 # Hermes
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target hermes
+npx github:wilsench/ironclad#v0.8.1 --target hermes
 
 # opencode (native)
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target opencode
+npx github:wilsench/ironclad#v0.8.1 --target opencode
 
 # Antigravity, global
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target gemini
+npx github:wilsench/ironclad#v0.8.1 --target gemini
 
 # everything installed on this machine
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
+npx github:wilsench/ironclad#v0.8.1 --all
 ```
 
 | Agent | Directory |
@@ -105,7 +105,7 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
 > inside the repo so it travels with the code:
 >
 > ```bash
-> curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills
+> npx github:wilsench/ironclad#v0.8.1 --dir .agents/skills
 > ```
 
 ## If you want the rules to travel with the repo
@@ -114,7 +114,7 @@ This is what makes a whole team use the same rulebook — the skill is in git, n
 only on one person's laptop:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills
+npx github:wilsench/ironclad#v0.8.1 --dir .agents/skills
 git add .agents/skills/ironclad && git commit -m "chore: add ironclad skill"
 ```
 
@@ -124,8 +124,7 @@ There are no prompts in the first place, so there is nothing to suppress. For a
 pipeline that wants everything at once:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh \
-  | bash -s -- --target agents --project . --preset legacy-friendly
+npx github:wilsench/ironclad#v0.8.1 --target agents --project . --preset legacy-friendly
 ```
 
 ## Uninstall
@@ -138,7 +137,7 @@ install.
 sweeps every agent:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall
+npx github:wilsench/ironclad#v0.8.1 --uninstall
 ```
 
 Removes `~/.agents/skills/ironclad`, `~/.claude/skills/ironclad`,
@@ -152,7 +151,7 @@ installer artefact, so it is left alone by default. To remove it from disk too:
 
 ```bash
 cd your-repo
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall --purge
+npx github:wilsench/ironclad#v0.8.1 --uninstall --purge
 ```
 
 If those files were committed, purge only clears the disk — Git still tracks them:

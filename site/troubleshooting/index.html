@@ -44,6 +44,7 @@
 <li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
 <li><a href="/ironclad/quickstart/">Quickstart</a></li>
 <li><a href="/ironclad/no-commands/">Cara pakai tanpa command</a></li>
+<li><a href="/ironclad/team/">Untuk tim</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
 <li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
@@ -130,7 +131,7 @@ description: Enforce team engineering standards with presets.
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py --list-presets   # kalau kosong, ini penyebabnya
 </code></pre></div>
 <p><strong>Perbaikan:</strong></p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project . --preset balanced
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1 --project . --preset balanced
 </code></pre></div>
 <h2 id="no-sqlphpprisma-files-found"><code>no .sql/.php/.prisma files found</code></h2>
 <p><strong>Gejala:</strong> checker bilang tidak ada berkas, padahal repo penuh migration.</p>
@@ -194,6 +195,31 @@ curl -sI https://raw.githubusercontent.com/wilsench/ironclad/main/skills/ironcla
 - minta laporannya mengutip ID aturan
 - jalankan checker sebelum commit — model boleh lupa, CI tidak</p>
 <p>Yang tidak membantu: menambah teks peringatan di skill. Instruksi bukan penegakan.</p>
+<h2 id="setelah-install-ironclad-version-masih-versi-lama">Setelah install, <code>ironclad version</code> masih versi lama</h2>
+<p><code>npx</code> menyimpan cache, dan tanpa tag ia mengikuti <code>main</code> apa adanya. Periksa
+versinya dulu:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad version
+</code></pre></div>
+<p>Kalau angkanya bukan versi yang kamu tuju:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx --yes github:wilsench/ironclad#v0.8.1 --force
+</code></pre></div>
+<p><code>--force</code> membuat installer menimpa payload yang ada. Kalau masih lama, bersihkan
+cache npm: <code>npm cache clean --force</code>.</p>
+<p>Kalau <code>ironclad</code> malah tidak ditemukan, berarti <code>~/.local/bin</code> belum ada di <code>PATH</code> —
+installer mencetak baris yang perlu ditambahkan ke <code>~/.bashrc</code>.</p>
+<h2 id="agent-nya-tidak-bertanya-padahal-sudah-install">Agent-nya tidak bertanya padahal sudah install</h2>
+<p>Cek dua hal, berurutan:</p>
+<ol>
+<li><strong>Apakah bloknya benar-benar ditulis?</strong> Installer mencetak <code>created</code>/<code>updated</code>
+   per agent. Kalau yang tercetak justru "no agent config directory was found",
+   berarti folder konfigurasi agent itu belum ada di mesinmu — buka agent-nya sekali,
+   lalu jalankan installer lagi.</li>
+<li><strong>Apakah agent membaca file itu?</strong> Untuk Antigravity/<code>agy</code>, aturan global ada di
+   <code>~/.gemini/AGENTS.md</code> dan <code>~/.gemini/GEMINI.md</code>. Untuk Claude Code di
+   <code>~/.claude/CLAUDE.md</code>. Kalau file ada tapi agent tetap diam, agent itu tidak
+   memuat file tersebut — laporkan, jangan diasumsikan bekerja.</li>
+</ol>
+<p>Reparasi tanpa install ulang: <code>ironclad attach --global</code>.</p>
         <nav class="pager" aria-label="Halaman berikutnya">
           <a class="prev" href="/ironclad/ci/"><span>Sebelumnya</span><b>CI & pre-commit</b></a>
 <a class="next" href="/ironclad/faq/"><span>Berikutnya</span><b>FAQ</b></a>
@@ -216,7 +242,9 @@ curl -sI https://raw.githubusercontent.com/wilsench/ironclad/main/skills/ironcla
 <li class="lvl2"><a href="#git-push-ditolak-fetch-first">git push ditolak fetch first</a></li>
 <li class="lvl2"><a href="#permission-denied-publickey-saat-push">Permission denied (publickey) saat push</a></li>
 <li class="lvl2"><a href="#installer-gagal-mengambil-berkas">Installer gagal mengambil berkas</a></li>
-<li class="lvl2"><a href="#agent-memuat-skill-tapi-tidak-mengikutinya">Agent memuat skill tapi tidak mengikutinya</a></li></ul>
+<li class="lvl2"><a href="#agent-memuat-skill-tapi-tidak-mengikutinya">Agent memuat skill tapi tidak mengikutinya</a></li>
+<li class="lvl2"><a href="#setelah-install-ironclad-version-masih-versi-lama">Setelah install, ironclad version masih versi lama</a></li>
+<li class="lvl2"><a href="#agent-nya-tidak-bertanya-padahal-sudah-install">Agent-nya tidak bertanya padahal sudah install</a></li></ul>
       </aside>
     </div>
   </main>

@@ -14,7 +14,7 @@ lalu selesai.
 ## 1. Pasang
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+npx github:wilsench/ironclad#v0.8.1
 ```
 
 ## 2. Selesai — benar-benar selesai
@@ -23,9 +23,10 @@ Setelah langkah 1, **tidak ada langkah kedua**. Installer sudah menulis aturan k
 konfigurasi global tiap agent yang ada di mesinmu:
 
 ```
-created  .claude/CLAUDE.md     (Claude Code)
-created  .codex/AGENTS.md      (Codex)
-created  .gemini/GEMINI.md     (Gemini CLI)
+created  .claude/CLAUDE.md          (Claude Code)
+created  .codex/AGENTS.md           (Codex)
+created  .gemini/AGENTS.md          (Antigravity / agy)
+created  .gemini/GEMINI.md          (Gemini CLI)
 ```
 
 Itu yang dibaca agent **di awal setiap sesi, di repo mana pun** — tanpa kamu
@@ -130,7 +131,7 @@ belum ada — bukan memilih diam-diam.
 ironclad init --no-agent-files
 ```
 
-Atau saat install: `curl ... | bash -s -- --no-agent-files`.
+Atau saat install: `npx github:wilsench/ironclad#v0.8.1 --no-agent-files`.
 
 Tanpa blok itu, agent hanya tahu aturannya kalau ia memuat skill — jadi kamu
 kembali ke dunia yang butuh command. Pilihan ini ada untuk repo yang sudah punya

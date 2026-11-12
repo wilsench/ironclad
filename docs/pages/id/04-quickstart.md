@@ -14,7 +14,7 @@ diedit tangan.
 ## 1. Pasang
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+npx github:wilsench/ironclad#v0.8.1
 ```
 
 Selesai. Skill ada di `~/.agents/skills/ironclad/`, perintah `ironclad` ada di

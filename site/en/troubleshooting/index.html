@@ -44,6 +44,7 @@
 <li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
 <li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
 <li><a href="/ironclad/en/no-commands/">Using it without commands</a></li>
+<li><a href="/ironclad/en/team/">For your team</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
 <li><a href="/ironclad/en/three-layers/">Three layers</a></li>
@@ -133,12 +134,12 @@ committed, or the command ran from the wrong directory.</p>
 <h2 id="curl-bash-seems-to-ignore-my-input"><code>curl … | bash</code> seems to ignore my input</h2>
 <p>It does not read stdin — by design, there is nothing to answer. If you passed
 flags and they were ignored, they must come after <code>-s --</code>:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL …/install.sh | bash -s -- --target claude
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1 --target claude
 </code></pre></div>
 <p>Without <code>-s --</code>, the arguments go to <code>bash</code> itself, which ignores them.</p>
 <h2 id="behind-a-proxy-or-the-mirror-is-unreachable">Behind a proxy, or the mirror is unreachable</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">IRONCLAD_BASE=https://raw.githubusercontent.com/wilsench/ironclad/main/skills/ironclad \
-  curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+  npx github:wilsench/ironclad#v0.8.1
 </code></pre></div>
 <p><code>IRONCLAD_BASE</code> overrides the payload source entirely. Use it for an internal
 mirror — the file list is fixed and printed in the installer's <code>FILES</code> variable.</p>
@@ -150,6 +151,29 @@ mirror — the file list is fixed and printed in the installer's <code>FILES</co
 <li><code>python3 --version</code></li>
 <li>which agent, and where the skill is installed</li>
 </ul>
+<h2 id="ironclad-version-still-shows-an-old-version-after-installing"><code>ironclad version</code> still shows an old version after installing</h2>
+<p><code>npx</code> caches, and without a ref it follows <code>main</code> as-is. Check what you actually have:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad version
+</code></pre></div>
+<p>If that is not the version you meant to install:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx --yes github:wilsench/ironclad#v0.8.1 --force
+</code></pre></div>
+<p><code>--force</code> makes the installer overwrite the existing payload. If it is still stale,
+clear the npm cache: <code>npm cache clean --force</code>.</p>
+<p>If <code>ironclad</code> is not found at all, <code>~/.local/bin</code> is not on your <code>PATH</code> — the
+installer prints the line to add to <code>~/.bashrc</code>.</p>
+<h2 id="the-agent-does-not-ask-even-though-it-is-installed">The agent does not ask, even though it is installed</h2>
+<p>Check two things, in order:</p>
+<ol>
+<li><strong>Was the block actually written?</strong> The installer prints <code>created</code>/<code>updated</code> per
+   agent. If it printed "no agent config directory was found", that agent's config
+   directory does not exist yet — launch the agent once, then re-run the installer.</li>
+<li><strong>Does the agent read that file?</strong> For Antigravity/<code>agy</code> the global rules live in
+   <code>~/.gemini/AGENTS.md</code> and <code>~/.gemini/GEMINI.md</code>. For Claude Code, <code>~/.claude/CLAUDE.md</code>.
+   If the file is there and the agent stays silent, that agent is not loading it —
+   report it rather than assuming it works.</li>
+</ol>
+<p>Repair without reinstalling: <code>ironclad attach --global</code>.</p>
         <nav class="pager" aria-label="Next page">
           <a class="prev" href="/ironclad/en/ci/"><span>Previous</span><b>CI & pre-commit</b></a>
 <a class="next" href="/ironclad/en/faq/"><span>Next</span><b>FAQ</b></a>
@@ -172,7 +196,9 @@ mirror — the file list is fixed and printed in the installer's <code>FILES</co
 <li class="lvl2"><a href="#score-got-worse-after-adding-a-rule">Score got worse after adding a rule</a></li>
 <li class="lvl2"><a href="#curl-bash-seems-to-ignore-my-input">curl … | bash seems to ignore my input</a></li>
 <li class="lvl2"><a href="#behind-a-proxy-or-the-mirror-is-unreachable">Behind a proxy, or the mirror is unreachable</a></li>
-<li class="lvl2"><a href="#nothing-here-matches">Nothing here matches</a></li></ul>
+<li class="lvl2"><a href="#nothing-here-matches">Nothing here matches</a></li>
+<li class="lvl2"><a href="#ironclad-version-still-shows-an-old-version-after-installing">ironclad version still shows an old version after installing</a></li>
+<li class="lvl2"><a href="#the-agent-does-not-ask-even-though-it-is-installed">The agent does not ask, even though it is installed</a></li></ul>
       </aside>
     </div>
   </main>

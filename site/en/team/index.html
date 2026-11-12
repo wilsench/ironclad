@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>For your team — Ironclad</title>
+<meta name="description" content="How to roll this out without touching every repo at once, and who decides when the agent stops and asks.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/team/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/team/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/team/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/team/">ID</a>
+      <a href="/ironclad/en/team/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/en/glossary/">Glossary</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+<li><a href="/ironclad/en/no-commands/">Using it without commands</a></li>
+<li><a href="/ironclad/en/team/" class="active" aria-current="page">For your team</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-08</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+<li><a href="/ironclad/en/frameworks/">Laravel, Prisma, and other backends</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Start / <b>For your team</b></span>
+      <a class="langsw-mini" href="/ironclad/team/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="rolling-it-out-to-a-team">Rolling it out to a team</h1>
+<p>Ironclad is not a rule imposed from above. It is one small behaviour: before an agent
+writes a status column, it reads that repo first, and stops if the repo already
+disagrees with itself. Everything else — when to use it, in which repo, and which
+style becomes the standard — is your call.</p>
+<p>This page is the order that causes the least friction.</p>
+<h2 id="the-order-that-works">The order that works</h2>
+<h3 id="1-one-pilot-repo-not-all-of-them">1. One pilot repo, not all of them</h3>
+<p>Pick the repo that has the most history with status: the one whose reports need
+<code>CASE WHEN</code>, or whose migrations were patched two different ways. Not the biggest,
+and not the quietest.</p>
+<p>Run this once in that repo:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">cd repo-pilot
+ironclad check
+</code></pre></div>
+<p>That only reads. If it comes back clean, the repo is too tidy to be a useful pilot —
+pick another one. A useful pilot is one that <strong>produces findings</strong>.</p>
+<h3 id="2-write-the-decision-down-do-not-leave-it-blank">2. Write the decision down, do not leave it blank</h3>
+<p>The installer already plants a house default (<code>status_code</code> + lookup + FK) for new
+tables. But a pilot repo usually <strong>already</strong> has its own style, and the repo's style
+always wins.</p>
+<p>The only decision you need to record in <code>.agent/standards.md</code> is one sentence: how
+this project stores status, and why. If the repo is already consistent, write down
+the style it already uses — not the default.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad init      # only to pin the decision into git
+</code></pre></div>
+<p>An untouched template is replaced on upgrade. A file you filled in is not.</p>
+<h3 id="3-one-developer-tries-it-first">3. One developer tries it first</h3>
+<p>Send it to <strong>one</strong> person, ideally one who uses a different agent than you. All they
+have to run is:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1
+</code></pre></div>
+<p>Then ask them to open the pilot repo and ask their agent:</p>
+<blockquote>
+<p>Before writing a status column, what is the rule?</p>
+</blockquote>
+<p>A correct answer names three things: read the repo first, follow the existing style,
+and use <code>status_code</code> + lookup if there is none yet. If the agent only says "use an
+integer" without mentioning reading the repo, the block did not load.</p>
+<h3 id="4-then-spread-it">4. Then spread it</h3>
+<p>Once one person is working, hand out the same command. There is no per-repo setup and
+nothing to commit, unless you want the decision pinned in git via <code>ironclad init</code>.</p>
+<h2 id="when-the-agent-stops-and-asks">When the agent stops and asks</h2>
+<p>There are two kinds of questions, and only one needs an answer from you.</p>
+<p><strong>"May I write it now?"</strong> — that is manners. Answer it.</p>
+<p><strong>"This repo has two status styles, which one is the standard?"</strong> — that is the one
+that matters. The agent stopped on purpose, because choosing on its own would add a
+third style. Whatever you answer that day becomes the repo's standard. Write it in
+<code>.agent/standards.md</code> so the next agent — and the next person — does not ask again.</p>
+<p>If you do not know the answer, "follow whichever is used most" is a valid answer. What
+is not valid: silence, then letting the agent pick.</p>
+<h2 id="agree-on-these-up-front">Agree on these up front</h2>
+<p>Three things the tool does not decide for you, and that are better settled before you
+spread it:</p>
+<ul>
+<li><strong>Status style for new repos</strong> — the house default is <code>status_code</code> + lookup. If your
+  team is more comfortable with a native <code>enum</code>, change it now, not after ten tables.</li>
+<li><strong>Money</strong> — <code>numeric(14,2)</code> or integer minor units. Both are valid; only <code>float</code> is not.</li>
+<li><strong>Legacy repos</strong> — leave them, or unify them slowly. Recommendation: leave them.
+  Rewriting a working schema to chase a default is how you lose a weekend and gain a bug.</li>
+</ul>
+<h2 id="if-something-does-not-work">If something does not work</h2>
+<p>Before anyone reports a problem, ask them for one thing:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad version
+</code></pre></div>
+<p>That prints the skill version, its location, and the size of the installed block. Those
+three numbers separate almost every failure: old version, wrong directory, or block
+never written.</p>
+<p>If the version is right and the agent still does not ask, then that agent is not loading
+the file we wrote. That needs reporting — not assuming.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/no-commands/"><span>Previous</span><b>Using it without commands</b></a>
+<a class="next" href="/ironclad/en/three-layers/"><span>Next</span><b>Three layers</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#the-order-that-works">The order that works</a></li>
+<li class="lvl3"><a href="#1-one-pilot-repo-not-all-of-them">1. One pilot repo, not all of them</a></li>
+<li class="lvl3"><a href="#2-write-the-decision-down-do-not-leave-it-blank">2. Write the decision down, do not leave it blank</a></li>
+<li class="lvl3"><a href="#3-one-developer-tries-it-first">3. One developer tries it first</a></li>
+<li class="lvl3"><a href="#4-then-spread-it">4. Then spread it</a></li>
+<li class="lvl2"><a href="#when-the-agent-stops-and-asks">When the agent stops and asks</a></li>
+<li class="lvl2"><a href="#agree-on-these-up-front">Agree on these up front</a></li>
+<li class="lvl2"><a href="#if-something-does-not-work">If something does not work</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

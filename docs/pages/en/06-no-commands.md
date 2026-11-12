@@ -14,7 +14,7 @@ you are done.
 ## 1. Install
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+npx github:wilsench/ironclad#v0.8.1
 ```
 
 ## 2. Done — actually done
@@ -23,9 +23,10 @@ After step 1 there is **no second step**. The installer already wrote the rules 
 each agent's global config on this machine:
 
 ```
-created  .claude/CLAUDE.md     (Claude Code)
-created  .codex/AGENTS.md      (Codex)
-created  .gemini/GEMINI.md     (Gemini CLI)
+created  .claude/CLAUDE.md          (Claude Code)
+created  .codex/AGENTS.md           (Codex)
+created  .gemini/AGENTS.md          (Antigravity / agy)
+created  .gemini/GEMINI.md          (Gemini CLI)
 ```
 
 That is what the agent reads **at the start of every session, in any repo** — with
@@ -130,7 +131,7 @@ codebase — it does not stop to interrogate you about presets.
 ironclad init --no-agent-files
 ```
 
-Or at install time: `curl ... | bash -s -- --no-agent-files`.
+Or at install time: `npx github:wilsench/ironclad#v0.8.1 --no-agent-files`.
 
 Without that block the agent only knows the rules if it loads the skill — so you
 are back to a world that needs commands. The option exists for repos that already

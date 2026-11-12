@@ -44,6 +44,7 @@
 <li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
 <li><a href="/ironclad/quickstart/">Quickstart</a></li>
 <li><a href="/ironclad/no-commands/">Cara pakai tanpa command</a></li>
+<li><a href="/ironclad/team/">Untuk tim</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
 <li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
@@ -93,7 +94,7 @@
 <p>Kalau kamu ingin memastikan, sebut namanya: <code>pakai skill ironclad</code>.</p>
 <h2 id="kalau-tidak-mau-sepanjang-ini-cukup-satu-perintah">Kalau tidak mau sepanjang ini, cukup satu perintah?</h2>
 <p>Ya:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1
 </code></pre></div>
 <p>Itu saja. Tidak ada langkah kedua — agent sudah bertanya sendiri di repo mana pun.</p>
 <p>Kalau kamu ingin aturannya ikut git supaya seluruh tim dan CI memakai jawaban yang sama:</p>
@@ -102,16 +103,16 @@
 <p>Satu perintah, tanpa clone, tanpa baca dokumen — dan tanpa <code>ironclad init</code> kecuali kamu ingin aturannya ikut git.</p>
 <h2 id="installer-ini-bisa-untuk-selain-hermes">Installer ini bisa untuk selain Hermes?</h2>
 <p>Ya, dan itu target utamanya. Enam target: Hermes, Claude Code, Codex, Cursor, opencode, Antigravity. Formatnya standar Agent Skills (<code>SKILL.md</code>), bukan format khusus Hermes.</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">… | bash -s -- --all              # semua agent yang terdeteksi
-… | bash -s -- --target claude
-… | bash -s -- --target gemini    # Antigravity global
-… | bash -s -- --target opencode
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1  --all              # semua agent yang terdeteksi
+npx github:wilsench/ironclad#v0.8.1  --target claude
+npx github:wilsench/ironclad#v0.8.1  --target gemini    # Antigravity global
+npx github:wilsench/ironclad#v0.8.1  --target opencode
 </code></pre></div>
 <h2 id="bisa-langsung-pakai-wilsenchironclad">Bisa langsung pakai <code>wilsench/ironclad</code>?</h2>
 <p>Untuk Hermes, ya — begitu repo GitHub-nya terbit:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">hermes skills install wilsench/ironclad/skills/ironclad
 </code></pre></div>
-<p>Untuk agent lain, tidak ada perintah <code>install &lt;owner&gt;/&lt;repo&gt;</code> universal. Yang portable adalah curl ke <code>install.sh</code> — dan itu <strong>sudah berfungsi sekarang</strong>, karena installer punya mirror di <code>wilsench.my.id</code>, tidak menunggu GitHub.</p>
+<p>Untuk agent lain, pakai <code>npx github:wilsench/ironclad#v0.8.1</code> — itu menarik paket langsung dari repo GitHub tanpa publish ke npm. Kalau tidak ada Node, mirror <code>install.sh</code> di <code>wilsench.my.id</code> menjalankan kode yang sama persis.</p>
 <h2 id="apakah-curl-bash-aman">Apakah <code>curl | bash</code> aman?</h2>
 <p>Installer-nya 180 baris bash dan bisa kamu baca dulu:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | less

@@ -46,7 +46,7 @@ yang salah pilihan tapi bisa diubah (lihat bagian berikut).
 Langsung dari installer:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project . --preset strict
+npx github:wilsench/ironclad#v0.8.1 --project . --preset strict
 ```
 
 Atau belakangan, dari dalam repo:
