@@ -108,9 +108,55 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh \
 
 ## Uninstall
 
+Two different things can be removed, and they have different owners. Understand
+this first, so you do not delete a team's rules just because you wanted to retry an
+install.
+
+**1. The skill** — lives in your agent folders, not in the repo. One command,
+sweeps every agent:
+
 ```bash
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall
 ```
 
-Removes the skill directory and the `ironclad` command. `.agent/` and `scripts/`
-in your repo are **not** touched — they are yours, not the installer's.
+Removes `~/.agents/skills/ironclad`, `~/.claude/skills/ironclad`,
+`~/.hermes/skills/ironclad`, `~/.gemini/config/skills/ironclad`,
+`~/.config/opencode/skills/ironclad`, and the `~/.local/bin/ironclad` command.
+Locations that were never installed are skipped, not an error.
+
+**2. The project policy** — `.agent/standards.{md,yml}`,
+`scripts/check_schema.py`, `scripts/presets/`. This is a **repo decision**, not an
+installer artefact, so it is left alone by default. To remove it from disk too:
+
+```bash
+cd your-repo
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall --purge
+```
+
+If those files were committed, purge only clears the disk — Git still tracks them:
+
+```bash
+git rm -r .agent scripts
+git commit -m "chore: drop ironclad standards"
+```
+
+> **Do not remove `.agent/` just to upgrade the skill.** An agreed team policy is
+> not install debris. `--uninstall` without `--purge` keeps it on purpose.
+
+### If you installed via `hermes skills install`
+
+That is a separate path, unknown to `install.sh`. Remove it with Hermes:
+
+```bash
+hermes skills uninstall ironclad
+```
+
+Check for leftovers anywhere:
+
+```bash
+ls -d ~/.agents/skills/ironclad ~/.claude/skills/ironclad ~/.hermes/skills/ironclad \
+      ~/.gemini/config/skills/ironclad ~/.config/opencode/skills/ironclad 2>/dev/null
+command -v ironclad
+```
+
+If both commands print nothing, it is gone.

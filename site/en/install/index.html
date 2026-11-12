@@ -179,10 +179,41 @@ pipeline that wants everything at once:</p>
   | bash -s -- --target agents --project . --preset legacy-friendly
 </code></pre></div>
 <h2 id="uninstall">Uninstall</h2>
+<p>Two different things can be removed, and they have different owners. Understand
+this first, so you do not delete a team's rules just because you wanted to retry an
+install.</p>
+<p><strong>1. The skill</strong> — lives in your agent folders, not in the repo. One command,
+sweeps every agent:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall
 </code></pre></div>
-<p>Removes the skill directory and the <code>ironclad</code> command. <code>.agent/</code> and <code>scripts/</code>
-in your repo are <strong>not</strong> touched — they are yours, not the installer's.</p>
+<p>Removes <code>~/.agents/skills/ironclad</code>, <code>~/.claude/skills/ironclad</code>,
+<code>~/.hermes/skills/ironclad</code>, <code>~/.gemini/config/skills/ironclad</code>,
+<code>~/.config/opencode/skills/ironclad</code>, and the <code>~/.local/bin/ironclad</code> command.
+Locations that were never installed are skipped, not an error.</p>
+<p><strong>2. The project policy</strong> — <code>.agent/standards.{md,yml}</code>,
+<code>scripts/check_schema.py</code>, <code>scripts/presets/</code>. This is a <strong>repo decision</strong>, not an
+installer artefact, so it is left alone by default. To remove it from disk too:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">cd your-repo
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall --purge
+</code></pre></div>
+<p>If those files were committed, purge only clears the disk — Git still tracks them:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">git rm -r .agent scripts
+git commit -m &quot;chore: drop ironclad standards&quot;
+</code></pre></div>
+<blockquote>
+<p><strong>Do not remove <code>.agent/</code> just to upgrade the skill.</strong> An agreed team policy is
+not install debris. <code>--uninstall</code> without <code>--purge</code> keeps it on purpose.</p>
+</blockquote>
+<h3 id="if-you-installed-via-hermes-skills-install">If you installed via <code>hermes skills install</code></h3>
+<p>That is a separate path, unknown to <code>install.sh</code>. Remove it with Hermes:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">hermes skills uninstall ironclad
+</code></pre></div>
+<p>Check for leftovers anywhere:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ls -d ~/.agents/skills/ironclad ~/.claude/skills/ironclad ~/.hermes/skills/ironclad \
+      ~/.gemini/config/skills/ironclad ~/.config/opencode/skills/ironclad 2&gt;/dev/null
+command -v ironclad
+</code></pre></div>
+<p>If both commands print nothing, it is gone.</p>
         <nav class="pager" aria-label="Next page">
           <a class="prev" href="/ironclad/en/glossary/"><span>Previous</span><b>Glossary</b></a>
 <a class="next" href="/ironclad/en/how-agents-use-it/"><span>Next</span><b>How agents use it</b></a>
@@ -201,7 +232,8 @@ in your repo are <strong>not</strong> touched — they are yours, not the instal
 <li class="lvl2"><a href="#other-agents">Other agents</a></li>
 <li class="lvl2"><a href="#if-you-want-the-rules-to-travel-with-the-repo">If you want the rules to travel with the repo</a></li>
 <li class="lvl2"><a href="#ci-nothing-to-skip">CI: nothing to skip</a></li>
-<li class="lvl2"><a href="#uninstall">Uninstall</a></li></ul>
+<li class="lvl2"><a href="#uninstall">Uninstall</a></li>
+<li class="lvl3"><a href="#if-you-installed-via-hermes-skills-install">If you installed via hermes skills install</a></li></ul>
       </aside>
     </div>
   </main>

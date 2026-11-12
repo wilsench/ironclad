@@ -20,7 +20,10 @@
 #   --policy-only        with --project: write .agent/ only, skip the checker
 #   --repo OWNER/REPO    payload repo (default: wilsench/ironclad)
 #   --ref REF            git branch or tag (default: main)
-#   --uninstall          remove the skill and the launcher
+#   --uninstall          remove the skill from every agent dir + the launcher
+#   --purge              with --uninstall: also delete this project's .agent/ and
+#                        scripts/ files (default is to leave them — they are a repo
+#                        decision, not an installer artefact)
 #   -h, --help
 #
 # Payload source order: $IRONCLAD_BASE → wilsench.my.id mirror → GitHub.
@@ -40,6 +43,7 @@ PROJECT=""
 PRESET="balanced"
 POLICY_ONLY=""
 UNINSTALL=""
+PURGE=""
 NO_BIN=""
 ALL=""
 
@@ -54,6 +58,7 @@ while [ $# -gt 0 ]; do
     --ref)         REF="${2:?--ref needs a value}"; shift 2 ;;
     --all)         ALL=1; shift ;;
     --uninstall)   UNINSTALL=1; shift ;;
+    --purge)       PURGE=1; shift ;;
     --no-bin)      NO_BIN=1; shift ;;
     -y|--yes)      shift ;;
     -h|--help)     sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
@@ -95,22 +100,64 @@ else
   DESTS="$(dest_for "$TARGET")"
 fi
 
-# ---- uninstall --------------------------------------------------------------
-if [ -n "$UNINSTALL" ]; then
-  for d in $DESTS; do
-    if [ -d "$d/$SKILL_NAME" ]; then
-      rm -rf "$d/$SKILL_NAME"
-      echo "removed $d/$SKILL_NAME"
-    else
-      echo "not installed: $d/$SKILL_NAME"
-    fi
+find_project_root() {
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -d "$d/.agent" ] || [ -d "$d/scripts/presets" ]; then echo "$d"; return 0; fi
+    d="$(dirname "$d")"
   done
-  if [ -f "$HOME/.local/bin/$SKILL_NAME" ]; then
+  return 1
+}
+
+# ---- uninstall --------------------------------------------------------------
+# Removing only one target leaves working copies behind in the other agents, and
+# the skill keeps loading there with no command to manage it. So: sweep every
+# known location, plus --dir if given, and say what was actually there.
+if [ -n "$UNINSTALL" ]; then
+  SCAN="$DESTS"
+  for t in agents claude hermes gemini opencode; do
+    SCAN="$SCAN $(dest_for "$t")"
+  done
+  FOUND=0
+  SEEN=""
+  for d in $SCAN; do
+    case ":$SEEN:" in *":$d:"*) continue ;; esac
+    SEEN="$SEEN:$d:"
+    [ -d "$d/$SKILL_NAME" ] || continue
+    rm -rf "$d/$SKILL_NAME"
+    echo "removed $d/$SKILL_NAME"
+    FOUND=$((FOUND + 1))
+  done
+  [ -f "$HOME/.local/bin/$SKILL_NAME" ] && {
     rm -f "$HOME/.local/bin/$SKILL_NAME"
     echo "removed $HOME/.local/bin/$SKILL_NAME"
+    FOUND=$((FOUND + 1))
+  }
+  [ "$FOUND" -eq 0 ] && echo "nothing to remove — not installed in any known location"
+
+  # The policy in a project is a repo decision, not an installer artefact, so it
+  # survives by default. --purge is for "I am dropping this entirely".
+  if [ -n "$PURGE" ]; then
+    ROOT="$(find_project_root)"
+    if [ -z "$ROOT" ]; then
+      echo "purge: no .agent/ or scripts/presets/ found at or above $PWD — nothing to purge"
+    else
+      for rel in "$ROOT/.agent/standards.yml" "$ROOT/.agent/standards.md" \
+                 "$ROOT/scripts/check_schema.py" "$ROOT/scripts/presets"; do
+        if [ -e "$rel" ]; then
+          rm -rf "$rel"
+          echo "purged  ${rel#$ROOT/}"
+        fi
+      done
+      rmdir "$ROOT/.agent" "$ROOT/scripts" 2>/dev/null || true
+      echo "purged project files — if they were committed, finish with: git rm -r .agent scripts"
+    fi
+  else
+    echo
+    echo "Project files were left alone: .agent/standards.{md,yml}, scripts/check_schema.py,"
+    echo "scripts/presets/. They are a repo decision — delete them in a commit, or rerun with"
+    echo "--uninstall --purge to remove them from disk."
   fi
-  echo
-  echo "Policy files (.agent/, scripts/) were left alone — delete them yourself if you want."
   exit 0
 fi
 

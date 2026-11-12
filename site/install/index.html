@@ -169,9 +169,32 @@ git add .agents/skills/ironclad &amp;&amp; git commit -m &quot;chore: add ironcl
   | bash -s -- --target agents --project . --preset legacy-friendly
 </code></pre></div>
 <h2 id="mencopot">Mencopot</h2>
+<p>Ada dua hal yang bisa dicopot, dan keduanya berbeda pemiliknya. Pahami ini dulu supaya tidak menghapus aturan tim hanya karena ingin mencoba ulang.</p>
+<p><strong>1. Skill-nya</strong> — ada di folder agent kamu, bukan di repo. Satu perintah, membersihkan semua agent sekaligus:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall
 </code></pre></div>
-<p>Menghapus folder skill dan perintah <code>ironclad</code>. Berkas <code>.agent/</code> dan <code>scripts/</code> di repo <strong>tidak</strong> dihapus — itu milik kamu, bukan milik installer.</p>
+<p>Yang dihapus: <code>~/.agents/skills/ironclad</code>, <code>~/.claude/skills/ironclad</code>, <code>~/.hermes/skills/ironclad</code>, <code>~/.gemini/config/skills/ironclad</code>, <code>~/.config/opencode/skills/ironclad</code>, dan perintah <code>~/.local/bin/ironclad</code>. Yang tidak ada akan dilewati, bukan error.</p>
+<p><strong>2. Aturan proyek</strong> — <code>.agent/standards.{md,yml}</code>, <code>scripts/check_schema.py</code>, <code>scripts/presets/</code>. Ini <strong>keputusan repo</strong>, bukan milik installer, jadi secara default ia dibiarkan. Kalau memang mau dibuang dari disk:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">cd repo-kamu
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall --purge
+</code></pre></div>
+<p>Kalau berkas itu sudah pernah di-commit, purge hanya menghapus dari disk — Git masih melacaknya. Selesaikan dengan commit:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">git rm -r .agent scripts
+git commit -m &quot;chore: drop ironclad standards&quot;
+</code></pre></div>
+<blockquote>
+<p><strong>Jangan copot <code>.agent/</code> hanya karena ingin upgrade skill.</strong> Aturan tim yang sudah disepakati bukan sampah instalasi. <code>--uninstall</code> tanpa <code>--purge</code> sengaja mempertahankannya.</p>
+</blockquote>
+<h3 id="kalau-dulu-memasang-lewat-hermes-skills-install">Kalau dulu memasang lewat <code>hermes skills install</code></h3>
+<p>Itu jalur berbeda dan tidak dikenal oleh <code>install.sh</code>. Copot lewat Hermes sendiri:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">hermes skills uninstall ironclad
+</code></pre></div>
+<p>Cek sisa pemasangan di mana saja:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ls -d ~/.agents/skills/ironclad ~/.claude/skills/ironclad ~/.hermes/skills/ironclad \
+      ~/.gemini/config/skills/ironclad ~/.config/opencode/skills/ironclad 2&gt;/dev/null
+command -v ironclad
+</code></pre></div>
+<p>Kalau kedua perintah di atas tidak menghasilkan apa pun, sudah bersih.</p>
         <nav class="pager" aria-label="Halaman berikutnya">
           <a class="prev" href="/ironclad/kamus/"><span>Sebelumnya</span><b>Kamus</b></a>
 <a class="next" href="/ironclad/how-agents-use-it/"><span>Berikutnya</span><b>Cara agent memakainya</b></a>
@@ -190,7 +213,8 @@ git add .agents/skills/ironclad &amp;&amp; git commit -m &quot;chore: add ironcl
 <li class="lvl2"><a href="#agent-lain">Agent lain</a></li>
 <li class="lvl2"><a href="#kalau-ingin-aturannya-ikut-repo">Kalau ingin aturannya ikut repo</a></li>
 <li class="lvl2"><a href="#ci-lewati-semua-pertanyaan">CI: lewati semua pertanyaan</a></li>
-<li class="lvl2"><a href="#mencopot">Mencopot</a></li></ul>
+<li class="lvl2"><a href="#mencopot">Mencopot</a></li>
+<li class="lvl3"><a href="#kalau-dulu-memasang-lewat-hermes-skills-install">Kalau dulu memasang lewat hermes skills install</a></li></ul>
       </aside>
     </div>
   </main>

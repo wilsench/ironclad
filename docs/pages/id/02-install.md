@@ -98,8 +98,46 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh \
 
 ## Mencopot
 
+Ada dua hal yang bisa dicopot, dan keduanya berbeda pemiliknya. Pahami ini dulu supaya tidak menghapus aturan tim hanya karena ingin mencoba ulang.
+
+**1. Skill-nya** — ada di folder agent kamu, bukan di repo. Satu perintah, membersihkan semua agent sekaligus:
+
 ```bash
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall
 ```
 
-Menghapus folder skill dan perintah `ironclad`. Berkas `.agent/` dan `scripts/` di repo **tidak** dihapus — itu milik kamu, bukan milik installer.
+Yang dihapus: `~/.agents/skills/ironclad`, `~/.claude/skills/ironclad`, `~/.hermes/skills/ironclad`, `~/.gemini/config/skills/ironclad`, `~/.config/opencode/skills/ironclad`, dan perintah `~/.local/bin/ironclad`. Yang tidak ada akan dilewati, bukan error.
+
+**2. Aturan proyek** — `.agent/standards.{md,yml}`, `scripts/check_schema.py`, `scripts/presets/`. Ini **keputusan repo**, bukan milik installer, jadi secara default ia dibiarkan. Kalau memang mau dibuang dari disk:
+
+```bash
+cd repo-kamu
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall --purge
+```
+
+Kalau berkas itu sudah pernah di-commit, purge hanya menghapus dari disk — Git masih melacaknya. Selesaikan dengan commit:
+
+```bash
+git rm -r .agent scripts
+git commit -m "chore: drop ironclad standards"
+```
+
+> **Jangan copot `.agent/` hanya karena ingin upgrade skill.** Aturan tim yang sudah disepakati bukan sampah instalasi. `--uninstall` tanpa `--purge` sengaja mempertahankannya.
+
+### Kalau dulu memasang lewat `hermes skills install`
+
+Itu jalur berbeda dan tidak dikenal oleh `install.sh`. Copot lewat Hermes sendiri:
+
+```bash
+hermes skills uninstall ironclad
+```
+
+Cek sisa pemasangan di mana saja:
+
+```bash
+ls -d ~/.agents/skills/ironclad ~/.claude/skills/ironclad ~/.hermes/skills/ironclad \
+      ~/.gemini/config/skills/ironclad ~/.config/opencode/skills/ironclad 2>/dev/null
+command -v ironclad
+```
+
+Kalau kedua perintah di atas tidak menghasilkan apa pun, sudah bersih.
