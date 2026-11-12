@@ -17,6 +17,8 @@
 #   --no-bin             skip the ~/.local/bin/ironclad launcher
 #   --no-agent-files     skip writing AGENTS.md / CLAUDE.md / GEMINI.md / .cursor
 #                        (the standing instruction that makes the agent ask first)
+#   --mode ask|house     ask  = follow the repo, ask when nothing exists yet (default)
+#                        house = also apply this team's default when nothing exists
 #   --project PATH       bootstrap policy + checker into that repo, then exit
 #   --preset NAME        balanced (default) | strict | legacy-friendly
 #   --policy-only        with --project: write .agent/ only, skip the checker
@@ -48,6 +50,7 @@ UNINSTALL=""
 PURGE=""
 NO_BIN=""
 NO_AGENT_FILES=""
+MODE=""
 ALL=""
 
 while [ $# -gt 0 ]; do
@@ -64,6 +67,7 @@ while [ $# -gt 0 ]; do
     --purge)       PURGE=1; shift ;;
     --no-bin)      NO_BIN=1; shift ;;
     --no-agent-files) NO_AGENT_FILES=1; shift ;;
+    --mode)        MODE="${2:?--mode needs a value (ask|house)}"; shift 2 ;;
     -y|--yes)      shift ;;
     -h|--help)     sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown argument: $1 (try --help)" >&2; exit 2 ;;
@@ -79,6 +83,10 @@ esac
 case "$PRESET" in
   balanced|strict|legacy-friendly) ;;
   *) echo "unknown preset: $PRESET (balanced|strict|legacy-friendly)" >&2; exit 2 ;;
+esac
+case "${MODE:-}" in
+  ""|ask|house) ;;
+  *) echo "unknown mode: $MODE (ask|house)" >&2; exit 2 ;;
 esac
 
 # ---- preflight ---------------------------------------------------------------
@@ -345,7 +353,9 @@ fi
 AGENTS_WRITTEN=0
 if [ -z "$NO_AGENT_FILES" ]; then
   echo
-  AF_OUT="$(python3 "$TMP/scripts/agent_files.py" --global 2>&1)" || {
+  AF_ARGS=(--global)
+[ -n "${MODE:-}" ] && AF_ARGS+=(--mode "$MODE")
+AF_OUT="$(python3 "$TMP/scripts/agent_files.py" "${AF_ARGS[@]}" 2>&1)" || {
     echo "$AF_OUT"
     echo "  could not write the standing instruction — the agent will not ask on its own" >&2
     ATTACH_FAILED=1

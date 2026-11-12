@@ -28,9 +28,36 @@ if (hasBash.error || hasBash.status !== 0) {
   process.exit(3);
 }
 
-// Everything after the package name is passed straight through, so
-// `npx github:wilsench/ironclad --uninstall` and `--dry-run` work unchanged.
-const result = spawnSync("bash", [installer, ...process.argv.slice(2)], {
+const argv = process.argv.slice(2);
+
+// Read-only subcommands. This is the front door for someone who does not want to
+// install anything yet: `npx github:wilsench/ironclad check .` answers "does this repo
+// already store status two ways" and exits, without touching a single agent config.
+// Without it, the only way to try the tool was to install it first — backwards.
+if (argv[0] === "check" || argv[0] === "scan") {
+  const checker = join(here, "..", "skills", "ironclad", "scripts", "check_schema.py");
+  if (!existsSync(checker)) {
+    console.error("ironclad: check_schema.py is missing from this package.");
+    process.exit(1);
+  }
+  const target = argv.slice(1).filter((a) => !a.startsWith("-"));
+  const flags = argv.slice(1).filter((a) => a.startsWith("-"));
+  const py = spawnSync("python3", ["-c", "true"], { stdio: "ignore" });
+  if (py.error || py.status !== 0) {
+    console.error("ironclad: `check` needs python3. Install it, or skip this step and");
+    console.error("use the installer instead — the agent instruction does not need Python.");
+    process.exit(3);
+  }
+  const check = spawnSync("python3", [checker, ...target.length ? target : ["."], ...flags], {
+    stdio: "inherit",
+    env: process.env,
+  });
+  process.exit(check.status ?? 1);
+}
+
+// Everything else is passed straight through, so `--uninstall`, `--mode house` and
+// `--dry-run` work unchanged.
+const result = spawnSync("bash", [installer, ...argv], {
   stdio: "inherit",
   env: process.env,
 });

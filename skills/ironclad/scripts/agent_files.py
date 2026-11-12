@@ -25,7 +25,28 @@ from pathlib import Path
 BEGIN = "<!-- ironclad:begin v1 -->"
 END = "<!-- ironclad:end -->"
 
-BODY = """## Ironclad — one way to store status per project
+ASK_BODY = """## Coherence — check how this project already does it
+
+A repo can store the same concept two ways and pass every review: status as an enum in
+one table, an integer code in another. Nobody decided that; it accumulated. Reports end
+up with a branch per table and no one can say which is current.
+
+This applies to any concept the project already stores, not only status: money,
+timestamps, IDs, soft deletes, error shapes, cache keys.
+
+Before adding one, look at how the project already does it (`grep -rn <concept>`, read
+migrations and models), then:
+
+- **already done one way** -> do it that way. Say which in one line, and continue.
+- **not done anywhere yet** -> ask which way this project wants it. Do not pick silently.
+- **already done two ways** -> stop. Name both, with the files, and ask which becomes
+  the standard. Never add a third while that is open.
+
+Money: never binary float (float/real/double precision); use numeric with a fixed scale
+or integer minor units. Timestamps: always timezone-aware.
+"""
+
+HOUSE_BODY = """## Coherence — one way to store status per project
 
 Two people on one database can each add a "status" and store it differently:
 `status ENUM('paid')` in one table, `status_code = 2` in another. Both pass review;
@@ -34,11 +55,11 @@ together the project becomes unmaintainable.
 Before writing anything that stores status, read the repo first (`grep -rn status`,
 migrations, models). Then:
 
-- **one consistent style already used** → follow it. Say which style in one line and
+- **one consistent style already used** -> follow it. Say which style in one line and
   carry on; do not stop to ask.
-- **two styles already present** → stop, name both with their files, and ask which
+- **two styles already present** -> stop, name both with their files, and ask which
   becomes the standard. Never add a third while that is open.
-- **no status anywhere yet** → use the house default. Do not ask.
+- **no status anywhere yet** -> use the house default. Do not ask.
   `status_code SMALLINT NOT NULL` + lookup table (`code` PK, `label`) + FK from the
   column, plus named constants in code. Any integer codes are fine (10/20/30, 1/2/3)
   as long as every code exists in the lookup table and is never reused.
@@ -47,6 +68,11 @@ migrations, models). Then:
 Money: exact, never binary float — `numeric`/`decimal` with a fixed scale, or integer
 minor units. Timestamps: `timestamptz`, never naive.
 """
+
+# `ask` is the default because it imports no opinion: it asks the project rather than
+# teaching it. `house` adds the one decision this team made. The sentinel marker lets a
+# machine tell which one is installed.
+BODY = ASK_BODY
 
 # Per-repo: only files this repo owns. Written by `ironclad init`.
 TARGETS = [
@@ -124,6 +150,27 @@ def remove(path: Path) -> str:
     return "removed-block"
 
 
+def detect_installed_mode() -> str | None:
+    """Which body is already installed here, read from any global target.
+
+    Used so `--mode` is only needed once. Without this, re-running the installer on a
+    `house` machine would quietly switch it to `ask` and the team default would vanish.
+    """
+    home = Path.home()
+    for rel, marker, _who, _generic in GLOBAL_TARGETS:
+        p = home / rel
+        try:
+            text = p.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if BEGIN in text:
+            chunk = text.split(BEGIN, 1)[1].split(END, 1)[0]
+            if "house default" in chunk:
+                return HOUSE_BODY
+            return ASK_BODY
+    return None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--project", help="repo to write into (default) ")
@@ -133,10 +180,20 @@ def main() -> int:
     ap.add_argument("--print", dest="show", action="store_true")
     ap.add_argument("--only", help="comma-separated filenames to touch")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--mode", choices=["ask", "house"], default=None,
+                    help="ask = follow/ask, no opinion (default for public use); "
+                         "house = also apply this team's default when nothing exists")
     a = ap.parse_args()
 
+    # Resolution order: explicit flag, then the mode already recorded in the file we
+    # are updating, then `ask`. Reading it back matters — re-running the installer
+    # must not silently downgrade a team that chose `house`.
+    body = HOUSE_BODY if a.mode == "house" else (ASK_BODY if a.mode == "ask" else None)
+    if body is None:
+        body = detect_installed_mode() or ASK_BODY
+
     if a.show:
-        print(BODY)
+        print(body)
         return 0
 
     if a.glob:
@@ -152,7 +209,7 @@ def main() -> int:
                 continue
             path = home / rel
             header = CURSOR_HEADER if rel.endswith(".mdc") else ""
-            state = remove(path) if a.remove else upsert(path, BODY, header)
+            state = remove(path) if a.remove else upsert(path, body, header)
             if not a.quiet and state != "absent":
                 print(f"  {state:14} {rel}  ({who})")
             if state != "absent" and not generic:
