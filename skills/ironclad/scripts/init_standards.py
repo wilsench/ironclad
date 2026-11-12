@@ -25,6 +25,7 @@ SKILL_DIR = Path(__file__).resolve().parent.parent
 PRESET_DIR = SKILL_DIR / "assets" / "presets"
 TEMPLATE = SKILL_DIR / "templates" / "standards.md"
 CHECKER = SKILL_DIR / "scripts" / "check_schema.py"
+PRESET_SRC = SKILL_DIR / "assets" / "presets"
 
 FALLBACK_PRESETS = ["balanced"]
 DEFAULT_PRESET = "balanced"
@@ -164,22 +165,28 @@ def main() -> int:
         yml_target.write_text(body)
         print(f"wrote {yml_target.relative_to(repo)} (preset: {preset})")
 
-    # 3. optional checker copy
+    # 3. optional checker copy — preset files travel with it, or `--preset` breaks
+    # in the target repo once the skill directory is not on disk.
     if args.with_checker:
         scripts = repo / "scripts"
         scripts.mkdir(exist_ok=True)
-        dest = scripts / "check_schema.py"
-        if dest.exists() and not args.force:
-            print(f"exists, left untouched: {dest.relative_to(repo)}")
-        else:
-            shutil.copyfile(CHECKER, dest)
-            dest.chmod(0o755)
+        copies = [(CHECKER, scripts / "check_schema.py")]
+        for yml in sorted(PRESET_SRC.glob("*.yml")):
+            copies.append((yml, scripts / "presets" / yml.name))
+        for src, dest in copies:
+            if dest.exists() and not args.force:
+                print(f"exists, left untouched: {dest.relative_to(repo)}")
+                continue
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, dest)
+            if dest.suffix == ".py":
+                dest.chmod(0o755)
             print(f"wrote {dest.relative_to(repo)}")
 
     print("\nnext:")
     print("  python3 scripts/check_schema.py . --json     # uses .agent/standards.yml")
-    print("  # want a different level?")
-    print(f"  python3 scripts/init_standards.py . --preset strict --force")
+    print("  # change the level later — re-run this same command with --preset <name> --force,")
+    print("  # or edit the seven rule lines in .agent/standards.yml and commit them")
     return 0
 
 

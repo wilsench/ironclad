@@ -32,7 +32,11 @@ import sys
 from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
-PRESET_DIR = SKILL_DIR / "assets" / "presets"
+# Two layouts: inside the skill (assets/presets/) and inside a target repo where
+# init_standards.py --with-checker copied the checker next to its presets (presets/).
+_HERE = Path(__file__).resolve().parent
+PRESET_DIR = next((d for d in (_HERE / "presets", SKILL_DIR / "assets" / "presets") if d.is_dir()),
+                  _HERE / "presets")
 
 DEFAULT_PRESET = "balanced"
 

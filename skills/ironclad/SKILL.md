@@ -1,7 +1,7 @@
 ---
 name: ironclad
 description: "Enforce team engineering standards with presets."
-version: 0.3.0
+version: 0.3.1
 author: Chia Wilsen, Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
@@ -93,7 +93,8 @@ Resolution order for severity: `--config` > `--preset` > `.agent/standards.yml` 
 7. **Running the checker on legacy code floods the report.** Start report-only, then gate changed files — otherwise the team disables the check outright.
 8. **Suppressing the checker to ship.** If a rule is genuinely wrong, change `.agent/standards.md` in review — that is the escape hatch.
 9. **Putting the preset in the skill instead of the repo.** A preset chosen in the skill file is invisible to CI and to the next teammate. The active preset must live in `.agent/standards.yml`, committed alongside the code.
-10. **`warn` is not a mute button.** A repo that warns on everything forever is a repo with no standard. Either fix the findings or move to a preset where they are errors; say which, in the PR.
+10. **Copying the checker without the presets.** `check_schema.py` reads presets from its own `scripts/presets/` when installed into a repo and from `assets/presets/` when running from the skill. Ship only the `.py` and `--preset` dies with `unknown preset`. Use `--with-checker`, which copies both.
+11. **`warn` is not a mute button.** A repo that warns on everything forever is a repo with no standard. Either fix the findings or move to a preset where they are errors; say which, in the PR.
 
 ## Files
 
@@ -105,4 +106,4 @@ Resolution order for severity: `--config` > `--preset` > `.agent/standards.yml` 
 - `assets/presets/strict.yml` — everything blocks
 - `assets/presets/legacy-friendly.yml` — everything warns
 - `scripts/check_schema.py` — SQL / Laravel migration / Prisma linter
-- `scripts/init_standards.py` — wizard + bootstrap
+- `scripts/init_standards.py` — wizard + bootstrap; with `--with-checker` it copies the checker **and** the presets into the target repo (`scripts/presets/`), so `--preset` keeps working after the skill directory is gone
