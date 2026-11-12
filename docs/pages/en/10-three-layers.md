@@ -25,6 +25,20 @@ the first time, which is cheaper than every later layer.
 description match, not by force. An agent that never reads it produces the same
 schema it would have produced without you.
 
+## Layer 1b — the installed block (the default before there is a file)
+
+On install, a short block is written into the global config of each agent on the
+machine. It carries the same three branches, plus one extra line if you installed
+with `--mode house`: the style to use when the repo has nothing yet. See
+[Modes](/en/modes/).
+
+**What it fixes:** the repo that has no `.agent/standards.md` yet — the case a file
+in the repo cannot cover, because the agent is working somewhere the file does not
+exist.
+
+**What it cannot fix:** it is a default, and defaults lose to specifics. A written
+repo decision always wins.
+
 ## Layer 2 — the policy file (the shared memory)
 
 `.agent/standards.md` lives in your repo and is committed. It is what the agent

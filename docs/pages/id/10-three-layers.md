@@ -12,6 +12,17 @@ Setiap lapis menutup celah yang tidak bisa ditutup lapis lain. Membuang salah sa
 
 ## Lapis 1 — Kebijakan
 
+Kebijakan punya dua bentuk, dan kamu boleh memakai salah satu atau keduanya:
+
+- **yang tertulis** — `.agent/standards.md`, di repo kamu, ikut git
+- **yang ditanam** — blok pendek di konfigurasi global agent, ditulis saat install.
+  Isinya tiga cabang keputusan, dan satu baris tambahan kalau kamu memakai mode
+  `house`. Lihat [Mode](/modes/).
+
+Yang tertulis menang kalau keduanya ada, karena keputusan proyek lebih spesifik
+daripada default alat. Yang ditanam menutup celah yang tidak bisa ditutup berkas
+repo: agent yang bekerja di repo yang belum punya `.agent/standards.md`.
+
 `.agent/standards.md`, di repo kamu, ikut git.
 
 Isinya aturan ber-ID:

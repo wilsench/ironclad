@@ -9,7 +9,7 @@
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/three-layers/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/three-layers/">
 <meta name="color-scheme" content="light">
-<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.9.4-0cff1a72">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.9.5-0cff1a72">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -23,7 +23,7 @@
       <span class="mark" aria-hidden="true">IC</span>
       <span>
         <b>Ironclad</b>
-        <i>v0.9.4-0cff1a72 · MIT</i>
+        <i>v0.9.5-0cff1a72 · MIT</i>
       </span>
     </a>
 
@@ -87,6 +87,16 @@
         <h1 id="tiga-lapis">Tiga lapis</h1>
 <p>Setiap lapis menutup celah yang tidak bisa ditutup lapis lain. Membuang salah satunya membuat sistemnya rapuh dengan cara yang berbeda.</p>
 <h2 id="lapis-1-kebijakan">Lapis 1 — Kebijakan</h2>
+<p>Kebijakan punya dua bentuk, dan kamu boleh memakai salah satu atau keduanya:</p>
+<ul>
+<li><strong>yang tertulis</strong> — <code>.agent/standards.md</code>, di repo kamu, ikut git</li>
+<li><strong>yang ditanam</strong> — blok pendek di konfigurasi global agent, ditulis saat install.
+  Isinya tiga cabang keputusan, dan satu baris tambahan kalau kamu memakai mode
+  <code>house</code>. Lihat <a href="/ironclad/modes/">Mode</a>.</li>
+</ul>
+<p>Yang tertulis menang kalau keduanya ada, karena keputusan proyek lebih spesifik
+daripada default alat. Yang ditanam menutup celah yang tidak bisa ditutup berkas
+repo: agent yang bekerja di repo yang belum punya <code>.agent/standards.md</code>.</p>
 <p><code>.agent/standards.md</code>, di repo kamu, ikut git.</p>
 <p>Isinya aturan ber-ID:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-markdown">### DB-04 — Never store a human label as the status
@@ -197,7 +207,7 @@ agent melihat daftar skill  ──►  deskripsi cocok?  ──►  baca SKILL.m
 <a class="next" href="/ironclad/presets/"><span>Berikutnya</span><b>Preset — seberapa keras</b></a>
         </nav>
         <footer class="docfoot">
-          <span>Ironclad v0.9.4-0cff1a72</span>
+          <span>Ironclad v0.9.5-0cff1a72</span>
           <span>MIT</span>
           <span>Chia Wilsen</span>
         </footer>
@@ -225,7 +235,7 @@ agent melihat daftar skill  ──►  deskripsi cocok?  ──►  baca SKILL.m
   <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
 </div>
 
-<script src="/ironclad/assets/docs.js?v=0.9.4-0cff1a72" defer></script>
-<script src="/ironclad/assets/search-index.js?v=0.9.4-0cff1a72" defer></script>
+<script src="/ironclad/assets/docs.js?v=0.9.5-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.9.5-0cff1a72" defer></script>
 </body>
 </html>

@@ -92,7 +92,7 @@ It does not read stdin — by design, there is nothing to answer. If you passed
 flags and they were ignored, they must come after `-s --`:
 
 ```bash
-npx github:wilsench/ironclad#v0.9.4 --target claude
+npx github:wilsench/ironclad#v0.9.5 --target claude
 ```
 
 Without `-s --`, the arguments go to `bash` itself, which ignores them.
@@ -101,7 +101,7 @@ Without `-s --`, the arguments go to `bash` itself, which ignores them.
 
 ```bash
 IRONCLAD_BASE=https://raw.githubusercontent.com/wilsench/ironclad/main/skills/ironclad \
-  npx github:wilsench/ironclad#v0.9.4
+  npx github:wilsench/ironclad#v0.9.5
 ```
 
 `IRONCLAD_BASE` overrides the payload source entirely. Use it for an internal
@@ -127,7 +127,7 @@ ironclad version
 If that is not the version you meant to install:
 
 ```bash
-npx --yes github:wilsench/ironclad#v0.9.4 --force
+npx --yes github:wilsench/ironclad#v0.9.5 --force
 ```
 
 `--force` makes the installer overwrite the existing payload. If it is still stale,
