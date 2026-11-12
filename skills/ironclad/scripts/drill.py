@@ -239,6 +239,60 @@ def selftest() -> int:
             failures += 1
             print(f"  {RED}FAIL{OFF}  grader passed an enum answer — it is now useless")
 
+        # A crash is worse than a wrong verdict: the process dies mid-report, so the
+        # findings already printed look like a full run. This exact bug shipped once
+        # (MAGIC_ASSIGN had no capturing group, code called group(1)) and no fixture
+        # happened to contain the line that triggers it. Probe every shape that does.
+        probes = (
+            "status = 1;\n"
+            "state = '2';\n"
+            "tipe = 0;\n"
+            "if (orderStatus === 2) {}\n"
+            "const x = 1; // status = 3;\n"
+            "$prototype = 1;\n"
+            "mimeType = 2;\n"
+        )
+        # Must look like a migration: DB-02 only inspects assignments there, and the
+        # original crash needed exactly that code path.
+        pf = tmp / "2024_01_01_000000_crash_probe_migration.sql"
+        pf.write_text(probes)
+        code, out = run_checker([str(pf)], "strict")
+        crashed = "Traceback" in out or "IndexError" in out
+        if not crashed and "DB-02" in out:
+            print(f"  {GREEN}PASS{OFF}  magic-number probe does not crash the run")
+        else:
+            failures += 1
+            what = "crashed" if crashed else "found nothing (pattern is dead)"
+            print(f"  {RED}FAIL{OFF}  magic-number probe {what}")
+            for line in out.strip().splitlines()[:4]:
+                print(f"        {DIM}{line}{OFF}")
+
+        # HTTP transport codes are not schema. Flagging `res.status === 409` is the
+        # fastest way to teach a team to ignore the tool, and it really happened on
+        # a real PHP/JS repo.
+        http_ok, http_noise = True, True
+        hf = tmp / "2024_01_01_000000_http_probe_migration.sql"
+        hf.write_text(
+            "if (res.status === 409) {}\n"
+            "if (r.status === 401) {}\n"
+            "if (response.__status === 401) {}\n"
+        )
+        code, out = run_checker([str(hf)], "strict")
+        http_noise = "DB-02" in out
+        hf.write_text("if (status === 2) {}\n")
+        code, out = run_checker([str(hf)], "strict")
+        http_ok = "DB-02" in out
+        if http_ok and not http_noise:
+            print(f"  {GREEN}PASS{OFF}  HTTP status codes ignored, schema status still flagged")
+        else:
+            failures += 1
+            why = []
+            if not http_ok:
+                why.append("stopped flagging real status comparisons")
+            if http_noise:
+                why.append("flagging res.status / r.status as schema")
+            print(f"  {RED}FAIL{OFF}  DB-02 HTTP handling: {', '.join(why)}")
+
     print()
     if failures:
         print(f"{RED}{failures} check(s) failed{OFF} — do not trust the gate yet.")

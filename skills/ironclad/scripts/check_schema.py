@@ -72,13 +72,24 @@ ENUM_PATTERNS = [
     (re.compile(r"^\s*enum\s+\w+\s*\{", re.I | re.M), "prisma enum block"),
 ]
 
+# HTTP response codes are not database status columns. `res.status === 409`,
+# `res.__status === 401` and `xhr.status == 404` are the most common false positives
+# on a PHP/JS repo, and noise like that is what makes people switch a linter off.
+# A *receiver* before the dot: `res.status`, `r.status`, `response.status`,
+# `response.__status`, `xhr.status`. Deliberately not a bare `status == 404`, which
+# still looks like a database column and stays flagged.
+HTTP_RECEIVER = re.compile(
+    r"(?:\bres(?:ponse)?|r|xhr|request|req)\s*\.\s*_*$",
+    re.I,
+)
+
 # status = 0 | ->where('status', 2) | === 3 on a status-y name
 MAGIC_COMPARE = re.compile(
     rf"({STATUS_WORD}[a-zA-Z0-9_]*)\s*(?:===?|!==?|<>|==|!=)\s*'?\d+'?", re.I)
 MAGIC_WHERE = re.compile(
     rf"['\"]([a-z0-9_]*{STATUS_WORD}[a-z0-9_]*)['\"]\s*,\s*'?\d+'?", re.I)
 MAGIC_ASSIGN = re.compile(
-    rf"\$?\w*{STATUS_WORD}\w*\s*=\s*'?[0-9]'?\s*;", re.I)
+    rf"(\$?\w*{STATUS_WORD}\w*)\s*=\s*'?[0-9]'?\s*;", re.I)
 
 VARCHAR_STATUS = re.compile(
     rf"['\"]?([a-z0-9_]*{STATUS_WORD}[a-z0-9_]*)['\"]?\s+(?:varchar|string|text)", re.I)
@@ -328,7 +339,15 @@ def check_file(path, cfg):
             if m and line_in_check:
                 break
             if m and (migration or kind != "assignment"):
-                add("DB-02", i, f"magic number in {kind} on `{m.group(1)}`; use a named constant")
+                name = m.group(1) if m.groups() else m.group(0)
+                # An HTTP response code is not a database status value. The name the
+                # regex captured tells us: if it is literally `status` and a response
+                # object precedes it (`res.status`, `r.status`, `response.__status`),
+                # this is transport, not schema.
+                if kind == "comparison" and name.lower().lstrip("_") == "status":
+                    if HTTP_RECEIVER.search(line[:m.start()]):
+                        continue
+                add("DB-02", i, f"magic number in {kind} on `{name}`; use a named constant")
                 break
 
         # DB-04
