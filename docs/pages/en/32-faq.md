@@ -39,7 +39,7 @@ If you want certainty, name it: "use the ironclad skill for this migration".
 Install:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.3
+npx github:wilsench/ironclad#v0.8.4
 ```
 
 Then, in a repo:
@@ -59,10 +59,10 @@ opencode, Antigravity. The format is the Agent Skills standard (`SKILL.md`), not
 something Hermes-specific.
 
 ```bash
-npx github:wilsench/ironclad#v0.8.3  --all              # everything detected on this machine
-npx github:wilsench/ironclad#v0.8.3  --target claude
-npx github:wilsench/ironclad#v0.8.3  --target gemini    # Antigravity, global
-npx github:wilsench/ironclad#v0.8.3  --target opencode
+npx github:wilsench/ironclad#v0.8.4  --all              # everything detected on this machine
+npx github:wilsench/ironclad#v0.8.4  --target claude
+npx github:wilsench/ironclad#v0.8.4  --target gemini    # Antigravity, global
+npx github:wilsench/ironclad#v0.8.4  --target opencode
 ```
 
 ## Can I use `wilsench/ironclad` directly?
@@ -73,7 +73,7 @@ For Hermes:
 hermes skills install wilsench/ironclad/skills/ironclad
 ```
 
-Other agents use `npx github:wilsench/ironclad#v0.8.3` — that pulls the package
+Other agents use `npx github:wilsench/ironclad#v0.8.4` — that pulls the package
 straight from the public repo, with nothing published to npm. If the machine has no
 Node, the `install.sh` mirror on `wilsench.my.id` runs the same code.
 

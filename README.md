@@ -19,7 +19,7 @@ understanding, the install is enough.
 ## Install
 
 ```bash
-npx github:wilsench/ironclad#v0.8.3
+npx github:wilsench/ironclad#v0.8.4
 ```
 
 Same installer without Node:

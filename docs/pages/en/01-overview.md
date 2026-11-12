@@ -113,7 +113,7 @@ Two commands. Nothing to answer.
 
 ```bash
 # 1. install (once per machine)
-npx github:wilsench/ironclad#v0.8.3
+npx github:wilsench/ironclad#v0.8.4
 ```
 
 ```bash
