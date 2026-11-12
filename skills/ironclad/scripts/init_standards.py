@@ -159,7 +159,7 @@ def main() -> int:
                 "name: balanced\n"
                 "rules:\n"
                 "  DB-01: error\n  DB-02: error\n  DB-03: warn\n"
-                "  DB-04: error\n  DB-05: warn\n  DB-06: warn\n  DB-07: warn\n"
+                "  DB-04: error\n  DB-05: warn\n  DB-06: warn\n  DB-07: warn\n  DB-08: warn\n"
                 "exceptions: []\nboolean_allowlist:\n  - is_active\n  - is_deleted\n"
             )
         yml_target.write_text(body)

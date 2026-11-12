@@ -11,6 +11,9 @@ rules:
   DB-03: warn       # status integer with no FK/CHECK (blocks only with --strict)
   DB-04: error      # status stored as text
   DB-05: warn       # boolean named for a non-binary concept
+  DB-06: warn       # money stored as float/double
+  DB-07: warn       # timestamp without a timezone
+  DB-08: warn       # project mixes enum/integer/text for the same concept
 exceptions: []
 boolean_allowlist:
   - is_active

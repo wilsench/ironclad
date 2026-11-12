@@ -12,6 +12,7 @@ rules:
   DB-05: warn
   DB-06: warn
   DB-07: warn
+  DB-08: warn
 exceptions: []
 boolean_allowlist:
   - is_active

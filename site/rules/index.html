@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Aturan DB-01…DB-07 — Ironclad</title>
-<meta name="description" content="Tujuh aturan database, masing-masing dengan contoh salah dan benar yang benar-benar diuji checker.">
+<title>Aturan DB-01…DB-08 — Ironclad</title>
+<meta name="description" content="Delapan aturan database, masing-masing dengan contoh salah dan benar yang benar-benar diuji checker. DB-08 adalah aturan yang paling menjawab masalah tim.">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/rules/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/rules/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/rules/">
@@ -49,7 +49,7 @@
 <li><a href="/ironclad/presets/">Preset</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
-<li><a href="/ironclad/rules/" class="active" aria-current="page">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/rules/" class="active" aria-current="page">Aturan DB-01…DB-08</a></li>
 <li><a href="/ironclad/checker/">Checker</a></li>
 <li><a href="/ironclad/extending/">Memperluas</a></li>
 </ul></div>
@@ -73,7 +73,7 @@
       <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
         <span></span><span></span>
       </button>
-      <span class="crumb">Referensi / <b>Aturan DB-01…DB-07</b></span>
+      <span class="crumb">Referensi / <b>Aturan DB-01…DB-08</b></span>
       <a class="langsw-mini" href="/ironclad/en/rules/" aria-label="Bahasa">EN</a>
       <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
     </header>
@@ -126,6 +126,11 @@
 <tr>
 <td>DB-07</td>
 <td>Timestamp wajib membawa zona waktu</td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+<tr>
+<td>DB-08</td>
+<td>Satu proyek satu gaya status — tidak campur enum dan integer</td>
 <td><span class="sev sev-warn">warn</span></td>
 </tr>
 </tbody>
@@ -215,6 +220,41 @@ created_at timestamptz NOT NULL DEFAULT now()
 <p><strong>Alasan:</strong> <code>timestamp</code> tanpa zona menyimpan "14:30" tanpa menjawab "di mana". Aplikasi dengan pengguna di Jakarta dan server di Singapura akan salah satu jam, dan tidak ada cara memperbaikinya setelah data bertahun-tahun terkumpul.</p>
 <p>Laravel dan Prisma memakai <code>createdAt</code>/<code>updatedAt</code> sebagai konvensi; checker mengenali itu dan tidak melaporkannya.</p>
 <hr />
+<h2 id="db-08-satu-proyek-satu-gaya-status">DB-08 — Satu proyek, satu gaya status</h2>
+<p>Ini aturan yang paling langsung menjawab masalah tim: <strong>bukan</strong> "enum itu salah",
+tapi "jangan biarkan satu proyek memakai tiga cara sekaligus".</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✗ ditolak: satu proyek, dua gaya berbeda
+CREATE TABLE orders (
+  status ENUM('new','paid','shipped')
+);
+CREATE TABLE shipments (
+  status_code smallint NOT NULL REFERENCES shipment_status(code)
+);
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>a.sql:1: [DB-08] warn  status is stored 2 different ways in this project:
+  enum (a.sql), integer (b.sql) — pick one for the whole project;
+  integer code + lookup is the default
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✓ diterima: semua tabel memakai cara yang sama
+CREATE TABLE orders (
+  status_code smallint NOT NULL REFERENCES order_status(code)
+);
+CREATE TABLE shipments (
+  status_code smallint NOT NULL REFERENCES shipment_status(code)
+);
+</code></pre></div>
+<p><strong>Alasan:</strong> enum dan integer sama-sama bisa bekerja — yang tidak bisa bekerja adalah
+keduanya di proyek yang sama. Setiap laporan jadi butuh dua query, setiap developer
+baru harus menebak, dan pertanyaan "bagaimana menambah status?" tidak punya satu
+jawaban. DB-08 adalah satu-satunya aturan yang membaca <strong>lintas berkas</strong>, karena
+inkonsistensi adalah sifat proyek, bukan sifat satu tabel.</p>
+<p><strong>Kenapa integer jadi default:</strong> menambah kode integer berarti menambah satu baris
+data; menambah nilai enum berarti <code>ALTER TABLE</code> yang mengunci tabel. Bukan soal
+selera, soal biaya saat status bertambah.</p>
+<p><strong>Menyimpang dengan sadar:</strong> kalau tim memilih enum, tulis alasannya di
+<code>.agent/standards.md</code> dan set <code>DB-01</code>/<code>DB-08</code> ke <code>warn</code> atau <code>off</code>. Yang dilarang
+bukan pilihan yang berbeda — yang dilarang adalah tidak ada pilihan sama sekali.</p>
+<hr />
 <h2 id="uji-sendiri">Uji sendiri</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash"># harus lolos semua preset
 python3 scripts/check_schema.py examples/good.sql --preset strict
@@ -246,6 +286,7 @@ python3 scripts/check_schema.py examples/bad.sql --preset strict
 <li class="lvl2"><a href="#db-05-boolean-hanya-untuk-biner-sejati">DB-05 — boolean hanya untuk biner sejati</a></li>
 <li class="lvl2"><a href="#db-06-uang-tidak-pernah-float">DB-06 — Uang tidak pernah float</a></li>
 <li class="lvl2"><a href="#db-07-timestamp-membawa-zona-waktu">DB-07 — Timestamp membawa zona waktu</a></li>
+<li class="lvl2"><a href="#db-08-satu-proyek-satu-gaya-status">DB-08 — Satu proyek, satu gaya status</a></li>
 <li class="lvl2"><a href="#uji-sendiri">Uji sendiri</a></li></ul>
       </aside>
     </div>

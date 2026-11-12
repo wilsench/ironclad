@@ -20,7 +20,7 @@ The shipped presets live in the skill at `assets/presets/` (Hermes only bundles 
 | Preset | Errors (block the build) | Warnings | Choose when |
 |---|---|---|---|
 | `legacy-friendly` | none | DB-01…DB-07 | repo already has debt; you want visibility, not a wall |
-| `balanced` **(default)** | DB-01, DB-02, DB-04 | DB-03, DB-05, DB-06, DB-07 | normal product work — the safe starting point |
+| `balanced` **(default)** | DB-01, DB-02, DB-04 | DB-03, DB-05, DB-06, DB-07, DB-08 | normal product work — the safe starting point |
 | `strict` | DB-01…DB-07 | none | finance, health, anything audited; a migration is a compliance event |
 
 Every preset can be auto-selected or overridden at runtime:

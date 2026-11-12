@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rules DB-01…DB-07 — Ironclad</title>
-<meta name="description" content="Seven database rules, each with a wrong and a right example that the checker actually tests.">
+<title>Rules DB-01…DB-08 — Ironclad</title>
+<meta name="description" content="Eight database rules, each with a wrong and a right example the checker actually tests. DB-08 is the one that answers the team problem.">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/en/rules/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/rules/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/rules/">
@@ -38,7 +38,7 @@
 
     <nav class="nav" aria-label="Documentation">
       <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
-<li><a href="/ironclad/en/overview/">What this is, and who it is for</a></li>
+<li><a href="/ironclad/en/overview/">Apa ini, untuk siapa</a></li>
 <li><a href="/ironclad/en/glossary/">Glossary</a></li>
 <li><a href="/ironclad/en/install/">Install</a></li>
 <li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
@@ -49,7 +49,7 @@
 <li><a href="/ironclad/en/presets/">Presets</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
-<li><a href="/ironclad/en/rules/" class="active" aria-current="page">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/rules/" class="active" aria-current="page">Rules DB-01…DB-08</a></li>
 <li><a href="/ironclad/en/checker/">Checker</a></li>
 <li><a href="/ironclad/en/extending/">Extending</a></li>
 </ul></div>
@@ -73,7 +73,7 @@
       <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span>
       </button>
-      <span class="crumb">Reference / <b>Rules DB-01…DB-07</b></span>
+      <span class="crumb">Reference / <b>Rules DB-01…DB-08</b></span>
       <a class="langsw-mini" href="/ironclad/rules/" aria-label="Language">ID</a>
       <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
     </header>
@@ -129,6 +129,11 @@ everything is <code>warn</code>.</p>
 <tr>
 <td>DB-07</td>
 <td>No <code>timestamp</code> without a timezone</td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+<tr>
+<td>DB-08</td>
+<td>One status style per project — no mixing enum and integer</td>
 <td><span class="sev sev-warn">warn</span></td>
 </tr>
 </tbody>
@@ -207,6 +212,41 @@ created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 <p>A naive timestamp is ambiguous across servers, timezones and DST. The checker
 does not flag camelCase columns like <code>createdAt</code> in Prisma schemas — Prisma
 handles the mapping, and flagging them was a false positive.</p>
+<h2 id="db-08-one-project-one-status-style">DB-08 — One project, one status style</h2>
+<p>This is the rule that answers the team problem most directly: <strong>not</strong> "enum is
+wrong", but "do not let one project use three approaches at once".</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- wrong: one project, two different styles
+CREATE TABLE orders (
+  status ENUM('new','paid','shipped')
+);
+CREATE TABLE shipments (
+  status_code smallint NOT NULL REFERENCES shipment_status(code)
+);
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>a.sql:1: [DB-08] warn  status is stored 2 different ways in this project:
+  enum (a.sql), integer (b.sql) — pick one for the whole project;
+  integer code + lookup is the default
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- right: every table uses the same approach
+CREATE TABLE orders (
+  status_code smallint NOT NULL REFERENCES order_status(code)
+);
+CREATE TABLE shipments (
+  status_code smallint NOT NULL REFERENCES shipment_status(code)
+);
+</code></pre></div>
+<p><strong>Why:</strong> enum and integer both work — what does not work is both in the same
+project. Every report needs two queries, every new developer has to guess, and "how
+do we add a status?" has no single answer. DB-08 is the only rule that reads
+<strong>across files</strong>, because inconsistency is a property of the project, not of one
+table.</p>
+<p><strong>Why integer is the default:</strong> adding an integer code adds one row of data; adding
+an enum value is <code>ALTER TABLE</code>, which locks the table. Not taste — cost, when status
+grows.</p>
+<p><strong>Deviating on purpose:</strong> if the team chooses enum, write the reason in
+<code>.agent/standards.md</code> and set <code>DB-01</code>/<code>DB-08</code> to <code>warn</code> or <code>off</code>. What is forbidden
+is not a different choice — what is forbidden is having no choice at all.</p>
+<hr />
 <h2 id="rule-ids-are-permanent">Rule IDs are permanent</h2>
 <p>Numbers are never reused. If <code>DB-03</code> is retired, that number is retired with it —
 not reassigned, because old review comments would then point at the wrong rule.</p>
@@ -231,6 +271,7 @@ not reassigned, because old review comments would then point at the wrong rule.<
 <li class="lvl2"><a href="#db-05-no-boolean-for-a-non-binary-concept">DB-05 — no boolean for a non-binary concept</a></li>
 <li class="lvl2"><a href="#db-06-no-money-as-float">DB-06 — no money as float</a></li>
 <li class="lvl2"><a href="#db-07-no-timestamp-without-a-timezone">DB-07 — no timestamp without a timezone</a></li>
+<li class="lvl2"><a href="#db-08-one-project-one-status-style">DB-08 — One project, one status style</a></li>
 <li class="lvl2"><a href="#rule-ids-are-permanent">Rule IDs are permanent</a></li></ul>
       </aside>
     </div>

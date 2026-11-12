@@ -12,6 +12,7 @@ rules:
   DB-05: error
   DB-06: error      # money as float
   DB-07: error      # timestamp without timezone
+  DB-08: error      # project mixes status styles
 exceptions: []
 boolean_allowlist:
   - is_active

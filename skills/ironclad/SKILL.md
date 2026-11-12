@@ -1,6 +1,6 @@
 ---
 name: ironclad
-description: "Enforce team engineering standards with presets."
+description: "Use when several developers share one database — keep status/field choices consistent across the team."
 version: 0.4.0
 author: Chia Wilsen, Hermes Agent
 license: MIT
@@ -13,9 +13,13 @@ metadata:
 
 # Ironclad
 
-Makes an agent build software the way *this company* builds it, not the way the model personally prefers. Ships a policy file the repo owns, a decision procedure the agent follows, and a checker that CI can enforce. The rules live in the repo (`.agent/standards.md`) — this skill is the executor, not the rulebook.
+**The problem it solves:** two developers on one project, both touching the database, choosing different ways to store the same thing — one writes `status ENUM('paid')`, the other writes `status_code = 2`. Both work. Together they make the project unmaintainable: reports need branches, new code guesses, "how do we add a status?" has two answers, and nobody can say which one is current.
 
-Ships with a worked database policy (integer codes over enums) because that is where teams drift fastest; the same shape extends to any domain via `references/extending.md`.
+Ironclad makes that choice **once, in a file the repo owns**, so every developer and every agent reads the same answer before writing a line. It ships the policy file (`.agent/standards.md`), a decision procedure the agent follows, and a checker CI can enforce. This skill is the executor, not the rulebook.
+
+The default answer is **integer code + lookup table + foreign key** — not because enums are forbidden, but because adding an integer code is one row of data while adding an enum value is `ALTER TABLE`. If a team chooses otherwise, it must be written down and checked, not assumed. `DB-08` catches the failure this exists to prevent: one project storing status two different ways.
+
+Ships with a worked database policy because that is where teams drift fastest; the same shape extends to any domain via `references/extending.md`.
 
 ## Install (one line, any agent)
 
@@ -49,7 +53,7 @@ The guardrail level is a **file in the repo** (`.agent/standards.yml`), not a fa
 
 | Preset | Blocks | Warns | Use when |
 |---|---|---|---|
-| `balanced` *(default)* | DB-01, DB-02, DB-04 | DB-03, DB-05, DB-06, DB-07 | normal product work |
+| `balanced` *(default)* | DB-01, DB-02, DB-04 | DB-03, DB-05, DB-06, DB-07, DB-08 | normal product work |
 | `legacy-friendly` | — | all | brownfield repo with existing debt |
 | `strict` | all | — | regulated, audit-bearing, finance/health |
 
@@ -66,9 +70,9 @@ run from an agent or CI. Switching later = `ironclad preset <name>` or edit
 
 ## Procedure
 
-1. **Read the policy.** `read_file` on `.agent/standards.md`. If missing, run `ironclad init` (or `python3 scripts/init_standards.py .`) — it writes both `standards.md` (human) and `standards.yml` (severity config) with the `balanced` preset, and never prompts. Completion: you can name the rule IDs governing the tables you are about to touch, and say which preset is active.
+1. **Read the policy, and the existing choice.** `read_file` on `.agent/standards.md`. If missing, run `ironclad init` — it writes both `standards.md` (human) and `standards.yml` (severity config) with the `balanced` preset, and never prompts. Then find out how this project *already* stores status: `grep -rn "status" --include=*.sql --include=*.prisma --include=*.php .` If the project already chose enum or text, follow it and say so — consistency with the codebase beats your preference. Only when nothing exists yet do you apply the default (integer + lookup). Completion: you can name the rule IDs governing the tables you touch, the active preset, and which status style the repo already uses.
 2. **Classify every status-like field** using the decision table in `references/database.md` *before* writing DDL. Completion: each field has a written verdict and a one-line reason.
-3. **Design the schema** per the verdict — integer code + lookup table + FK + constraint + app-level named constants.
+3. **Design the schema** per the verdict — integer code + lookup table + FK + constraint + app-level named constants. Match the style the project already uses; if that style contradicts the policy, flag it once (DB-08) instead of quietly writing a third style.
 4. **Write the migration** per the naming rule. No bare integer literal compared against a status field in app code.
 5. **Run the checker** — `python3 scripts/check_schema.py <paths> --json`. Exit 0 required. Fix the schema; do not suppress the rule. Downgrading a rule to `warn`/`off` in `.agent/standards.yml` is a reviewed decision, not a shortcut — say so explicitly.
 6. **Report with citations.** Every deviation gets a line: rule ID, what you did instead, why. Undocumented deviation is a defect.
@@ -83,7 +87,7 @@ python3 scripts/check_schema.py . --preset legacy-friendly
 python3 scripts/check_schema.py --list-presets
 ```
 
-Rules: `DB-01` enum in schema, `DB-02` magic number on a status field, `DB-03` status integer with no FK/CHECK, `DB-04` text status column, `DB-05` boolean named for a non-binary concept, `DB-06` money as float, `DB-07` timestamp without timezone.
+Rules: `DB-01` enum in schema, `DB-02` magic number on a status field, `DB-03` status integer with no FK/CHECK, `DB-04` text status column, `DB-05` boolean named for a non-binary concept, `DB-06` money as float, `DB-07` timestamp without timezone, `DB-08` the project mixes status styles (enum in one table, integer in another).
 
 Resolution order for severity: `--config` > `--preset` > `.agent/standards.yml` > built-in `balanced`.
 
@@ -92,6 +96,7 @@ Resolution order for severity: `--config` > `--preset` > `.agent/standards.yml` 
 - Checker exits 0 on the repo.
 - Every status field has a verdict recorded in the PR/report.
 - Adding one status value is doable with a single data migration — prove it by writing that migration, not by asserting it.
+- `ironclad check` reports no DB-08: the whole project stores status one way, not per table or per developer.
 - Agent report cites a rule ID for each deviation.
 
 ## Pitfalls

@@ -1,9 +1,9 @@
 ---
-title: Aturan DB-01…DB-07
+title: Aturan DB-01…DB-08
 slug: rules
 group: Referensi
 order: 20
-summary: Tujuh aturan database, masing-masing dengan contoh salah dan benar yang benar-benar diuji checker.
+summary: Delapan aturan database, masing-masing dengan contoh salah dan benar yang benar-benar diuji checker. DB-08 adalah aturan yang paling menjawab masalah tim.
 ---
 
 # Aturan
@@ -23,6 +23,7 @@ Kolom **Status** di bawah adalah perilaku pada preset `balanced` (default). Pada
 | DB-05 | `boolean` hanya untuk biner sejati | warn |
 | DB-06 | Uang pakai `bigint` satuan terkecil + kode mata uang | warn |
 | DB-07 | Timestamp wajib membawa zona waktu | warn |
+| DB-08 | Satu proyek satu gaya status — tidak campur enum dan integer | warn |
 
 ---
 
@@ -153,6 +154,53 @@ created_at timestamptz NOT NULL DEFAULT now()
 **Alasan:** `timestamp` tanpa zona menyimpan "14:30" tanpa menjawab "di mana". Aplikasi dengan pengguna di Jakarta dan server di Singapura akan salah satu jam, dan tidak ada cara memperbaikinya setelah data bertahun-tahun terkumpul.
 
 Laravel dan Prisma memakai `createdAt`/`updatedAt` sebagai konvensi; checker mengenali itu dan tidak melaporkannya.
+
+---
+
+## DB-08 — Satu proyek, satu gaya status
+
+Ini aturan yang paling langsung menjawab masalah tim: **bukan** "enum itu salah",
+tapi "jangan biarkan satu proyek memakai tiga cara sekaligus".
+
+```sql
+-- ✗ ditolak: satu proyek, dua gaya berbeda
+CREATE TABLE orders (
+  status ENUM('new','paid','shipped')
+);
+CREATE TABLE shipments (
+  status_code smallint NOT NULL REFERENCES shipment_status(code)
+);
+```
+
+```
+a.sql:1: [DB-08] warn  status is stored 2 different ways in this project:
+  enum (a.sql), integer (b.sql) — pick one for the whole project;
+  integer code + lookup is the default
+```
+
+```sql
+-- ✓ diterima: semua tabel memakai cara yang sama
+CREATE TABLE orders (
+  status_code smallint NOT NULL REFERENCES order_status(code)
+);
+CREATE TABLE shipments (
+  status_code smallint NOT NULL REFERENCES shipment_status(code)
+);
+```
+
+**Alasan:** enum dan integer sama-sama bisa bekerja — yang tidak bisa bekerja adalah
+keduanya di proyek yang sama. Setiap laporan jadi butuh dua query, setiap developer
+baru harus menebak, dan pertanyaan "bagaimana menambah status?" tidak punya satu
+jawaban. DB-08 adalah satu-satunya aturan yang membaca **lintas berkas**, karena
+inkonsistensi adalah sifat proyek, bukan sifat satu tabel.
+
+**Kenapa integer jadi default:** menambah kode integer berarti menambah satu baris
+data; menambah nilai enum berarti `ALTER TABLE` yang mengunci tabel. Bukan soal
+selera, soal biaya saat status bertambah.
+
+**Menyimpang dengan sadar:** kalau tim memilih enum, tulis alasannya di
+`.agent/standards.md` dan set `DB-01`/`DB-08` ke `warn` atau `off`. Yang dilarang
+bukan pilihan yang berbeda — yang dilarang adalah tidak ada pilihan sama sekali.
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: What this is, and who it is for
+title: Apa ini, untuk siapa
 slug: overview
 group: Start
 order: 1
@@ -8,85 +8,108 @@ summary: The plain-language explanation — what problem it solves, what you hav
 
 # Ironclad, without the jargon
 
-**Ironclad is a rulebook for the AI that writes your code.** Not an app, not a
-subscription — a text file the AI reads before it starts, plus a checker that
-rejects the result if it breaks the rules.
+**Ironclad keeps one project consistent when more than one person works on its
+database.**
 
-If that is still abstract, here it is another way: *if your team uses AI to build
-software, Ironclad keeps the output consistent — so nobody has to tear it apart a
-year later.*
+Not an app, not a subscription. It is two things: a rules file inside your repo,
+and a checker that rejects work which breaks those rules.
 
-**Who this is for:**
+## The real problem: two developers, two styles
 
-- **You write code** and use AI (Claude, Copilot, Cursor) for the database part.
-  You will use this daily.
-- **You do not write code**, but you decide whether the team adopts this. All you
-  have to do is forward it to a developer, then ask three questions
-  [near the bottom](#if-you-are-not-the-one-writing-code).
+This is not a story about AI. It is a story about teams.
 
-**What you do not need to know to start:** what an enum is, what a foreign key is,
-what a migration is. Every term like that lives in the [Glossary](/glossary/), and
-you never have to read it in order.
+One project. Three developers. All three touch the database — add a column, create
+a table, change a status.
 
-## The problem it solves
+Developer A stores order status as an **enum**:
 
-This happens on teams over and over.
+```sql
+status ENUM('new', 'paid', 'shipped')
+```
 
-You ask an AI — Claude, Copilot, Cursor, whatever — to add an "orders" feature. It
-writes the database part (where the data lives). The feature works. Everyone is
-happy.
+Developer B stores the same thing as an **integer**:
 
-Six months later, three problems surface at once:
+```sql
+status_code smallint NOT NULL
+```
 
-- In one table, order status is stored as `1`, `2`, `3`. Nobody remembers what `2`
-  means. Whoever wrote it has changed jobs.
-- In another table, status is stored as text: `"Paid"`, `"paid"`, `"PAID"` — three
-  spellings, and the sales report now undercounts.
-- A client wants a new status: "delayed by weather". To add it, you have to change
-  the database **structure**, not just the data. On a production server that can
-  lock the table — meaning the shop stops serving for a few minutes.
+Both work. Both survive review, because each makes sense on its own. What is
+missing: a shared decision about which one this project uses.
 
-None of this is the AI's fault. It wrote what made sense at the time. What was
-missing: a written rulebook it reads before it starts.
+Six months later, one table stores status as an enum, another as an integer, a
+third as free text. Every report needs three different queries for the same
+question. And when a client asks for a new status — "delayed by weather" —
+developer C first has to work out which table uses which approach, because adding
+an enum value and adding a lookup row are two very different jobs.
+
+None of this is anyone's fault. What was missing is one thing: **a written rule
+everybody reads before they start.**
+
+## The recommendation: integer, not enum
+
+Ironclad leans toward **integer + lookup table** as the default. The reason is not
+taste:
+
+- **Adding an enum value changes the database structure.** In MySQL that is
+  `ALTER TABLE`, and on a large table it locks the table while it runs. Business
+  status always grows — and every growth should not be a maintenance event.
+- **Adding one integer code adds one row of data.** An ordinary operation, no lock,
+  no deploy.
+- **A registered number is no more fragile than text.** As long as the code exists
+  in a lookup table and is guarded by a foreign key, the database rejects numbers
+  that were never registered. `88` is safe when `88` is registered; `87` is refused.
+
+So the rule is not "never use enum". The rule is: **one approach per project**, and
+the approach is integer + lookup — unless there is a written reason to deviate, and
+that reason goes through review.
 
 ## Why this is expensive to fix later
 
 Think of renovating a house.
 
-You are free to choose paint colours, door handles, furniture layout — those are
-cheap to change any time. But plumbing and wiring have to follow a standard. Not
-because anyone loves rules, but because fixing them means tearing open walls.
+You are free to choose paint colours, door handles, furniture layout — cheap to
+change any time. But plumbing and wiring have to follow one standard. Not because
+anyone loves rules, but because fixing them means tearing open walls.
 
-The database is the plumbing. A UI can be replaced in a day. A wrong data structure
-sticks around for years, and the cost rises every time new data lands in it.
+The database is the plumbing. A UI can be replaced in a day. An inconsistent data
+structure sticks around for years, and the cost rises every time new data lands.
 
-Ironclad is the building code for that part — not for the paint.
+## AI accelerates this problem; it does not cause it
+
+If one developer writes enum and another writes integer, that happens because each
+decided alone. AI makes those decisions happen **faster and in greater numbers** —
+it writes in seconds, across many files, and never asks "how does this project
+usually do it?"
+
+That is why Ironclad puts the rules where the agent reads them: not to make the AI
+smarter, but so it does not become a fourth team member with its own style.
 
 ## What Ironclad actually does
 
 Three things, and only three:
 
-**1. It gives the AI a rulebook before it starts.**
-A text file in your repo (`.agent/standards.md`) holds decisions the team already
-made: how status is stored, how money is stored, how dates are stored. The AI reads
-it before writing the database.
+**1. It writes the team's decisions into the repo.**
+`.agent/standards.md` holds decisions already made: how status is stored, how money
+is stored, how dates are stored. Not one person's preference — an agreement that
+gets committed.
 
-**2. It keeps those rules in the repo, not in someone's head.**
-It travels with git and gets reviewed when it changes. A new team member — human
-or AI — reads the same file.
+**2. It makes the AI read them before starting.**
+The agent reads that file before writing the database. A new developer — human or
+AI — reads the same file on day one.
 
 **3. It checks the result automatically.**
-A script (`check_schema.py`) reads the database code and points at violations with
-a rule number. You can run it by hand, or wire it into CI so a pull request that
-violates a rule cannot be merged.
+`check_schema.py` reads the database code and points at violations with a rule
+number. You can run it by hand, or wire it into CI so a pull request that violates a
+rule cannot be merged. This is what catches a developer who does not use AI at all —
+or who simply forgot.
 
-Point 1 is advice. Point 3 is enforcement. You need both, because an AI that only
-gets advice will sometimes ignore it, and a checker with no written rules just
+Points 1 and 2 are advice. Point 3 is enforcement. You need both: advice without
+enforcement gets ignored under deadline, and enforcement without written rules just
 produces a list of errors nobody knows how to fix.
 
 ## What you have to do
 
-Two commands. Nothing to answer, nothing to configure.
+Two commands. Nothing to answer.
 
 ```bash
 # 1. install (once per machine)
@@ -104,20 +127,20 @@ If the result makes sense, make it permanent:
 ironclad init
 ```
 
-That is it. About two minutes, and your repo is untouched until you run the third
-command.
+Then commit the four files it writes. From that commit on, everyone in the project —
+and every agent — reads the same rules.
 
-Step by step: [Quickstart](/quickstart/).
+Walkthrough: [Quickstart](/quickstart/).
 
 ## If you are not the one writing code
 
 You can still use this. What you do:
 
-**Send this page to your developer** — or to whoever maintains the app. Ask them to
-run the two commands above.
+**Send this page to your developer.** Ask them to run the two commands above, then
+commit the result.
 
-**Then ask three questions.** The answers show whether this is actually installed
-or merely promised:
+**Then ask three questions.** The answers show whether this is actually installed or
+merely promised:
 
 1. "Which preset are we on?" — the right answer is one of `balanced`, `strict`, or
    `legacy-friendly`. If the answer is "what's a preset", it has not been run.
@@ -125,8 +148,12 @@ or merely promised:
 3. "Does a violating pull request actually fail?" — if it was never tested, the gate
    is unproven.
 
+**A fourth question, specific to the enum problem:** "Is status stored as an enum or
+an integer in this project?" If the answer is "it depends", the problem is still
+there — and that is exactly what Ironclad solves.
+
 **What you never need to learn:** how the checker works, what a foreign key is, or
-what is inside the YAML file. That belongs to whoever writes the code.
+what is inside the YAML file.
 
 ## What Ironclad does not do
 
@@ -139,13 +166,14 @@ what is inside the YAML file. That belongs to whoever writes the code.
 
 ## The honest limits
 
-- The checker works by pattern matching, not understanding. It can flag code that
-  is actually fine, and it can miss things it should have flagged. A human is still
-  the last layer.
-- It knows seven rules about databases. Not two hundred.
+- The checker works by pattern matching, not understanding. It can flag code that is
+  actually fine, and it can miss things it should have flagged. A human is still the
+  last layer.
+- It knows eight rules about databases. Not two hundred.
+- **It cannot force anyone to read.** If a developer ignores `.agent/standards.md`
+  and CI is never wired up, nothing catches it. What makes this work is CI, not good
+  intentions.
 - There is no auto-update. For a newer version, re-run the installer.
-- If your team has never used AI to write database code, the benefit is small —
-  this is built for a problem that appears precisely because AI writes a lot, fast.
 
 ## Where to go next
 
@@ -155,4 +183,4 @@ what is inside the YAML file. That belongs to whoever writes the code.
 | install right now | [Install](/install/) |
 | see every step | [Quickstart](/quickstart/) |
 | know what it checks | [Rules](/rules/) |
-| worry the team will rip it out | [Three layers](/three-layers/) — why tools like this get abandoned |
+| worry the team will rip it out | [Three layers](/three-layers/) |

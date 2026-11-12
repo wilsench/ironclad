@@ -58,7 +58,7 @@ python3 scripts/check_schema.py . --preset legacy-friendly   # one-off, no file 
 python3 scripts/check_schema.py --list-presets
 ```
 
-Or just edit `.agent/standards.yml` — seven lines, `error` / `warn` / `off`. See [presets.md](skills/ironclad/references/presets.md).
+Or just edit `.agent/standards.yml` — one line per rule, `error` / `warn` / `off`. See [presets.md](skills/ironclad/references/presets.md).
 
 ## Why three layers
 
@@ -80,6 +80,7 @@ DB-04  never store a human label as the status
 DB-05  boolean only for genuine binaries
 DB-06  money as bigint minor units + currency, never float
 DB-07  timestamps carry a timezone
+DB-08  one project stores status one way (no enum table beside an integer table)
 ```
 
 ## Verified, not asserted

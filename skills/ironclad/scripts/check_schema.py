@@ -203,6 +203,28 @@ def is_migration_like(path, text):
             or "$table->" in text or re.search(r"\bCREATE\s+TABLE\b", text, re.I) is not None)
 
 
+def status_styles(path, text):
+    """Which ways does this file store a status?
+
+    The point of DB-08 is not that one style is wrong in isolation — it is that a
+    project using three of them forces every report to be written three times, and
+    makes "how do we add a status?" a question with no single answer.
+    Returns a set of style names found in this file.
+    """
+    styles = set()
+    for line in text.splitlines():
+        if line.strip().startswith(("//", "#", "--", "*")):
+            continue
+        if any(pat.search(line) for pat, _ in ENUM_PATTERNS):
+            styles.add("enum")
+        if VARCHAR_STATUS.search(line) or LARAVEL_STRING_STATUS.search(line):
+            styles.add("text")
+        if re.search(rf"\b(?:[a-z0-9_]*{STATUS_WORD}[a-z0-9_]*)\b\s+"
+                     rf"(?:smallint|tinyint|integer|int|bigint)", line, re.I):
+            styles.add("integer")
+    return styles
+
+
 def check_file(path, cfg):
     findings = []
     try:
@@ -334,8 +356,39 @@ def main():
         return 2
 
     findings = []
+    style_map = {}
     for f in files:
         findings.extend(check_file(f, cfg))
+        try:
+            found = status_styles(f, f.read_text(encoding="utf-8", errors="replace"))
+        except OSError:
+            found = set()
+        if found:
+            style_map[f] = found
+
+    # DB-08 — the project uses more than one way to store a status. Each file above
+    # is already judged on its own; this is the only rule that looks across files,
+    # because inconsistency is a property of the whole project, not of one table.
+    # One finding for the project, not one per file: a reader needs to know that a
+    # choice was never made, not that eleven files each picked something.
+    all_styles = set().union(*style_map.values()) if style_map else set()
+    if len(all_styles) > 1:
+        sev = cfg["rules"].get("DB-08", "warn")
+        if sev not in ("off", "ignore", "none"):
+            rank = {"enum": 0, "text": 1, "integer": 2}
+            order = sorted(all_styles, key=lambda s: rank.get(s, 9))
+            where = {}
+            for f, styles in style_map.items():
+                for s in styles:
+                    where.setdefault(s, str(f))
+            detail = ", ".join(f"{s} ({where[s]})" for s in order)
+            first = style_map and sorted(style_map, key=str)[0]
+            indoor = "integer code + lookup is the default"
+            findings.append({
+                "rule": "DB-08", "severity": sev, "line": 1,
+                "msg": (f"status is stored {len(all_styles)} different ways in this "
+                        f"project: {detail} — pick one for the whole project; {indoor}"),
+                "file": str(first)})
 
     if args.strict:
         for f in findings:
