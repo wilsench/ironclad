@@ -1,7 +1,7 @@
 ---
 name: ironclad
 description: "Use when several developers share one database — make sure everyone stores status the same way before the agent writes schema."
-version: 0.9.1
+version: 0.9.2
 author: Chia Wilsen, Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
@@ -57,6 +57,16 @@ Then:
 2. **If it is inconsistent, name it once** — both styles, both files — and ask which
    becomes the project standard. Do not choose for the team.
 3. **Do not add a second style while a decision is pending.** Ask, then wait.
+
+If the repo has **nothing** to follow yet, the answer depends on one setting — the
+mode you installed with:
+
+- **`ask`** (default) — ask which style this project wants, then wait.
+- **`house`** — this team already decided: `status_code SMALLINT` + lookup table
+  (`code` PK, `label`) + FK, named constants in code. Any integer codes are fine.
+  Say "house default: status_code + lookup" in one line and write it; do not ask.
+
+Both modes do the same thing when the repo already has an answer: follow it.
 
 That is the entire behaviour. The agent does not need to know which style is
 "better"; it needs to know that it is not the one who decides.
@@ -146,7 +156,8 @@ preferences nobody on the team asked for.
 - `references/presets.md` — severity levels, if you use the checker
 - `references/extending.md` — applying the same idea beyond databases
 - `templates/standards.md` — the prose record to copy into a repo
-- `assets/presets/*.yml` — `balanced` (default), `strict`, `legacy-friendly`
+- `assets/presets/*.yml` — `balanced` (default), `coherence`, `strict`,
+  `legacy-friendly`
 - `scripts/check_schema.py` — consistency detector for SQL, Laravel, Prisma
 - `scripts/agent_files.py` — writes/removes the standing instruction block
 - `scripts/drill.py` — `--prompt`, `--grade`, `--selftest`
