@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cara pakai tanpa command — Ironclad</title>
+<meta name="description" content="Tiga langkah. Setelah itu kamu tidak menjalankan perintah apa pun — agent yang bertanya dan mengerjakannya.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/no-commands/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/no-commands/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/no-commands/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Bahasa">
+      <a href="/ironclad/no-commands/" class="on" aria-current="true">ID</a>
+      <a href="/ironclad/en/no-commands/">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/kamus/">Kamus</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+<li><a href="/ironclad/no-commands/" class="active" aria-current="page">Cara pakai tanpa command</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-08</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+<li><a href="/ironclad/frameworks/">Laravel, Prisma, dan backend lain</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Mulai / <b>Cara pakai tanpa command</b></span>
+      <a class="langsw-mini" href="/ironclad/en/no-commands/" aria-label="Bahasa">EN</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="cara-pakai-tanpa-command">Cara pakai tanpa command</h1>
+<p>Kalau kamu tidak ingin mengingat perintah, ini jalurnya. Tiga langkah, sekali,
+lalu selesai.</p>
+<h2 id="1-pasang">1. Pasang</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+</code></pre></div>
+<h2 id="2-aktifkan-di-repo-kamu">2. Aktifkan di repo kamu</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">cd repo-kamu
+ironclad init
+</code></pre></div>
+<p>Perintah kedua ini <strong>yang terakhir</strong> yang perlu kamu hafal. Ia menulis:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>wrote   .agent/standards.yml      ← aturan repo ini (bisa di-review di PR)
+wrote   .agent/standards.md       ← penjelasan untuk manusia dan agent
+wrote   scripts/check_schema.py   ← pemeriksa, bisa dipakai CI
+
+  created        AGENTS.md                             (Codex, opencode, dll)
+  created        CLAUDE.md                             (Claude Code)
+  created        GEMINI.md                             (Gemini CLI)
+  created        .cursor/rules/ironclad.mdc            (Cursor)
+  created        .github/copilot-instructions.md       (GitHub Copilot)
+</code></pre></div>
+<p>Lalu commit:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">git add .agent scripts AGENTS.md CLAUDE.md GEMINI.md .cursor .github
+git commit -m &quot;chore: adopt ironclad standards&quot;
+</code></pre></div>
+<p>Yang terakhir itu kuncinya. Agent <strong>membaca berkas-berkas itu sendiri</strong> setiap
+kali kamu buka repo — tanpa kamu menyuruh, tanpa slash command, tanpa skill yang
+harus diaktifkan.</p>
+<h2 id="3-kerjakan-seperti-biasa">3. Kerjakan seperti biasa</h2>
+<p>Buka agent, minta fitur apa pun yang menyentuh database. Yang terjadi:</p>
+<blockquote>
+<p><strong>Kamu:</strong> tolong tambahkan fitur pesanan: tabel orders dengan status, total, waktu dibuat</p>
+<p><strong>Agent:</strong> Ironclad: aturannya ditegakkan sambil kita menulis, atau diperiksa di akhir?</p>
+</blockquote>
+<p>Pilih salah satu, dan ia lanjut:</p>
+<ul>
+<li><strong>sambil</strong> — aturan diterapkan saat menulis, <code>ironclad check</code> dijalankan pada
+  tiap berkas sebelum dilaporkan selesai.</li>
+<li><strong>di akhir</strong> — ia menulis dulu, lalu memeriksa sebelum menutup pekerjaan dan
+  memperbaiki apa pun yang dilaporkan.</li>
+</ul>
+<p>Kamu tidak mengetik perintah apa pun. Agent yang menjalankannya.</p>
+<h2 id="kenapa-ini-bekerja">Kenapa ini bekerja</h2>
+<p>Skill hanya dimuat kalau agent menilai ia relevan — dan penilaian itu sering
+terlambat: kode sudah ditulis sebelum skill dibaca. Berkas seperti <code>AGENTS.md</code>
+dan <code>CLAUDE.md</code> berbeda: itu dibaca <strong>setiap sesi, di awal</strong>, sebelum agent
+menjawab apa pun.</p>
+<p>Isi yang ditanamkan ke berkas itu:</p>
+<ul>
+<li>kapan aturan berlaku (setiap perubahan schema, termasuk Laravel dan Prisma)</li>
+<li>pertanyaan yang harus diajukan lebih dulu, dan pilihannya</li>
+<li>delapan aturan dalam satu paragraf</li>
+<li>larangan membungkam checker demi build hijau</li>
+<li>kewajiban menyebut ID aturan saat menyimpang</li>
+</ul>
+<h2 id="kalau-kamu-ingin-memilih-preset-tanpa-ditanya">Kalau kamu ingin memilih preset tanpa ditanya</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad init strict
+ironclad init legacy-friendly
+</code></pre></div>
+<p>Defaultnya <code>balanced</code>, dan agent akan tetap menanyakan preset kalau <code>.agent/</code>
+belum ada — bukan memilih diam-diam.</p>
+<h2 id="kalau-tidak-ingin-menyentuh-agentsmd">Kalau tidak ingin menyentuh AGENTS.md</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad init --no-agent-files
+</code></pre></div>
+<p>Atau saat install: <code>curl ... | bash -s -- --no-agent-files</code>.</p>
+<p>Tanpa blok itu, agent hanya tahu aturannya kalau ia memuat skill — jadi kamu
+kembali ke dunia yang butuh command. Pilihan ini ada untuk repo yang sudah punya
+<code>AGENTS.md</code> sendiri dan tidak mau dicampuri.</p>
+<h2 id="mencopot-blok-itu-saja">Mencopot blok itu saja</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad attach . --remove
+</code></pre></div>
+<p>Yang dihapus hanya blok bertanda <code>&lt;!-- ironclad:begin v1 --&gt;</code>. Tulisanmu sendiri
+di berkas yang sama tidak disentuh. Sudah diuji: <code>CLAUDE.md</code> yang berisi aturan
+kantor tetap utuh setelah blok Ironclad dicabut.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/quickstart/"><span>Sebelumnya</span><b>Quickstart</b></a>
+<a class="next" href="/ironclad/three-layers/"><span>Berikutnya</span><b>Tiga lapis</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#1-pasang">1. Pasang</a></li>
+<li class="lvl2"><a href="#2-aktifkan-di-repo-kamu">2. Aktifkan di repo kamu</a></li>
+<li class="lvl2"><a href="#3-kerjakan-seperti-biasa">3. Kerjakan seperti biasa</a></li>
+<li class="lvl2"><a href="#kenapa-ini-bekerja">Kenapa ini bekerja</a></li>
+<li class="lvl2"><a href="#kalau-kamu-ingin-memilih-preset-tanpa-ditanya">Kalau kamu ingin memilih preset tanpa ditanya</a></li>
+<li class="lvl2"><a href="#kalau-tidak-ingin-menyentuh-agentsmd">Kalau tidak ingin menyentuh AGENTS.md</a></li>
+<li class="lvl2"><a href="#mencopot-blok-itu-saja">Mencopot blok itu saja</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

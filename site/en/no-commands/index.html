@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Using it without commands — Ironclad</title>
+<meta name="description" content="Three steps. After that you run nothing — the agent asks and does the checking.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/no-commands/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/no-commands/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/no-commands/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/no-commands/">ID</a>
+      <a href="/ironclad/en/no-commands/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/en/glossary/">Glossary</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+<li><a href="/ironclad/en/no-commands/" class="active" aria-current="page">Using it without commands</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-08</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+<li><a href="/ironclad/en/frameworks/">Laravel, Prisma, and other backends</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Start / <b>Using it without commands</b></span>
+      <a class="langsw-mini" href="/ironclad/no-commands/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="using-it-without-commands">Using it without commands</h1>
+<p>If you do not want to remember commands, this is the path. Three steps, once, and
+you are done.</p>
+<h2 id="1-install">1. Install</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+</code></pre></div>
+<h2 id="2-enable-it-in-your-repo">2. Enable it in your repo</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">cd your-repo
+ironclad init
+</code></pre></div>
+<p>That second command is <strong>the last one you need to remember</strong>. It writes:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>wrote   .agent/standards.yml      ← this repo's rules (reviewable in a PR)
+wrote   .agent/standards.md       ← the explanation, for humans and agents
+wrote   scripts/check_schema.py   ← the checker CI can run
+
+  created        AGENTS.md                             (Codex, opencode, etc.)
+  created        CLAUDE.md                             (Claude Code)
+  created        GEMINI.md                             (Gemini CLI)
+  created        .cursor/rules/ironclad.mdc            (Cursor)
+  created        .github/copilot-instructions.md       (GitHub Copilot)
+</code></pre></div>
+<p>Then commit:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">git add .agent scripts AGENTS.md CLAUDE.md GEMINI.md .cursor .github
+git commit -m &quot;chore: adopt ironclad standards&quot;
+</code></pre></div>
+<p>That last part is the trick. The agent <strong>reads those files by itself</strong> every time
+you open the repo — no instruction from you, no slash command, no skill to
+activate.</p>
+<h2 id="3-work-as-usual">3. Work as usual</h2>
+<p>Open your agent, ask for any feature that touches the database. What happens:</p>
+<blockquote>
+<p><strong>You:</strong> add an order feature: orders table with status, total, created time</p>
+<p><strong>Agent:</strong> Ironclad: enforce the rules while we write, or check at the end?</p>
+</blockquote>
+<p>Pick one and it proceeds:</p>
+<ul>
+<li><strong>while</strong> — rules applied as it writes, <code>ironclad check</code> run on each file before
+  reporting it done.</li>
+<li><strong>end</strong> — it writes first, then checks before finishing and fixes everything
+  reported.</li>
+</ul>
+<p>You type no commands. The agent runs them.</p>
+<h2 id="why-this-works">Why this works</h2>
+<p>A skill is only loaded when the agent judges it relevant — and that judgement
+often comes too late: the code is written before the skill is read. Files like
+<code>AGENTS.md</code> and <code>CLAUDE.md</code> are different: they are read <strong>every session, up
+front</strong>, before the agent answers anything.</p>
+<p>What goes into those files:</p>
+<ul>
+<li>when the rules apply (any schema change, Laravel and Prisma included)</li>
+<li>the question to ask first, and the choices</li>
+<li>the eight rules in one paragraph</li>
+<li>the ban on silencing the checker to get a green build</li>
+<li>the obligation to cite a rule ID when deviating</li>
+</ul>
+<h2 id="choosing-a-preset-without-being-asked">Choosing a preset without being asked</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad init strict
+ironclad init legacy-friendly
+</code></pre></div>
+<p>The default is <code>balanced</code>, and the agent still asks which preset to use when
+<code>.agent/</code> is missing — it does not pick silently.</p>
+<h2 id="if-you-do-not-want-agentsmd-touched">If you do not want AGENTS.md touched</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad init --no-agent-files
+</code></pre></div>
+<p>Or at install time: <code>curl ... | bash -s -- --no-agent-files</code>.</p>
+<p>Without that block the agent only knows the rules if it loads the skill — so you
+are back to a world that needs commands. The option exists for repos that already
+maintain their own <code>AGENTS.md</code> and do not want it edited.</p>
+<h2 id="removing-just-that-block">Removing just that block</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad attach . --remove
+</code></pre></div>
+<p>Only the block marked <code>&lt;!-- ironclad:begin v1 --&gt;</code> is removed. Your own text in
+the same file is untouched. Tested: a <code>CLAUDE.md</code> holding office rules survives
+intact after the Ironclad block is pulled out.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/quickstart/"><span>Previous</span><b>Quickstart</b></a>
+<a class="next" href="/ironclad/en/three-layers/"><span>Next</span><b>Three layers</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#1-install">1. Install</a></li>
+<li class="lvl2"><a href="#2-enable-it-in-your-repo">2. Enable it in your repo</a></li>
+<li class="lvl2"><a href="#3-work-as-usual">3. Work as usual</a></li>
+<li class="lvl2"><a href="#why-this-works">Why this works</a></li>
+<li class="lvl2"><a href="#choosing-a-preset-without-being-asked">Choosing a preset without being asked</a></li>
+<li class="lvl2"><a href="#if-you-do-not-want-agentsmd-touched">If you do not want AGENTS.md touched</a></li>
+<li class="lvl2"><a href="#removing-just-that-block">Removing just that block</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

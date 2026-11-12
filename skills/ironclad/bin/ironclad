@@ -7,6 +7,8 @@
 #   ironclad status    where the skill and the project policy live
 #   ironclad drill     prove your agent knows: selftest the gate, or grade its output
 #                      (ironclad drill --selftest | --prompt | answer.sql)
+#   ironclad attach    put the standing instruction into AGENTS.md / CLAUDE.md /
+#                      GEMINI.md / .cursor/rules so the agent asks before coding
 #
 # `check` and `init` work without a repo config: they fall back to the preset
 # shipped in the skill, so the first run needs no setup.
@@ -16,6 +18,7 @@ set -euo pipefail
 IRONCLAD_HOME="${IRONCLAD_HOME:-$HOME/.agents/skills/ironclad}"
 CHECKER="$IRONCLAD_HOME/scripts/check_schema.py"
 DRILL="$IRONCLAD_HOME/scripts/drill.py"
+AGENT_FILES="$IRONCLAD_HOME/scripts/agent_files.py"
 TEMPLATE="$IRONCLAD_HOME/templates/standards.md"
 PRESETS="$IRONCLAD_HOME/assets/presets"
 
@@ -74,9 +77,14 @@ cmd_init() {
   chmod +x "$root/scripts/check_schema.py"
   echo "wrote   scripts/check_schema.py + scripts/presets/"
 
+  if [ -f "$AGENT_FILES" ] && [ -z "${IRONCLAD_NO_AGENT_FILES:-}" ]; then
+    echo
+    python3 "$AGENT_FILES" --project "$root"
+  fi
+
   echo
   echo "Commit these, or the next teammate gets a different rulebook:"
-  echo "  git add .agent scripts && git commit -m 'chore: adopt ironclad standards'"
+  echo "  git add .agent scripts AGENTS.md && git commit -m 'chore: adopt ironclad standards'"
   echo
   echo "Then, in CI, gate only the files a PR touches — see"
   echo "https://wilsench.my.id/ironclad/ci/"
@@ -119,8 +127,9 @@ case "${1:-}" in
   preset)  shift; cmd_preset "$@" ;;
   status)  cmd_status ;;
   drill)   shift; python3 "$DRILL" "$@" ;;
+  attach)  shift; python3 "$AGENT_FILES" --project "${1:-.}" "${@:2}" ;;
   ""|-h|--help|help)
     sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//' ;;
   *)
-    die "unknown command: $1 (try: check | init | preset | status | drill)" ;;
+    die "unknown command: $1 (try: check | init | preset | status | drill | attach)" ;;
 esac

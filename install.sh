@@ -15,6 +15,8 @@
 #   --target NAME        agents | claude | hermes | gemini | opencode | all
 #   --dir PATH           explicit skills directory (overrides --target)
 #   --no-bin             skip the ~/.local/bin/ironclad launcher
+#   --no-agent-files     skip writing AGENTS.md / CLAUDE.md / GEMINI.md / .cursor
+#                        (the standing instruction that makes the agent ask first)
 #   --project PATH       bootstrap policy + checker into that repo, then exit
 #   --preset NAME        balanced (default) | strict | legacy-friendly
 #   --policy-only        with --project: write .agent/ only, skip the checker
@@ -45,6 +47,7 @@ POLICY_ONLY=""
 UNINSTALL=""
 PURGE=""
 NO_BIN=""
+NO_AGENT_FILES=""
 ALL=""
 
 while [ $# -gt 0 ]; do
@@ -60,6 +63,7 @@ while [ $# -gt 0 ]; do
     --uninstall)   UNINSTALL=1; shift ;;
     --purge)       PURGE=1; shift ;;
     --no-bin)      NO_BIN=1; shift ;;
+    --no-agent-files) NO_AGENT_FILES=1; shift ;;
     -y|--yes)      shift ;;
     -h|--help)     sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown argument: $1 (try --help)" >&2; exit 2 ;;
@@ -135,6 +139,20 @@ if [ -n "$UNINSTALL" ]; then
   }
   [ "$FOUND" -eq 0 ] && echo "nothing to remove — not installed in any known location"
 
+  # The instruction block is ours, not the user's, so it always comes out. The
+  # project policy is a repo decision and survives unless --purge is given.
+  SELF_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd || echo .)"
+  AF=""
+  for cand in "$SELF_DIR/skills/ironclad/scripts/agent_files.py" \
+              "$SELF_DIR/scripts/agent_files.py" \
+              "$HOME/.agents/skills/ironclad/scripts/agent_files.py"; do
+    [ -f "$cand" ] && { AF="$cand"; break; }
+  done
+  if [ -n "$AF" ] && [ -d "$PWD/.agent" -o -f "$PWD/AGENTS.md" -o -f "$PWD/CLAUDE.md" ]; then
+    echo
+    python3 "$AF" --project "$PWD" --remove
+  fi
+
   # The policy in a project is a repo decision, not an installer artefact, so it
   # survives by default. --purge is for "I am dropping this entirely".
   if [ -n "$PURGE" ]; then
@@ -171,7 +189,8 @@ trap 'rm -rf "$TMP"' EXIT
 FILES="SKILL.md templates/standards.md
 references/database.md references/presets.md references/extending.md
 assets/presets/balanced.yml assets/presets/strict.yml assets/presets/legacy-friendly.yml
-scripts/check_schema.py scripts/init_standards.py scripts/drill.py bin/ironclad"
+scripts/check_schema.py scripts/init_standards.py scripts/drill.py
+scripts/agent_files.py bin/ironclad"
 
 fetch_from() {
   base="$1"; label="$2"
@@ -256,9 +275,15 @@ if [ -n "$PROJECT" ]; then
     chmod +x "$PROJECT/scripts/check_schema.py"
     echo "wrote   scripts/check_schema.py + scripts/presets/"
   fi
+  # The standing instruction, so the agent asks before writing schema instead of
+  # waiting to be told. This is what removes the need to remember a command.
+  if [ -z "$NO_AGENT_FILES" ]; then
+    echo
+    python3 "$TMP/scripts/agent_files.py" --project "$PROJECT"
+  fi
   echo
   echo "Commit these, or the next teammate gets a different rulebook:"
-  echo "  git add .agent scripts && git commit -m 'chore: adopt ironclad standards'"
+  echo "  git add .agent scripts AGENTS.md && git commit -m 'chore: adopt ironclad standards'"
   exit 0
 fi
 
