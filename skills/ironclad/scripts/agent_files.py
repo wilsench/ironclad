@@ -25,31 +25,21 @@ from pathlib import Path
 BEGIN = "<!-- ironclad:begin v1 -->"
 END = "<!-- ironclad:end -->"
 
-BODY = """## Ironclad — agree the team on one way to store status
+BODY = """## Ironclad — one way to store status per project
 
-Database work on this project is shared. The failure this catches is not a bad
-query — it is two people storing the same thing two different ways in one database:
-one writes `status ENUM('paid')`, the other writes `status_code = 2`. Both work.
-Together the project becomes unmaintainable: reports branch, new code guesses, and
-"how do we add a status?" has two answers.
+Two people on one database can each add a "status" and store it differently:
+`status ENUM('paid')` in one table, `status_code = 2` in another. Both pass review;
+together the project becomes unmaintainable.
 
-**So before you write anything that touches status, ask — one line, then wait:**
+Before writing anything that stores status, ask one line, then wait:
 
-> Ironclad: which way does this project store status — and do you want me to follow
-> the codebase, or check with the team first?
+> Ironclad: how does this project store status — should I follow the codebase, or
+> check with the team first?
 
-Then:
-
-- **read first.** Before you propose anything, look at how status is already stored
-  in this repo (`grep -rn status`, the migrations, the models). The codebase wins
-  over your preference. If it is already consistent, follow it silently.
-- **if it is not consistent, say so once** — name both styles and the files — and
-  ask which one becomes the project standard. Do not pick for them.
-- **do not add a second style while a decision is pending.** Ask, then wait, rather
-  than shipping something that will have to be reverted.
-
-You are not the one deciding how the schema is written. You are making sure that
-whatever gets decided, everyone sees the same answer.
+Then read the repo first (`grep -rn status`, migrations, models). If it is
+consistent, follow it silently — the codebase wins over your preference. If it is
+not, name both styles and their files, ask which becomes the standard, and do not
+add a third while that is open.
 """
 
 # Per-repo: only files this repo owns. Written by `ironclad init`.
