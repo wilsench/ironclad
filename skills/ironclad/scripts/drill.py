@@ -293,6 +293,32 @@ def selftest() -> int:
                 why.append("flagging res.status / r.status as schema")
             print(f"  {RED}FAIL{OFF}  DB-02 HTTP handling: {', '.join(why)}")
 
+    # Grading a directory must see every file: a correct answer routinely splits the
+    # lookup table and the table that references it across two migrations. Grading
+    # only the second file reports "no *_status table" for a right answer, and
+    # `--grade <dir>` used to crash on read_text() of a directory.
+    with tempfile.TemporaryDirectory() as gd:
+        d = Path(gd) / "migs"
+        d.mkdir()
+        (d / "001_lookup.sql").write_text(
+            "CREATE TABLE ref_order_status (code smallint PRIMARY KEY, label text NOT NULL);\n"
+            "INSERT INTO ref_order_status (code, label) VALUES (10, 'new'), (20, 'paid');\n",
+            encoding="utf-8")
+        (d / "002_orders.sql").write_text(
+            "CREATE TABLE orders (id bigint PRIMARY KEY, "
+            "status_code smallint NOT NULL REFERENCES ref_order_status (code), "
+            "created_at timestamptz NOT NULL DEFAULT now());\n"
+            "-- DB-03\n",
+            encoding="utf-8")
+        g_single = grade(d / "002_orders.sql", "balanced")
+        g_dir = grade(d, "balanced")
+        if g_dir == 0 and g_single != 0:
+            print(f"  {GREEN}PASS{OFF}  grade a directory: lookup in a sibling file counts")
+        else:
+            failures += 1
+            print(f"  {RED}FAIL{OFF}  grade a directory: expected dir=0 single!=0, "
+                  f"got dir={g_dir} single={g_single}")
+
     print()
     if failures:
         print(f"{RED}{failures} check(s) failed{OFF} — do not trust the gate yet.")
@@ -344,12 +370,26 @@ def find_lookup_tables(sql: str) -> list[str]:
 
 
 def grade(path: Path, preset: str = "balanced") -> int:
-    sql = path.read_text(encoding="utf-8", errors="replace")
+    # An answer is often spread over several files: the lookup table in one
+    # migration, the table that references it in another. Grading a single file
+    # then reports "no *_status table" for a correct answer — a false negative
+    # in the tool that is supposed to catch inconsistency. Read the whole set.
+    if path.is_dir():
+        files = sorted(p for p in path.rglob("*")
+                       if p.is_file() and p.suffix.lower() in {".sql", ".php", ".prisma"})
+        if not files:
+            print(f"No .sql/.php/.prisma files under {path}", file=sys.stderr)
+            return 2
+        sql = "\n\n".join(f.read_text(encoding="utf-8", errors="replace") for f in files)
+        check_paths = [str(f) for f in files]
+    else:
+        sql = path.read_text(encoding="utf-8", errors="replace")
+        check_paths = [str(path)]
     low = sql.lower()
     results: list[tuple[bool, str, str]] = []
 
     # 1. mechanical: whatever the repo policy says
-    code, out = run_checker([str(path)], preset)
+    code, out = run_checker(check_paths, preset)
     results.append((
         code == 0,
         "policy check",
