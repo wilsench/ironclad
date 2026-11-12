@@ -43,6 +43,12 @@ jobs:
           python skills/ironclad/scripts/check_schema.py examples/bad.sql --preset legacy-friendly \
             || { echo "::error::legacy-friendly must exit 0"; exit 1; }
 
+      # The regression guard for everything found by auditing: crashes on real
+      # repos, HTTP codes mistaken for schema, one-line enum, multi-line FK.
+      # Without this step CI only proves the fixtures in examples/ still behave.
+      - name: Self-test the gate itself
+        run: python skills/ironclad/scripts/drill.py --selftest
+
       - name: Bootstrap works from a clean dir
         run: |
           rm -rf /tmp/ic && mkdir -p /tmp/ic && cd /tmp/ic
