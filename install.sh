@@ -171,7 +171,7 @@ trap 'rm -rf "$TMP"' EXIT
 FILES="SKILL.md templates/standards.md
 references/database.md references/presets.md references/extending.md
 assets/presets/balanced.yml assets/presets/strict.yml assets/presets/legacy-friendly.yml
-scripts/check_schema.py scripts/init_standards.py bin/ironclad"
+scripts/check_schema.py scripts/init_standards.py scripts/drill.py bin/ironclad"
 
 fetch_from() {
   base="$1"; label="$2"

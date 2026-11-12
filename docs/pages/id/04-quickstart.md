@@ -83,12 +83,73 @@ Naik satu tingkat setelah jumlah temuan turun, bukan setelah tanggal tertentu.
 
 ## 5. Buktikan gate-nya benar-benar bekerja
 
-Jangan percaya tampilan hijau. Uji tiga hal:
+```bash
+ironclad drill --selftest
+```
+
+Satu perintah, tujuh pemeriksaan, memakai contoh yang sudah pasti:
+
+```
+  PASS  enum blocked in the default preset
+  PASS  integer + lookup + fk accepted
+  PASS  text label blocked in the default preset
+  PASS  money as float blocks under strict
+  PASS  naive timestamp blocks under strict
+  PASS  mixed project flagged (DB-08) — the two-developer case
+  PASS  consistent project stays silent (no false alarm)
+```
+
+Kalau ada yang `FAIL`, jangan lanjut: gate-nya rusak, dan semua hijau setelahnya
+tidak berarti apa-apa.
+
+Perhatikan baris keempat dan kelima: pada preset `balanced`, uang-float dan
+timestamp tanpa zona **hanya warning**, tidak memblokir. Itu disengaja — tapi
+artinya jangan mengira `balanced` menangkap semuanya. Naik ke `strict` kalau
+kamu memang butuh semuanya memblokir.
+
+## 6. Buktikan agent-nya benar-benar paham
+
+Ini pertanyaan yang berbeda dari langkah 5. Gate yang bekerja tidak menjamin
+agent membaca policy — dan agent yang hari ini benar bisa lain besok.
 
 ```bash
-ironclad check examples/good.sql   # harus exit 0
-ironclad check examples/bad.sql    # harus exit 1
+ironclad drill --prompt
 ```
+
+Perintah itu mencetak satu tugas untuk ditempel ke agent kamu — dan sengaja
+**tidak** menyebut integer, enum, atau aturan apa pun. Kalau agent memang
+memahami policy-nya, ia akan sampai ke jawaban yang sama tanpa disuapi.
+
+Lalu nilai hasilnya:
+
+```bash
+ironclad drill answer.sql
+```
+
+```
+  PASS  policy check                           clean
+  PASS  no enum column                         none
+  PASS  lookup table for status                order_status
+  PASS  status column has a foreign key        status_code → order_status
+  PASS  statuses seeded as data (not schema)   1 INSERT statement(s)
+  PASS  money is integer minor units           ok
+  PASS  timestamps carry a timezone            ok
+  PASS  cites a rule ID                        DB-01, DB-03, DB-08
+8/8 criteria
+```
+
+Penilai ini tidak memanggil model. Alat yang menilai model dengan bertanya ke
+model lain hanya menilai dirinya sendiri. Semua kriteria di atas diperiksa dari
+teks SQL-nya: ada `enum` atau tidak, ada tabel lookup atau tidak, kolom status
+punya `REFERENCES` atau tidak, status di-seed sebagai data atau tidak.
+
+**Kalau hasilnya di bawah 8/8**, urutan yang benar:
+
+1. Pastikan agent benar-benar memuat skill — minta ia mengutip `.agent/standards.md`.
+2. Minta ia menyebut ID aturan yang diikuti. Agent yang tidak bisa menyebut
+   aturannya sedang menebak.
+3. Pasang checker di CI. Skill itu nasihat; gate adalah satu-satunya yang tidak
+   bisa dibantah saat tengah malam.
 
 Lalu buka PR yang menambah satu kolom `enum` — PR itu harus merah di GitHub.
 Kalau tidak merah, CI-nya belum benar, bukan checkernya.

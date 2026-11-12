@@ -149,10 +149,56 @@ ironclad preset strict            # setelah tidak ada warning tersisa
 </code></pre></div>
 <p>Naik satu tingkat setelah jumlah temuan turun, bukan setelah tanggal tertentu.</p>
 <h2 id="5-buktikan-gate-nya-benar-benar-bekerja">5. Buktikan gate-nya benar-benar bekerja</h2>
-<p>Jangan percaya tampilan hijau. Uji tiga hal:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad check examples/good.sql   # harus exit 0
-ironclad check examples/bad.sql    # harus exit 1
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad drill --selftest
 </code></pre></div>
+<p>Satu perintah, tujuh pemeriksaan, memakai contoh yang sudah pasti:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>  PASS  enum blocked in the default preset
+  PASS  integer + lookup + fk accepted
+  PASS  text label blocked in the default preset
+  PASS  money as float blocks under strict
+  PASS  naive timestamp blocks under strict
+  PASS  mixed project flagged (DB-08) — the two-developer case
+  PASS  consistent project stays silent (no false alarm)
+</code></pre></div>
+<p>Kalau ada yang <code>FAIL</code>, jangan lanjut: gate-nya rusak, dan semua hijau setelahnya
+tidak berarti apa-apa.</p>
+<p>Perhatikan baris keempat dan kelima: pada preset <code>balanced</code>, uang-float dan
+timestamp tanpa zona <strong>hanya warning</strong>, tidak memblokir. Itu disengaja — tapi
+artinya jangan mengira <code>balanced</code> menangkap semuanya. Naik ke <code>strict</code> kalau
+kamu memang butuh semuanya memblokir.</p>
+<h2 id="6-buktikan-agent-nya-benar-benar-paham">6. Buktikan agent-nya benar-benar paham</h2>
+<p>Ini pertanyaan yang berbeda dari langkah 5. Gate yang bekerja tidak menjamin
+agent membaca policy — dan agent yang hari ini benar bisa lain besok.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad drill --prompt
+</code></pre></div>
+<p>Perintah itu mencetak satu tugas untuk ditempel ke agent kamu — dan sengaja
+<strong>tidak</strong> menyebut integer, enum, atau aturan apa pun. Kalau agent memang
+memahami policy-nya, ia akan sampai ke jawaban yang sama tanpa disuapi.</p>
+<p>Lalu nilai hasilnya:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad drill answer.sql
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>  PASS  policy check                           clean
+  PASS  no enum column                         none
+  PASS  lookup table for status                order_status
+  PASS  status column has a foreign key        status_code → order_status
+  PASS  statuses seeded as data (not schema)   1 INSERT statement(s)
+  PASS  money is integer minor units           ok
+  PASS  timestamps carry a timezone            ok
+  PASS  cites a rule ID                        DB-01, DB-03, DB-08
+8/8 criteria
+</code></pre></div>
+<p>Penilai ini tidak memanggil model. Alat yang menilai model dengan bertanya ke
+model lain hanya menilai dirinya sendiri. Semua kriteria di atas diperiksa dari
+teks SQL-nya: ada <code>enum</code> atau tidak, ada tabel lookup atau tidak, kolom status
+punya <code>REFERENCES</code> atau tidak, status di-seed sebagai data atau tidak.</p>
+<p><strong>Kalau hasilnya di bawah 8/8</strong>, urutan yang benar:</p>
+<ol>
+<li>Pastikan agent benar-benar memuat skill — minta ia mengutip <code>.agent/standards.md</code>.</li>
+<li>Minta ia menyebut ID aturan yang diikuti. Agent yang tidak bisa menyebut
+   aturannya sedang menebak.</li>
+<li>Pasang checker di CI. Skill itu nasihat; gate adalah satu-satunya yang tidak
+   bisa dibantah saat tengah malam.</li>
+</ol>
 <p>Lalu buka PR yang menambah satu kolom <code>enum</code> — PR itu harus merah di GitHub.
 Kalau tidak merah, CI-nya belum benar, bukan checkernya.</p>
 <h2 id="selesai">Selesai</h2>
@@ -178,6 +224,7 @@ menjalankan hal yang sama pada setiap PR.</p>
 <li class="lvl2"><a href="#3-jadikan-permanen">3. Jadikan permanen</a></li>
 <li class="lvl2"><a href="#4-pilih-tingkat-penegakan-yang-tidak-membuat-tim-matikan-ci">4. Pilih tingkat penegakan yang tidak membuat tim matikan CI</a></li>
 <li class="lvl2"><a href="#5-buktikan-gate-nya-benar-benar-bekerja">5. Buktikan gate-nya benar-benar bekerja</a></li>
+<li class="lvl2"><a href="#6-buktikan-agent-nya-benar-benar-paham">6. Buktikan agent-nya benar-benar paham</a></li>
 <li class="lvl2"><a href="#selesai">Selesai</a></li></ul>
       </aside>
     </div>

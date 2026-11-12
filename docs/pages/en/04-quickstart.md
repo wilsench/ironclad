@@ -82,12 +82,73 @@ Step up when the finding count drops, not when a date arrives.
 
 ## 5. Prove the gate actually works
 
-Do not trust a green checkmark. Test three things:
+```bash
+ironclad drill --selftest
+```
+
+One command, nine assertions, using fixtures whose answers are already known:
+
+```
+  PASS  enum blocked in the default preset
+  PASS  integer + lookup + fk accepted
+  PASS  text label blocked in the default preset
+  PASS  money as float blocks under strict
+  PASS  naive timestamp blocks under strict
+  PASS  mixed project flagged (DB-08) — the two-developer case
+  PASS  consistent project stays silent (no false alarm)
+  PASS  grader accepts table-level FOREIGN KEY syntax
+  PASS  grader still rejects an enum answer
+```
+
+If anything says `FAIL`, stop. The gate is broken and every green check after it
+means nothing.
+
+Note lines four and five: under `balanced`, float money and naive timestamps only
+**warn** — they do not block. That is deliberate, but it means `balanced` is not a
+catch-all. Move to `strict` if you need everything to block.
+
+## 6. Prove the agent actually understands
+
+This is a different question from step 5. A working gate does not guarantee the
+agent read the policy — and an agent that is right today can be wrong tomorrow.
 
 ```bash
-ironclad check examples/good.sql   # must exit 0
-ironclad check examples/bad.sql    # must exit 1
+ironclad drill --prompt
 ```
+
+That prints a task to paste into your agent, and it deliberately mentions **no**
+integer, no enum, no rule. If the agent really understood the policy it will land
+on the same answer without being fed it.
+
+Then grade what it wrote:
+
+```bash
+ironclad drill answer.sql
+```
+
+```
+  PASS  policy check                           clean
+  PASS  no enum column                         none
+  PASS  lookup table for status                order_status
+  PASS  status column has a foreign key        status_code → order_status
+  PASS  statuses seeded as data (not schema)   1 INSERT statement(s)
+  PASS  money is integer minor units           ok
+  PASS  timestamps carry a timezone            ok
+  PASS  cites a rule ID                        DB-01, DB-03, DB-08
+8/8 criteria
+```
+
+The grader calls no model. A tool that grades a model by asking another model is
+only grading itself. Every criterion above is read off the SQL text: is there an
+`enum`, is there a lookup table, does the status column carry `REFERENCES`, are the
+statuses seeded as data.
+
+**If it scores below 8/8**, fix it in this order:
+
+1. Make sure the agent actually loaded the skill — ask it to quote `.agent/standards.md`.
+2. Ask it to name the rule IDs it followed. An agent that cannot name the rule was guessing.
+3. Put the checker in CI. The skill is advice; the gate is the only thing that
+   cannot be argued with at 2am.
 
 Then open a PR that adds one `enum` column — it must go red on GitHub. If it does
 not go red, your CI is wrong, not the checker.

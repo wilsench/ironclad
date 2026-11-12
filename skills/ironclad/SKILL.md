@@ -82,6 +82,9 @@ run from an agent or CI. Switching later = `ironclad preset <name>` or edit
 ```
 ironclad init                                          # → .agent/standards.{md,yml}
 ironclad preset strict                                 # switch the active preset
+ironclad drill --selftest                              # prove the checker gates correctly
+ironclad drill --prompt                                # a task to hand your agent, no hints
+ironclad drill answer.sql                              # grade what the agent produced
 python3 scripts/check_schema.py . --json               # auto-uses .agent/standards.yml
 python3 scripts/check_schema.py . --preset legacy-friendly
 python3 scripts/check_schema.py --list-presets
@@ -97,6 +100,8 @@ Resolution order for severity: `--config` > `--preset` > `.agent/standards.yml` 
 - Every status field has a verdict recorded in the PR/report.
 - Adding one status value is doable with a single data migration — prove it by writing that migration, not by asserting it.
 - `ironclad check` reports no DB-08: the whole project stores status one way, not per table or per developer.
+- `ironclad drill --selftest` passes. If it does not, the gate is broken and every green check after it is meaningless.
+- When someone asks "how do I know the agent learned this?", the answer is `ironclad drill --prompt` then `ironclad drill answer.sql` — not an assertion that it did.
 - Agent report cites a rule ID for each deviation.
 
 ## Pitfalls

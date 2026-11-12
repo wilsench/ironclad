@@ -4,6 +4,9 @@
 #   ironclad check     score this repo's schema against the rules (read-only)
 #   ironclad init      write .agent/ + scripts/ so agent and CI share the rules
 #   ironclad preset N  switch strictness: balanced | strict | legacy-friendly
+#   ironclad status    where the skill and the project policy live
+#   ironclad drill     prove your agent knows: selftest the gate, or grade its output
+#                      (ironclad drill --selftest | --prompt | answer.sql)
 #
 # `check` and `init` work without a repo config: they fall back to the preset
 # shipped in the skill, so the first run needs no setup.
@@ -12,6 +15,7 @@ set -euo pipefail
 
 IRONCLAD_HOME="${IRONCLAD_HOME:-$HOME/.agents/skills/ironclad}"
 CHECKER="$IRONCLAD_HOME/scripts/check_schema.py"
+DRILL="$IRONCLAD_HOME/scripts/drill.py"
 TEMPLATE="$IRONCLAD_HOME/templates/standards.md"
 PRESETS="$IRONCLAD_HOME/assets/presets"
 
@@ -114,8 +118,9 @@ case "${1:-}" in
   init)    shift; cmd_init "$@" ;;
   preset)  shift; cmd_preset "$@" ;;
   status)  cmd_status ;;
+  drill)   shift; python3 "$DRILL" "$@" ;;
   ""|-h|--help|help)
     sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//' ;;
   *)
-    die "unknown command: $1 (try: check | init | preset | status)" ;;
+    die "unknown command: $1 (try: check | init | preset | status | drill)" ;;
 esac
