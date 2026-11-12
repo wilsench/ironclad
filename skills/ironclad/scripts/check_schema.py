@@ -65,7 +65,7 @@ STATUS_WORD = _LEAD + r"(?:status|state|stage|kondisi|keberangkatan|ketersediaan
 STATUS_COL = re.compile(rf"^[a-z0-9_]*{STATUS_WORD}[a-z0-9_]*$", re.I)
 
 ENUM_PATTERNS = [
-    (re.compile(r"\$table\s*->\s*enum\s*\(", re.I), "Laravel $table->enum()"),
+    (re.compile(r"\$\w+\s*->\s*enum\s*\(", re.I), "Laravel $table->enum()"),
     (re.compile(r"\bALTER\s+TABLE\b[^;]*\bADD\s+COLUMN\b[^;]*\benum\s*\(", re.I),
      "SQL enum column"),
     (re.compile(r"^\s*\w+\s+enum\s*\(", re.I | re.M), "SQL/prisma enum column"),
@@ -84,20 +84,42 @@ VARCHAR_STATUS = re.compile(
     rf"['\"]?([a-z0-9_]*{STATUS_WORD}[a-z0-9_]*)['\"]?\s+(?:varchar|string|text)", re.I)
 # Laravel puts the type first: $table->string('departure_status')
 LARAVEL_STRING_STATUS = re.compile(
-    rf"\$table\s*->\s*(?:string|text)\s*\(\s*['\"]([a-z0-9_]*{STATUS_WORD}[a-z0-9_]*)['\"]", re.I)
+    rf"\$\w+\s*->\s*(?:string|text)\s*\(\s*['\"]([a-z0-9_]*{STATUS_WORD}[a-z0-9_]*)['\"]", re.I)
 
 BOOL_NAMES = re.compile(r"\b(is|has|should|can)_(?:status|state|kondisi|tipe|type|kategori)\b", re.I)
 
 MONEY_WORD = r"(?:amount|price|harga|total|subtotal|cost|biaya|fee|tarif|salary|gaji|balance|saldo)"
 MONEY_FLOAT = re.compile(
     rf"\b([a-z0-9_]*(?:{MONEY_WORD})[a-z0-9_]*)\b\s+(?:float|double|real|float8|float4)\b", re.I)
-MONEY_FLOAT_LARAVEL = re.compile(rf"\$table\s*->\s*(?:float|double)\s*\(\s*['\"]([^'\"]+)['\"]", re.I)
+MONEY_FLOAT_LARAVEL = re.compile(rf"\$\w+\s*->\s*(?:float|double)\s*\(\s*['\"]([^'\"]+)['\"]", re.I)
 
 TIMESTAMP_BARE = re.compile(r"\b([a-z0-9_]+)\s+timestamp\b(?!\s*\(?\s*\d*\s*\)?\s*with\s+time\s+zone)", re.I)
+# Laravel spells the same thing differently, and `timestamp()` there means
+# "timestamp WITHOUT time zone" — a genuine drift trap that raw-SQL patterns miss.
+LARAVEL_TIMESTAMP_BARE = re.compile(
+    r"\$\w+\s*->\s*timestamp\s*\(\s*['\"]([^'\"]+)['\"]", re.I)
 
 SKIP_DIRS = {".git", "node_modules", "vendor", "dist", "build", ".next",
              "storage", "__pycache__", ".venv", "venv"}
 TARGETS = {".sql", ".php", ".prisma"}
+
+# Stacks this checker cannot read yet, but whose files are unambiguously schema.
+# Staying silent about them is the worst failure mode available: the run is green,
+# the CI badge is green, and half the repo was never looked at. So we detect them
+# and say so out loud instead of implying coverage we do not have.
+UNSUPPORTED_HINTS = {
+    ".py": re.compile(r"\bmodels\.(?:Model|CharField|IntegerField|FloatField|DecimalField|"
+                      r"ForeignKey|SmallIntegerField)\b|\bColumn\(\s*(?:Integer|String|Float)"),
+    ".rb": re.compile(r"\bcreate_table\b|\bt\.(?:integer|string|decimal|float)\b"),
+    ".ts": re.compile(r"\bpgTable\b|@Entity\b|\bDataTypes\.",
+                      re.I),
+    ".js": re.compile(r"\bpgTable\b|\bDataTypes\.|\bSequelize\b|\bModel\.init\b"),
+    ".go": re.compile(r"\bgorm:\""),
+    ".java": re.compile(r"@Entity\b"),
+    ".kt": re.compile(r"@Entity\b"),
+    ".cs": re.compile(r"\[Table\(|\bDbSet<"),
+    ".rs": re.compile(r"#\[(?:derive\(.*?(?:sqlx|diesel)|table_name)"),
+}
 
 
 # ---------------------------------------------------------------- preset loading
@@ -197,10 +219,37 @@ def iter_files(paths, exceptions=()):
                 yield f
 
 
+def find_unsupported(paths):
+    """Schema files in stacks we cannot parse. Reported, never silently skipped."""
+    hits = {}
+    for p in paths:
+        root = Path(p)
+        if not root.is_dir():
+            continue
+        for f in root.rglob("*"):
+            if f.suffix not in UNSUPPORTED_HINTS:
+                continue
+            if set(f.parts) & SKIP_DIRS:
+                continue
+            try:
+                text = f.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            if UNSUPPORTED_HINTS[f.suffix].search(text):
+                hits.setdefault(f.suffix, []).append(str(f))
+    return hits
+
+
 def is_migration_like(path, text):
-    name = path.name.lower()
-    return ("migration" in name or "migrasi" in name
-            or "$table->" in text or re.search(r"\bCREATE\s+TABLE\b", text, re.I) is not None)
+    # Laravel migration filenames look like 2024_01_01_000000_create_orders_table.php
+    # — the word "migration" is in the DIRECTORY, not the filename. Checking only
+    # path.name silently skipped every real Laravel migration.
+    where = str(path).lower()
+    return ("migration" in where or "migrasi" in where
+            or "schema" in where
+            or re.search(r"\$\w+\s*->", text) is not None
+            or re.search(r"\bSchema::\w+\b", text) is not None
+            or re.search(r"\bCREATE\s+TABLE\b", text, re.I) is not None)
 
 
 def status_styles(path, text):
@@ -301,6 +350,10 @@ def check_file(path, cfg):
 
         # DB-07 — camelCase `*At` is the Laravel/Prisma timestamp convention, not a smell
         if migration:
+            lm = LARAVEL_TIMESTAMP_BARE.search(line)
+            if lm and not lm.group(1).endswith("_tz"):
+                add("DB-07", i, f"`$table->timestamp('{lm.group(1)}')` has no timezone; "
+                                f"use timestampTz() so Jakarta and the server agree")
             m = TIMESTAMP_BARE.search(line)
             if m and not re.search(r"[a-z]At$", m.group(1)) and "timestamptz" not in line.lower():
                 add("DB-07", i, f"`{m.group(0).strip()}` has no timezone; "
@@ -375,8 +428,23 @@ def main():
         return 2
 
     files = list(iter_files(targets, cfg.get("exceptions") or ()))
+    unsupported = find_unsupported(targets)
+
     if not files:
         print("no .sql/.php/.prisma files found", file=sys.stderr)
+        if unsupported:
+            exts = ", ".join(sorted(unsupported))
+            print(f"\nThis repo does have schema files this checker cannot read: {exts}.",
+                  file=sys.stderr)
+            print("Nothing was checked. Do not treat this as a pass.", file=sys.stderr)
+            for ext, paths in sorted(unsupported.items()):
+                print(f"  {ext}: {paths[0]}"
+                      f"{f' (+{len(paths)-1} more)' if len(paths) > 1 else ''}",
+                      file=sys.stderr)
+            print("\nUntil support exists, enforce the same rules by hand or with your",
+                  file=sys.stderr)
+            print("framework's own migrations review — see", file=sys.stderr)
+            print("https://wilsench.my.id/ironclad/troubleshooting/", file=sys.stderr)
         return 2
 
     findings = []
@@ -413,6 +481,15 @@ def main():
                 "msg": (f"status is stored {len(all_styles)} different ways in this "
                         f"project: {detail} — pick one for the whole project; {indoor}"),
                 "file": str(first)})
+
+    # Partial coverage is the dangerous case: green output, half a repo unchecked.
+    if unsupported:
+        partial = (f"{len(files)} schema file(s) checked, but this repo also has "
+                   f"{', '.join(sorted(unsupported))} schema files this checker cannot read")
+        findings.append({
+            "rule": "COVERAGE", "severity": "warn", "line": 1,
+            "msg": partial + " — those files were NOT checked; verify them by hand",
+            "file": (sorted(unsupported.items())[0][1] or ["."])[0]})
 
     if args.strict:
         for f in findings:

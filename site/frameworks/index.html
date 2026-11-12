@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laravel, Prisma, dan backend lain — Ironclad</title>
+<meta name="description" content="Checker membaca apa saja, apa yang tidak terbaca, dan bagaimana tetap konsisten kalau kerangka kamu belum didukung.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/frameworks/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/frameworks/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/frameworks/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Bahasa">
+      <a href="/ironclad/frameworks/" class="on" aria-current="true">ID</a>
+      <a href="/ironclad/en/frameworks/">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/kamus/">Kamus</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-08</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+<li><a href="/ironclad/frameworks/" class="active" aria-current="page">Laravel, Prisma, dan backend lain</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Referensi / <b>Laravel, Prisma, dan backend lain</b></span>
+      <a class="langsw-mini" href="/ironclad/en/frameworks/" aria-label="Bahasa">EN</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="laravel-prisma-dan-backend-lain">Laravel, Prisma, dan backend lain</h1>
+<p>Jawaban singkat: <strong>bukan masalah selama kamu memakai salah satu dari tiga jenis
+berkas yang dibaca checker.</strong> Untuk yang lain, ada batas yang harus kamu tahu
+sebelum percaya warna hijau.</p>
+<h2 id="apa-yang-terbaca">Apa yang terbaca</h2>
+<p>Checker memeriksa isi berkas, bukan menjalankan aplikasimu. Jadi yang penting
+bukan "kamu pakai Laravel atau tidak", tapi "aturan itu akhirnya ditulis dalam
+bentuk apa".</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Sumber</th>
+<th>Contoh</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQL mentah</td>
+<td><code>CREATE TABLE</code>, migration <code>.sql</code></td>
+<td><strong>didukung</strong></td>
+</tr>
+<tr>
+<td>Laravel / PHP</td>
+<td><code>Schema::create</code>, <code>$table-&gt;enum()</code>, <code>$table-&gt;unsignedSmallInteger()</code></td>
+<td><strong>didukung</strong></td>
+</tr>
+<tr>
+<td>Prisma</td>
+<td><code>model Order</code>, <code>enum OrderStatus</code></td>
+<td><strong>didukung</strong></td>
+</tr>
+<tr>
+<td>Django / Python</td>
+<td><code>models.CharField</code>, <code>models.FloatField</code></td>
+<td>belum — dilaporkan, tidak diperiksa</td>
+</tr>
+<tr>
+<td>Rails / Ruby</td>
+<td><code>create_table</code>, <code>t.integer</code></td>
+<td>belum — dilaporkan, tidak diperiksa</td>
+</tr>
+<tr>
+<td>TypeORM / Drizzle</td>
+<td><code>@Entity</code>, <code>pgTable</code></td>
+<td>belum — dilaporkan, tidak diperiksa</td>
+</tr>
+<tr>
+<td>Sequelize</td>
+<td><code>Model.init</code>, <code>DataTypes.*</code></td>
+<td>belum — dilaporkan, tidak diperiksa</td>
+</tr>
+<tr>
+<td>GORM / Go</td>
+<td><code>gorm:"..."</code></td>
+<td>belum — dilaporkan, tidak diperiksa</td>
+</tr>
+<tr>
+<td>JPA / Java / Kotlin</td>
+<td><code>@Entity</code></td>
+<td>belum — dilaporkan, tidak diperiksa</td>
+</tr>
+<tr>
+<td>Entity Framework / C#</td>
+<td><code>[Table(</code>, <code>DbSet&lt;</code></td>
+<td>belum — dilaporkan, tidak diperiksa</td>
+</tr>
+<tr>
+<td>Diesel / sqlx / Rust</td>
+<td><code>#[derive(...)]</code>, <code>table_name</code></td>
+<td>belum — dilaporkan, tidak diperiksa</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="yang-penting-alat-ini-mengaku-kalau-tidak-memeriksa">Yang penting: alat ini mengaku kalau tidak memeriksa</h2>
+<p>Ini bagian yang paling menentukan. Repo Django yang lolos tanpa pesan apa pun
+lebih berbahaya daripada repo Django yang ditolak, karena yang pertama membuat
+kamu mengira sudah aman.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">$ ironclad check
+no .sql/.php/.prisma files found
+
+This repo does have schema files this checker cannot read: .py.
+Nothing was checked. Do not treat this as a pass.
+  .py: models.py
+</code></pre></div>
+<p>Exit code <code>2</code>. Di CI, itu bukan hijau — job-nya gagal.</p>
+<p>Dan kalau repo-nya campuran (sebagian terbaca, sebagian tidak), kamu dapat
+peringatan <code>COVERAGE</code> di atas hasil yang lain:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>models.py:1: [COVERAGE] warn  1 schema file(s) checked, but this repo also has
+.py schema files this checker cannot read — those files were NOT checked
+</code></pre></div>
+<p>Artinya: yang hijau hanya sebagian. Jangan anggap seluruh repo bersih.</p>
+<h2 id="kalau-kamu-memakai-backend-yang-belum-didukung">Kalau kamu memakai backend yang belum didukung</h2>
+<p>Ada dua pilihan jujur, dan satu pilihan yang buruk.</p>
+<p><strong>1. Taruh aturannya di level yang bisa diperiksa.</strong> Kalau kerangka kamu
+menghasilkan SQL (kebanyakan melakukannya), commit juga berkas migrasi SQL-nya,
+lalu arahkan checker ke sana:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad check db/schema.sql
+</code></pre></div>
+<p><strong>2. Periksa lewat review, bukan mesin.</strong> Untuk sementara, <code>.agent/standards.md</code>
+tetap berguna: agent membacanya dan mengikuti aturan yang sama walau checker
+tidak bisa memverifikasi. Yang hilang cuma gerbangnya — jadi lakukan
+pemeriksaan manual di PR.</p>
+<p><strong>3. Yang buruk: menambahkan <code>|| true</code>.</strong> Itu membuat CI hijau tanpa memeriksa
+apa pun. Lebih baik tidak memasang checker sama sekali daripada memasangnya
+sebagai hiasan.</p>
+<h2 id="kenapa-laravel-tetap-aman">Kenapa Laravel tetap aman</h2>
+<p>Tiga jebakan Laravel yang paling sering, dan ketiganya tertangkap:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-php">// ✗ ditolak DB-01 — enum tidak bisa ditambah tanpa ALTER TABLE
+$table-&gt;enum('status', ['new', 'paid', 'shipped']);
+
+// ✓ diterima — integer + foreign key ke tabel lookup
+$table-&gt;unsignedSmallInteger('status_code');
+$table-&gt;foreign('status_code')-&gt;references('code')-&gt;on('order_status');
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-php">// ✗ ditolak DB-07 — timestamp() di Laravel menyimpan TANPA zona waktu
+$table-&gt;timestamp('created_at');
+
+// ✓ diterima
+$table-&gt;timestampTz('created_at')-&gt;useCurrent();
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-php">// ✗ ditolak DB-06 — uang tidak boleh float
+$table-&gt;float('total');
+
+// ✓ diterima — satuan terkecil + kode mata uang
+$table-&gt;bigInteger('total_minor');
+$table-&gt;char('currency', 3);
+</code></pre></div>
+<p>Satu catatan penting soal nama berkas: migrasi Laravel bernama
+<code>2024_01_01_000000_create_orders_table.php</code> — kata "migration" ada di <strong>nama
+folder</strong>, bukan nama berkas. Checker sekarang mengenali keduanya, dan juga
+mengenali <code>Schema::create</code> tanpa peduli nama berkasnya.</p>
+<h2 id="eloquent-dan-controller">Eloquent dan controller</h2>
+<p>Checkernya juga membaca kode aplikasi, bukan hanya migrasi. Yang dicari di sana
+adalah magic number:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-php">// ✗ ditolak DB-02
+if ($order-&gt;status_code === 2) { ... }
+
+// ✓ diterima
+if ($order-&gt;status_code === OrderStatus::PAID) { ... }
+</code></pre></div>
+<p>Ini aturan yang paling sering dilanggar bukan karena orang malas, tapi karena
+angka 2 terasa jelas saat ditulis dan tidak jelas enam bulan kemudian.</p>
+<h2 id="kalau-kamu-ragu">Kalau kamu ragu</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad check --json
+</code></pre></div>
+<p>Keluarannya menyebut setiap berkas yang diperiksa dan setiap temuan. Kalau
+sebuah berkas tidak muncul dan tidak ada peringatan <code>COVERAGE</code>, berarti berkas
+itu tidak pernah dibaca — bukan berarti ia bersih.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/extending/"><span>Sebelumnya</span><b>Memperluas</b></a>
+<a class="next" href="/ironclad/ci/"><span>Berikutnya</span><b>CI & pre-commit</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#apa-yang-terbaca">Apa yang terbaca</a></li>
+<li class="lvl2"><a href="#yang-penting-alat-ini-mengaku-kalau-tidak-memeriksa">Yang penting: alat ini mengaku kalau tidak memeriksa</a></li>
+<li class="lvl2"><a href="#kalau-kamu-memakai-backend-yang-belum-didukung">Kalau kamu memakai backend yang belum didukung</a></li>
+<li class="lvl2"><a href="#kenapa-laravel-tetap-aman">Kenapa Laravel tetap aman</a></li>
+<li class="lvl2"><a href="#eloquent-dan-controller">Eloquent dan controller</a></li>
+<li class="lvl2"><a href="#kalau-kamu-ragu">Kalau kamu ragu</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

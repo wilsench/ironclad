@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laravel, Prisma, and other backends — Ironclad</title>
+<meta name="description" content="What the checker reads, what it cannot read, and how to stay consistent when your framework is not supported yet.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/frameworks/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/frameworks/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/frameworks/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/frameworks/">ID</a>
+      <a href="/ironclad/en/frameworks/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/en/glossary/">Glossary</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-08</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+<li><a href="/ironclad/en/frameworks/" class="active" aria-current="page">Laravel, Prisma, and other backends</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Reference / <b>Laravel, Prisma, and other backends</b></span>
+      <a class="langsw-mini" href="/ironclad/frameworks/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="laravel-prisma-and-other-backends">Laravel, Prisma, and other backends</h1>
+<p>The short answer: <strong>it does not matter as long as your project writes its schema in
+one of the three file types the checker reads.</strong> For everything else there is a
+limit you should know before trusting a green result.</p>
+<h2 id="what-is-read">What is read</h2>
+<p>The checker reads file contents; it does not run your app. So the question is not
+"are you on Laravel", it is "what form do the rules eventually take".</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Example</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw SQL</td>
+<td><code>CREATE TABLE</code>, <code>.sql</code> migration</td>
+<td><strong>supported</strong></td>
+</tr>
+<tr>
+<td>Laravel / PHP</td>
+<td><code>Schema::create</code>, <code>$table-&gt;enum()</code>, <code>$table-&gt;unsignedSmallInteger()</code></td>
+<td><strong>supported</strong></td>
+</tr>
+<tr>
+<td>Prisma</td>
+<td><code>model Order</code>, <code>enum OrderStatus</code></td>
+<td><strong>supported</strong></td>
+</tr>
+<tr>
+<td>Django / Python</td>
+<td><code>models.CharField</code>, <code>models.FloatField</code></td>
+<td>no — reported, not checked</td>
+</tr>
+<tr>
+<td>Rails / Ruby</td>
+<td><code>create_table</code>, <code>t.integer</code></td>
+<td>no — reported, not checked</td>
+</tr>
+<tr>
+<td>TypeORM / Drizzle</td>
+<td><code>@Entity</code>, <code>pgTable</code></td>
+<td>no — reported, not checked</td>
+</tr>
+<tr>
+<td>Sequelize</td>
+<td><code>Model.init</code>, <code>DataTypes.*</code></td>
+<td>no — reported, not checked</td>
+</tr>
+<tr>
+<td>GORM / Go</td>
+<td><code>gorm:"..."</code></td>
+<td>no — reported, not checked</td>
+</tr>
+<tr>
+<td>JPA / Java / Kotlin</td>
+<td><code>@Entity</code></td>
+<td>no — reported, not checked</td>
+</tr>
+<tr>
+<td>Entity Framework / C#</td>
+<td><code>[Table(</code>, <code>DbSet&lt;</code></td>
+<td>no — reported, not checked</td>
+</tr>
+<tr>
+<td>Diesel / sqlx / Rust</td>
+<td><code>#[derive(...)]</code>, <code>table_name</code></td>
+<td>no — reported, not checked</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="the-part-that-matters-it-says-so">The part that matters: it says so</h2>
+<p>A Django repo that passes silently is more dangerous than one that is rejected,
+because the first makes you believe you are covered.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">$ ironclad check
+no .sql/.php/.prisma files found
+
+This repo does have schema files this checker cannot read: .py.
+Nothing was checked. Do not treat this as a pass.
+  .py: models.py
+</code></pre></div>
+<p>Exit code <code>2</code>. In CI that is not green — the job fails.</p>
+<p>And when the repo is mixed (some files read, some not), a <code>COVERAGE</code> warning sits
+on top of the other findings:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>models.py:1: [COVERAGE] warn  1 schema file(s) checked, but this repo also has
+.py schema files this checker cannot read — those files were NOT checked
+</code></pre></div>
+<p>Meaning: only part of the repo is green. Do not read it as "all clean".</p>
+<h2 id="if-your-backend-is-not-supported-yet">If your backend is not supported yet</h2>
+<p>Two honest options, and one bad one.</p>
+<p><strong>1. Put the rules where they can be checked.</strong> Most frameworks emit SQL. Commit
+the resulting SQL schema too and point the checker at it:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check db/schema.sql
+</code></pre></div>
+<p><strong>2. Check it by review instead of by machine.</strong> <code>.agent/standards.md</code> is still
+useful in the meantime: the agent reads it and follows the same rules even where
+the checker cannot verify. Only the gate is missing — so do that review manually
+on PRs.</p>
+<p><strong>3. The bad one: adding <code>|| true</code>.</strong> That makes CI green without checking
+anything. Better to install no checker at all than one that is decoration.</p>
+<h2 id="why-laravel-is-still-safe">Why Laravel is still safe</h2>
+<p>The three Laravel traps that actually bite, all caught:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-php">// rejected DB-01 — an enum cannot be extended without ALTER TABLE
+$table-&gt;enum('status', ['new', 'paid', 'shipped']);
+
+// accepted — integer + foreign key to a lookup table
+$table-&gt;unsignedSmallInteger('status_code');
+$table-&gt;foreign('status_code')-&gt;references('code')-&gt;on('order_status');
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-php">// rejected DB-07 — Laravel's timestamp() stores WITHOUT a timezone
+$table-&gt;timestamp('created_at');
+
+// accepted
+$table-&gt;timestampTz('created_at')-&gt;useCurrent();
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-php">// rejected DB-06 — money is never a float
+$table-&gt;float('total');
+
+// accepted — minor units + currency code
+$table-&gt;bigInteger('total_minor');
+$table-&gt;char('currency', 3);
+</code></pre></div>
+<p>One filename note: Laravel migrations are named
+<code>2024_01_01_000000_create_orders_table.php</code> — the word "migration" is in the
+<strong>folder</strong>, not the filename. The checker now recognises both, and also matches
+<code>Schema::create</code> regardless of filename.</p>
+<h2 id="eloquent-and-controllers">Eloquent and controllers</h2>
+<p>It reads application code too, not just migrations. What it looks for there is
+magic numbers:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-php">// rejected DB-02
+if ($order-&gt;status_code === 2) { ... }
+
+// accepted
+if ($order-&gt;status_code === OrderStatus::PAID) { ... }
+</code></pre></div>
+<p>This is the rule most often broken, not from laziness but because <code>2</code> feels obvious
+when you write it and is not obvious six months later.</p>
+<h2 id="when-in-doubt">When in doubt</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check --json
+</code></pre></div>
+<p>The output names every file checked and every finding. If a file is absent and
+there is no <code>COVERAGE</code> warning, that file was never read — which is not the same as
+clean.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/extending/"><span>Previous</span><b>Extending</b></a>
+<a class="next" href="/ironclad/en/ci/"><span>Next</span><b>CI & pre-commit</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#what-is-read">What is read</a></li>
+<li class="lvl2"><a href="#the-part-that-matters-it-says-so">The part that matters: it says so</a></li>
+<li class="lvl2"><a href="#if-your-backend-is-not-supported-yet">If your backend is not supported yet</a></li>
+<li class="lvl2"><a href="#why-laravel-is-still-safe">Why Laravel is still safe</a></li>
+<li class="lvl2"><a href="#eloquent-and-controllers">Eloquent and controllers</a></li>
+<li class="lvl2"><a href="#when-in-doubt">When in doubt</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

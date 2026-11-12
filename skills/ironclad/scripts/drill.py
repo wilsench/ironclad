@@ -102,6 +102,34 @@ CREATE TABLE orders (
 """,
         "strict", 1, "DB-03",
     ),
+    # Laravel: enum, float money, and naive timestamp in the framework's own idiom.
+    # A regex checker that only understands raw SQL silently passes all three.
+    "laravel enum + float + naive timestamp caught": (
+        ".php",
+        """<?php
+Schema::create('orders', function (Blueprint $t) {
+    $t->enum('status', ['new', 'paid']);
+    $t->float('total');
+    $t->timestamp('created_at');
+});
+""",
+        "balanced", 1, "DB-01",
+    ),
+    "laravel integer + timestampTz accepted": (
+        ".php",
+        """<?php
+Schema::create('order_status', function (Blueprint $t) {
+    $t->unsignedSmallInteger('code')->primary();
+});
+Schema::create('orders', function (Blueprint $t) {
+    $t->unsignedSmallInteger('status_code');
+    $t->foreign('status_code')->references('code')->on('order_status');
+    $t->bigInteger('total_minor');
+    $t->timestampTz('created_at')->useCurrent();
+});
+""",
+        "strict", 0, None,
+    ),
 }
 
 
@@ -117,8 +145,15 @@ def selftest() -> int:
 
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
-        for name, (sql, preset, want_exit, want_rule) in FIXTURES.items():
-            f = tmp / (re.sub(r"\W+", "_", name) + ".sql")
+        for name, spec in FIXTURES.items():
+            # A fixture may carry its own suffix; PHP content in a .sql file never
+            # matches the Laravel patterns and would silently "pass" a broken test.
+            if len(spec) == 5:
+                suffix, sql, preset, want_exit, want_rule = spec
+            else:
+                sql, preset, want_exit, want_rule = spec
+                suffix = ".sql"
+            f = tmp / (re.sub(r"\W+", "_", name) + suffix)
             f.write_text(sql)
             code, out = run_checker([str(f)], preset)
             ok = code == want_exit
@@ -133,6 +168,12 @@ def selftest() -> int:
                       f" — got exit {code} (preset {preset})")
                 for line in out.strip().splitlines()[:4]:
                     print(f"        {DIM}{line}{OFF}")
+
+        # Clear the fixture files first: this sub-test asserts on the WHOLE tmpdir,
+        # and leftovers from the loop above would trip DB-08 for the wrong reason.
+        for leftover in tmp.iterdir():
+            if leftover.is_file():
+                leftover.unlink()
 
         # The one rule that reads across files: two developers, two styles.
         (tmp / "dev_a.sql").write_text(
