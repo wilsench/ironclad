@@ -6,6 +6,21 @@ A skill for AI coding agents. Ten people vibe-code the same app, nobody reads th
 
 Ships a worked database policy as the headline example — **integer codes + lookup table + FK, not `enum`** — because that is the drift that hurts most and shows up latest.
 
+## Quick start (three steps, ~2 minutes)
+
+```bash
+# 1. install the skill into the agent
+hermes skills install <owner>/ironclad/skills/ironclad
+
+# 2. bootstrap the policy into YOUR repo (asks the strictness, balanced pre-picked)
+cd your-project && python3 scripts/init_standards.py . --with-checker
+
+# 3. run it
+python3 scripts/check_schema.py .
+```
+
+Step 2 writes `.agent/standards.md` + `.agent/standards.yml` + `scripts/check_schema.py` + `scripts/presets/`. Commit all four. From then on the agent reads the policy before writing DDL, and CI reads the same file to decide what blocks.
+
 ## One command
 
 ```bash
@@ -92,13 +107,20 @@ $ check_schema.py examples/good.sql --preset strict
 - It will not catch a status field that is *semantically* wrong but syntactically fine. A human reviewer is still the last line.
 - Run it report-only first, then gate changed files. Gating an entire legacy repo on day one is how the check gets deleted from CI by lunch.
 
-## Why `00` is not the answer
+## Arbitrary codes are fine — undocumented codes are not
 
-If "empty stock = 00" is the plan: `00` in an integer column is just `0`. Two-digit form is display formatting, never storage. What you want is a named constant plus a lookup table:
+`88` for "empty stock", `99` for "departed" — that works, and this skill does not fight it. Integer codes are exactly what the policy asks for. Two things make it safe:
+
+```sql
+INSERT INTO stock_state (code, label) VALUES (88, 'empty'), (89, 'low'), (90, 'available');
+--                        ^ single source of truth: the DB rejects 87
+```
 
 ```ts
-const STOCK = { EMPTY: 0, LOW: 1, AVAILABLE: 2, RESERVED: 3 } as const;
+const STOCK = { EMPTY: 88, LOW: 89, AVAILABLE: 90 } as const;   // no bare 88 in app code
 ```
+
+The gaps are the point — reserve `8x` for stock states, `9x` for departure states, and the number carries meaning to a human reading a query six months later. What the checker blocks is the *bare literal*: `if (status === 88)` scattered through the codebase. That is the same number with no name, no foreign key, and no reviewer.
 
 ## Repo layout
 

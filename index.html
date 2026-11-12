@@ -172,9 +172,11 @@
   </table>
 
   <div class="note">
-    <b>Soal “00 untuk stok kosong”.</b> Di kolom integer, <code>00</code> itu <code>0</code>.
-    Bentuk dua digit adalah format tampilan, bukan penyimpanan. Yang kamu mau sebenarnya:
-    konstanta bernama + lookup table, supaya angka 7 yang salah ketik ditolak database.
+    <b>Kode bebas seperti <code>88</code> / <code>99</code> itu boleh.</b>
+    Yang membuatnya aman cuma dua hal: kodenya terdaftar di lookup table (angka 87 ditolak database),
+    dan di kode aplikasi memakai konstanta bernama — bukan <code>if (status === 88)</code> yang berserakan.
+    Sisakan blok (<code>8x</code> stok, <code>9x</code> keberangkatan) supaya angkanya masih bisa dibaca
+    saat muncul di hasil query.
   </div>
 
   <div class="rule"></div>

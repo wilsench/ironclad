@@ -1,12 +1,14 @@
-name: engineering-standards
+name: self-test
 
+# This repo ships a linter, so CI should prove the linter itself still works —
+# not run it against a repo that has no `.agent/standards.yml`.
 on:
   pull_request:
   push:
     branches: [main]
 
 jobs:
-  schema-conventions:
+  checker:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,32 +17,36 @@ jobs:
         with:
           python-version: "3.11"
 
-      # Report-only on the whole repo: proves the checker runs without
-      # failing the build on existing debt. Severity comes from the committed
-      # .agent/standards.yml, so changing the guardrail level is a normal PR.
-      - name: Report existing violations
-        run: |
-          python scripts/check_schema.py . --json > standards-report.json || true
-          python - <<'PY'
-          import json, pathlib
-          d = json.loads(pathlib.Path("standards-report.json").read_text() or "{}")
-          print(f"{d.get('files',0)} file(s), {d.get('errors',0)} violation(s)")
-          for f in d.get("findings", [])[:50]:
-              print(f"{f['file']}:{f['line']}: [{f['rule']}] {f['msg']}")
-          PY
+      - name: Syntax check
+        run: python -m py_compile skills/ironclad/scripts/*.py
 
-      # Gate the diff: new violations block the PR, legacy ones do not.
-      - name: Gate changed files
-        if: github.event_name == 'pull_request'
+      - name: Presets are readable
         run: |
-          git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
-          CHANGED=$(git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}"...HEAD \
-            | grep -E '\.(sql|php|prisma)$' || true)
-          if [ -z "$CHANGED" ]; then
-            echo "no schema files changed"
-            exit 0
+          OUT=$(python skills/ironclad/scripts/check_schema.py --list-presets)
+          echo "$OUT"
+          grep -q '^balanced' <<< "$OUT"
+          grep -q '^strict' <<< "$OUT"
+          grep -q '^legacy-friendly' <<< "$OUT"
+
+      - name: Fixture that must pass
+        run: python skills/ironclad/scripts/check_schema.py examples/good.sql --preset strict
+
+      - name: Fixture that must fail
+        run: |
+          if python skills/ironclad/scripts/check_schema.py examples/bad.sql --preset strict; then
+            echo "::error::examples/bad.sql was expected to fail and did not — the checker regressed"
+            exit 1
           fi
-          echo "checking: $CHANGED"
-          # severity still comes from .agent/standards.yml; --strict only exists
-          # as an escape hatch for repos that have not adopted a preset yet
-          python scripts/check_schema.py $CHANGED
+
+      - name: Presets actually change severity
+        run: |
+          python skills/ironclad/scripts/check_schema.py examples/bad.sql --preset legacy-friendly \
+            || { echo "::error::legacy-friendly must exit 0"; exit 1; }
+
+      - name: Bootstrap works from a clean dir
+        run: |
+          rm -rf /tmp/ic && mkdir -p /tmp/ic && cd /tmp/ic
+          printf '' | python3 "$GITHUB_WORKSPACE/skills/ironclad/scripts/init_standards.py" . --with-checker
+          test -f .agent/standards.yml
+          test -f scripts/presets/strict.yml
+          python3 scripts/check_schema.py --list-presets

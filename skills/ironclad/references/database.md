@@ -29,7 +29,7 @@ Full decision table and rationale. `SKILL.md` carries the procedure; this file c
 
 All three, not two. Integer without a lookup table just relocates the mystery.
 
-**`00` is not a storage concept.** `00` as "empty stock" is display formatting. Storage is `0`; the two-digit rendering belongs in the presenter. Storing `00` means either a string column (worse than an enum) or a false precision that vanishes the moment someone sums the column.
+**Arbitrary codes are the point.** `88` = empty stock, `99` = departed — no sequential ordering needed, and nobody should have to guess. The code is only safe when it is declared in exactly two places: a row in the lookup table, and a named constant in app code. Reserve blocks (`8x` stock, `9x` departure) so a raw number still means something in a query result. `00` as a *style* of writing the number is presenter work, not storage.
 
 ## When enum is the right answer
 
