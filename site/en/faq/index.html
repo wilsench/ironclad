@@ -104,7 +104,7 @@ decides, the same way it decides which tool to call.</p>
 <p>If you want certainty, name it: "use the ironclad skill for this migration".</p>
 <h2 id="can-it-be-shorter-than-this">Can it be shorter than this?</h2>
 <p>Install:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.2
 </code></pre></div>
 <p>Then, in a repo:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check      # look
@@ -116,16 +116,16 @@ the rules pinned in git for your team.</p>
 <p>Yes — that is its main target. Six targets: Hermes, Claude Code, Codex, Cursor,
 opencode, Antigravity. The format is the Agent Skills standard (<code>SKILL.md</code>), not
 something Hermes-specific.</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.1  --all              # everything detected on this machine
-npx github:wilsench/ironclad#v0.8.1  --target claude
-npx github:wilsench/ironclad#v0.8.1  --target gemini    # Antigravity, global
-npx github:wilsench/ironclad#v0.8.1  --target opencode
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.2  --all              # everything detected on this machine
+npx github:wilsench/ironclad#v0.8.2  --target claude
+npx github:wilsench/ironclad#v0.8.2  --target gemini    # Antigravity, global
+npx github:wilsench/ironclad#v0.8.2  --target opencode
 </code></pre></div>
 <h2 id="can-i-use-wilsenchironclad-directly">Can I use <code>wilsench/ironclad</code> directly?</h2>
 <p>For Hermes:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">hermes skills install wilsench/ironclad/skills/ironclad
 </code></pre></div>
-<p>Other agents use <code>npx github:wilsench/ironclad#v0.8.1</code> — that pulls the package
+<p>Other agents use <code>npx github:wilsench/ironclad#v0.8.2</code> — that pulls the package
 straight from the public repo, with nothing published to npm. If the machine has no
 Node, the <code>install.sh</code> mirror on <code>wilsench.my.id</code> runs the same code.</p>
 <h2 id="is-curl-bash-safe">Is <code>curl | bash</code> safe?</h2>

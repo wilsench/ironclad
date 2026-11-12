@@ -119,7 +119,7 @@ Dua perintah. Tidak ada yang perlu dijawab.
 
 ```bash
 # 1. pasang (sekali per komputer)
-npx github:wilsench/ironclad#v0.8.1
+npx github:wilsench/ironclad#v0.8.2
 ```
 
 ```bash

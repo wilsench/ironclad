@@ -55,7 +55,7 @@ Kirim ke **satu** orang, sebaiknya yang memakai agent berbeda darimu. Yang perlu
 mereka lakukan hanya satu perintah:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.1
+npx github:wilsench/ironclad#v0.8.2
 ```
 
 Lalu minta mereka buka repo pilot dan bertanya ke agent-nya:

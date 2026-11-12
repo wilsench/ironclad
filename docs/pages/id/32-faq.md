@@ -29,7 +29,7 @@ Kalau kamu ingin memastikan, sebut namanya: `pakai skill ironclad`.
 Ya:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.1
+npx github:wilsench/ironclad#v0.8.2
 ```
 
 Itu saja. Tidak ada langkah kedua — agent sudah bertanya sendiri di repo mana pun.
@@ -47,10 +47,10 @@ Satu perintah, tanpa clone, tanpa baca dokumen — dan tanpa `ironclad init` kec
 Ya, dan itu target utamanya. Enam target: Hermes, Claude Code, Codex, Cursor, opencode, Antigravity. Formatnya standar Agent Skills (`SKILL.md`), bukan format khusus Hermes.
 
 ```bash
-npx github:wilsench/ironclad#v0.8.1  --all              # semua agent yang terdeteksi
-npx github:wilsench/ironclad#v0.8.1  --target claude
-npx github:wilsench/ironclad#v0.8.1  --target gemini    # Antigravity global
-npx github:wilsench/ironclad#v0.8.1  --target opencode
+npx github:wilsench/ironclad#v0.8.2  --all              # semua agent yang terdeteksi
+npx github:wilsench/ironclad#v0.8.2  --target claude
+npx github:wilsench/ironclad#v0.8.2  --target gemini    # Antigravity global
+npx github:wilsench/ironclad#v0.8.2  --target opencode
 ```
 
 ## Bisa langsung pakai `wilsench/ironclad`?
@@ -61,7 +61,7 @@ Untuk Hermes, ya — begitu repo GitHub-nya terbit:
 hermes skills install wilsench/ironclad/skills/ironclad
 ```
 
-Untuk agent lain, pakai `npx github:wilsench/ironclad#v0.8.1` — itu menarik paket langsung dari repo GitHub tanpa publish ke npm. Kalau tidak ada Node, mirror `install.sh` di `wilsench.my.id` menjalankan kode yang sama persis.
+Untuk agent lain, pakai `npx github:wilsench/ironclad#v0.8.2` — itu menarik paket langsung dari repo GitHub tanpa publish ke npm. Kalau tidak ada Node, mirror `install.sh` di `wilsench.my.id` menjalankan kode yang sama persis.
 
 ## Apakah `curl | bash` aman?
 
