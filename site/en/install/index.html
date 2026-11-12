@@ -83,16 +83,20 @@
     <div class="pagegrid">
       <article class="prose">
         <h1 id="install-into-your-agent">Install into your agent</h1>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx wilsench/ironclad
+</code></pre></div>
+<p>Or, if you would rather not use Node:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 </code></pre></div>
-<p>That is the entire install. No questions, no menu, no second step.</p>
+<p>Both run the same installer. No questions, no menu, no second step.</p>
 <p>What it does:</p>
 <ol>
 <li>puts the skill in <code>~/.agents/skills/ironclad/</code> — the directory Codex, Cursor,
    opencode and Antigravity read</li>
 <li>adds an <code>ironclad</code> command to <code>~/.local/bin/</code></li>
 <li>writes the rule block into each agent's <strong>global</strong> config on this machine
-   (<code>~/.claude/CLAUDE.md</code>, <code>~/.codex/AGENTS.md</code>, <code>~/.gemini/GEMINI.md</code>, and so on)</li>
+   (<code>~/.claude/CLAUDE.md</code>, <code>~/.codex/AGENTS.md</code>, <code>~/.gemini/AGENTS.md</code> and
+   <code>~/.gemini/GEMINI.md</code> for Antigravity, <code>~/.config/opencode/AGENTS.md</code>, and so on)</li>
 </ol>
 <p>Step 3 is what makes the agent ask in any repo without anything from you. Agents
 whose config directory does not exist are left alone.</p>

@@ -19,12 +19,18 @@ understanding, the install is enough.
 ## Install
 
 ```bash
+npx wilsench/ironclad
+```
+
+Same installer without Node:
+
+```bash
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
 No questions, no second step. It puts the skill where your agent looks, adds an
 `ironclad` command to `~/.local/bin`, and writes the rule block into each agent's
-**global** config (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`,
+**global** config (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/AGENTS.md`, `~/.gemini/GEMINI.md`,
 `~/.cursor/rules/`, `~/.config/opencode/AGENTS.md`, `~/.agents/AGENTS.md`) — only for
 agents whose config directory already exists.
 

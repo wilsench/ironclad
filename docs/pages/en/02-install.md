@@ -9,10 +9,16 @@ summary: One command, no questions. The agent starts asking on its own — no se
 # Install into your agent
 
 ```bash
+npx wilsench/ironclad
+```
+
+Or, if you would rather not use Node:
+
+```bash
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
-That is the entire install. No questions, no menu, no second step.
+Both run the same installer. No questions, no menu, no second step.
 
 What it does:
 
@@ -20,7 +26,8 @@ What it does:
    opencode and Antigravity read
 2. adds an `ironclad` command to `~/.local/bin/`
 3. writes the rule block into each agent's **global** config on this machine
-   (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, and so on)
+   (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/AGENTS.md` and
+   `~/.gemini/GEMINI.md` for Antigravity, `~/.config/opencode/AGENTS.md`, and so on)
 
 Step 3 is what makes the agent ask in any repo without anything from you. Agents
 whose config directory does not exist are left alone.

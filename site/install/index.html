@@ -83,15 +83,20 @@
     <div class="pagegrid">
       <article class="prose">
         <h1 id="pasang-di-agent-kamu">Pasang di agent kamu</h1>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx wilsench/ironclad
+</code></pre></div>
+<p>Atau, kalau lebih suka tanpa Node:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 </code></pre></div>
-<p>Itu seluruh instalasinya. Tidak ada pertanyaan, tidak ada menu, tidak ada langkah kedua.</p>
+<p>Keduanya menjalankan installer yang sama. Tidak ada pertanyaan, tidak ada menu, tidak
+ada langkah kedua.</p>
 <p>Yang dilakukannya:</p>
 <ol>
 <li>menaruh skill di <code>~/.agents/skills/ironclad/</code> — folder yang dibaca Codex, Cursor, opencode, dan Antigravity</li>
 <li>menambahkan perintah <code>ironclad</code> ke <code>~/.local/bin/</code></li>
 <li>menulis blok aturan ke konfigurasi global tiap agent yang ada di mesinmu
-   (<code>~/.claude/CLAUDE.md</code>, <code>~/.codex/AGENTS.md</code>, <code>~/.gemini/GEMINI.md</code>, dan seterusnya)</li>
+   (<code>~/.claude/CLAUDE.md</code>, <code>~/.codex/AGENTS.md</code>, <code>~/.gemini/AGENTS.md</code> dan
+   <code>~/.gemini/GEMINI.md</code> untuk Antigravity/<code>agy</code>, <code>~/.config/opencode/AGENTS.md</code>, dan seterusnya)</li>
 </ol>
 <p>Langkah 3 itulah yang membuat agent bertanya sendiri di repo mana pun, tanpa kamu
 menjalankan apa-apa. Agent yang folder konfigurasinya tidak ada tidak disentuh.</p>

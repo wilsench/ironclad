@@ -9,17 +9,25 @@ summary: Satu perintah, tanpa pertanyaan. Agent langsung bertanya sendiri — ti
 # Pasang di agent kamu
 
 ```bash
+npx wilsench/ironclad
+```
+
+Atau, kalau lebih suka tanpa Node:
+
+```bash
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
-Itu seluruh instalasinya. Tidak ada pertanyaan, tidak ada menu, tidak ada langkah kedua.
+Keduanya menjalankan installer yang sama. Tidak ada pertanyaan, tidak ada menu, tidak
+ada langkah kedua.
 
 Yang dilakukannya:
 
 1. menaruh skill di `~/.agents/skills/ironclad/` — folder yang dibaca Codex, Cursor, opencode, dan Antigravity
 2. menambahkan perintah `ironclad` ke `~/.local/bin/`
 3. menulis blok aturan ke konfigurasi global tiap agent yang ada di mesinmu
-   (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, dan seterusnya)
+   (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/AGENTS.md` dan
+   `~/.gemini/GEMINI.md` untuk Antigravity/`agy`, `~/.config/opencode/AGENTS.md`, dan seterusnya)
 
 Langkah 3 itulah yang membuat agent bertanya sendiri di repo mana pun, tanpa kamu
 menjalankan apa-apa. Agent yang folder konfigurasinya tidak ada tidak disentuh.
