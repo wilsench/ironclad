@@ -97,9 +97,9 @@ created  .gemini/GEMINI.md     (Gemini CLI)
 </code></pre></div>
 <p>Itu yang dibaca agent <strong>di awal setiap sesi, di repo mana pun</strong> — tanpa kamu
 menjalankan apa pun.</p>
-<h2 id="3-opsional-kunci-aturan-per-repo">3. Opsional: kunci aturan per repo</h2>
-<p>Kalau kamu ingin aturan itu ikut git (supaya seluruh tim dan CI memakai jawaban
-yang sama), jalankan sekali di repo:</p>
+<h2 id="3-opsional-catat-keputusan-proyek">3. Opsional: catat keputusan proyek</h2>
+<p>Kalau kamu ingin jawaban "di proyek ini status disimpan bagaimana" ikut git —
+supaya anggota tim baru dan agent baru membaca hal yang sama — jalankan sekali:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">cd repo-kamu
 ironclad init
 </code></pre></div>
@@ -111,9 +111,9 @@ ironclad init
 Choose 1-3 [1]:
 </code></pre></div>
 <p>Lalu menulis:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>wrote   .agent/standards.yml      ← aturan repo ini (bisa di-review di PR)
-wrote   .agent/standards.md       ← penjelasan untuk manusia dan agent
-wrote   scripts/check_schema.py   ← pemeriksa, bisa dipakai CI
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>wrote   .agent/standards.md       ← catatan keputusan proyek, bukan buku aturan
+wrote   .agent/standards.yml      ← tingkat pemeriksaan, kalau kamu memakai checker
+wrote   scripts/check_schema.py   ← opsional: pendeteksi gaya campur, bisa dipakai CI
 
   created        AGENTS.md                             (Codex, opencode, dll)
   created        CLAUDE.md                             (Claude Code)
@@ -128,36 +128,36 @@ git commit -m &quot;chore: adopt ironclad standards&quot;
 <p>Yang terakhir itu kuncinya. Agent <strong>membaca berkas-berkas itu sendiri</strong> setiap
 kali kamu buka repo — tanpa kamu menyuruh, tanpa slash command, tanpa skill yang
 harus diaktifkan.</p>
-<p>Tanpa <code>ironclad init</code>, agent tetap bertanya dan tetap memakai default <code>balanced</code>
-dari skill. Yang hilang cuma dua: aturannya tidak ikut git, dan CI tidak punya
-berkas untuk dijalankan.</p>
+<p>Tanpa <code>ironclad init</code>, agent tetap bertanya dan tetap membaca kodebase. Yang hilang
+cuma dua: keputusan proyek tidak tercatat di git, dan CI tidak punya berkas untuk
+dijalankan.</p>
 <h2 id="4-kerjakan-seperti-biasa">4. Kerjakan seperti biasa</h2>
 <p>Buka agent, minta fitur apa pun yang menyentuh database. Yang terjadi:</p>
 <blockquote>
-<p><strong>Kamu:</strong> tolong tambahkan fitur pesanan: tabel orders dengan status, total, waktu dibuat</p>
-<p><strong>Agent:</strong> Ironclad: aturannya ditegakkan sambil kita menulis, atau diperiksa di akhir?</p>
+<p><strong>Kamu:</strong> tolong tambahkan kolom status ke tabel orders</p>
+<p><strong>Agent:</strong> Ironclad: di proyek ini status disimpan bagaimana — dan saya ikuti
+kodebase yang ada, atau cek dulu ke tim?</p>
 </blockquote>
-<p>Pilih salah satu, dan ia lanjut:</p>
-<ul>
-<li><strong>sambil</strong> — aturan diterapkan saat menulis, <code>ironclad check</code> dijalankan pada
-  tiap berkas sebelum dilaporkan selesai.</li>
-<li><strong>di akhir</strong> — ia menulis dulu, lalu memeriksa sebelum menutup pekerjaan dan
-  memperbaiki apa pun yang dilaporkan.</li>
-</ul>
-<p>Kamu tidak mengetik perintah apa pun. Agent yang menjalankannya.</p>
+<p>Lalu ia <strong>membaca repo lebih dulu</strong> (<code>grep -rn status</code>, migrasi, model). Kalau
+proyekmu sudah konsisten, ia ikut diam-diam — tidak ada upacara. Kalau ternyata
+ada dua gaya berbeda, ia menyebut keduanya beserta berkasnya dan menanyakan mana
+yang jadi standar. Ia tidak memilih sendiri.</p>
+<p>Kamu tidak mengetik perintah apa pun.</p>
 <h2 id="kenapa-ini-bekerja">Kenapa ini bekerja</h2>
 <p>Skill hanya dimuat kalau agent menilai ia relevan — dan penilaian itu sering
 terlambat: kode sudah ditulis sebelum skill dibaca. Berkas seperti <code>AGENTS.md</code>
 dan <code>CLAUDE.md</code> berbeda: itu dibaca <strong>setiap sesi, di awal</strong>, sebelum agent
 menjawab apa pun.</p>
-<p>Isi yang ditanamkan ke berkas itu:</p>
+<p>Isi yang ditanamkan ke berkas itu sengaja pendek — pemahaman, bukan buku aturan:</p>
 <ul>
-<li>kapan aturan berlaku (setiap perubahan schema, termasuk Laravel dan Prisma)</li>
-<li>pertanyaan yang harus diajukan lebih dulu, dan pilihannya</li>
-<li>delapan aturan dalam satu paragraf</li>
-<li>larangan membungkam checker demi build hijau</li>
-<li>kewajiban menyebut ID aturan saat menyimpang</li>
+<li>masalah yang dicegah: dua orang menyimpan hal yang sama dengan dua cara</li>
+<li>satu pertanyaan yang harus diajukan sebelum menulis apa pun soal status</li>
+<li>perintah membaca repo dulu, dan bahwa kodebase menang atas preferensi agent</li>
+<li>larangan menambah gaya kedua selagi keputusan belum ada</li>
 </ul>
+<p>Tidak ada daftar "pakai integer", tidak ada aturan penulisan query. Kalau kamu
+memang ingin jawabannya dicatat, <code>ironclad init</code> menulis <code>.agent/standards.md</code>
+berisi keputusan proyekmu — bukan aturan dari saya.</p>
 <h2 id="kalau-kamu-ingin-memilih-preset-tanpa-ditanya">Kalau kamu ingin memilih preset tanpa ditanya</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad init strict
 ironclad init legacy-friendly
@@ -192,7 +192,7 @@ kantor tetap utuh setelah blok Ironclad dicabut.</p>
         <div class="navlabel"><span>§</span>Di halaman ini</div>
         <ul><li class="lvl2"><a href="#1-pasang">1. Pasang</a></li>
 <li class="lvl2"><a href="#2-selesai-benar-benar-selesai">2. Selesai — benar-benar selesai</a></li>
-<li class="lvl2"><a href="#3-opsional-kunci-aturan-per-repo">3. Opsional: kunci aturan per repo</a></li>
+<li class="lvl2"><a href="#3-opsional-catat-keputusan-proyek">3. Opsional: catat keputusan proyek</a></li>
 <li class="lvl2"><a href="#4-kerjakan-seperti-biasa">4. Kerjakan seperti biasa</a></li>
 <li class="lvl2"><a href="#kenapa-ini-bekerja">Kenapa ini bekerja</a></li>
 <li class="lvl2"><a href="#kalau-kamu-ingin-memilih-preset-tanpa-ditanya">Kalau kamu ingin memilih preset tanpa ditanya</a></li>

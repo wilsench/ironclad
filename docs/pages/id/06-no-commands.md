@@ -31,10 +31,10 @@ created  .gemini/GEMINI.md     (Gemini CLI)
 Itu yang dibaca agent **di awal setiap sesi, di repo mana pun** — tanpa kamu
 menjalankan apa pun.
 
-## 3. Opsional: kunci aturan per repo
+## 3. Opsional: catat keputusan proyek
 
-Kalau kamu ingin aturan itu ikut git (supaya seluruh tim dan CI memakai jawaban
-yang sama), jalankan sekali di repo:
+Kalau kamu ingin jawaban "di proyek ini status disimpan bagaimana" ikut git —
+supaya anggota tim baru dan agent baru membaca hal yang sama — jalankan sekali:
 
 ```bash
 cd repo-kamu
@@ -54,9 +54,9 @@ Choose 1-3 [1]:
 Lalu menulis:
 
 ```
-wrote   .agent/standards.yml      ← aturan repo ini (bisa di-review di PR)
-wrote   .agent/standards.md       ← penjelasan untuk manusia dan agent
-wrote   scripts/check_schema.py   ← pemeriksa, bisa dipakai CI
+wrote   .agent/standards.md       ← catatan keputusan proyek, bukan buku aturan
+wrote   .agent/standards.yml      ← tingkat pemeriksaan, kalau kamu memakai checker
+wrote   scripts/check_schema.py   ← opsional: pendeteksi gaya campur, bisa dipakai CI
 
   created        AGENTS.md                             (Codex, opencode, dll)
   created        CLAUDE.md                             (Claude Code)
@@ -76,26 +76,25 @@ Yang terakhir itu kuncinya. Agent **membaca berkas-berkas itu sendiri** setiap
 kali kamu buka repo — tanpa kamu menyuruh, tanpa slash command, tanpa skill yang
 harus diaktifkan.
 
-Tanpa `ironclad init`, agent tetap bertanya dan tetap memakai default `balanced`
-dari skill. Yang hilang cuma dua: aturannya tidak ikut git, dan CI tidak punya
-berkas untuk dijalankan.
+Tanpa `ironclad init`, agent tetap bertanya dan tetap membaca kodebase. Yang hilang
+cuma dua: keputusan proyek tidak tercatat di git, dan CI tidak punya berkas untuk
+dijalankan.
 
 ## 4. Kerjakan seperti biasa
 
 Buka agent, minta fitur apa pun yang menyentuh database. Yang terjadi:
 
-> **Kamu:** tolong tambahkan fitur pesanan: tabel orders dengan status, total, waktu dibuat
+> **Kamu:** tolong tambahkan kolom status ke tabel orders
 >
-> **Agent:** Ironclad: aturannya ditegakkan sambil kita menulis, atau diperiksa di akhir?
+> **Agent:** Ironclad: di proyek ini status disimpan bagaimana — dan saya ikuti
+> kodebase yang ada, atau cek dulu ke tim?
 
-Pilih salah satu, dan ia lanjut:
+Lalu ia **membaca repo lebih dulu** (`grep -rn status`, migrasi, model). Kalau
+proyekmu sudah konsisten, ia ikut diam-diam — tidak ada upacara. Kalau ternyata
+ada dua gaya berbeda, ia menyebut keduanya beserta berkasnya dan menanyakan mana
+yang jadi standar. Ia tidak memilih sendiri.
 
-- **sambil** — aturan diterapkan saat menulis, `ironclad check` dijalankan pada
-  tiap berkas sebelum dilaporkan selesai.
-- **di akhir** — ia menulis dulu, lalu memeriksa sebelum menutup pekerjaan dan
-  memperbaiki apa pun yang dilaporkan.
-
-Kamu tidak mengetik perintah apa pun. Agent yang menjalankannya.
+Kamu tidak mengetik perintah apa pun.
 
 ## Kenapa ini bekerja
 
@@ -104,13 +103,16 @@ terlambat: kode sudah ditulis sebelum skill dibaca. Berkas seperti `AGENTS.md`
 dan `CLAUDE.md` berbeda: itu dibaca **setiap sesi, di awal**, sebelum agent
 menjawab apa pun.
 
-Isi yang ditanamkan ke berkas itu:
+Isi yang ditanamkan ke berkas itu sengaja pendek — pemahaman, bukan buku aturan:
 
-- kapan aturan berlaku (setiap perubahan schema, termasuk Laravel dan Prisma)
-- pertanyaan yang harus diajukan lebih dulu, dan pilihannya
-- delapan aturan dalam satu paragraf
-- larangan membungkam checker demi build hijau
-- kewajiban menyebut ID aturan saat menyimpang
+- masalah yang dicegah: dua orang menyimpan hal yang sama dengan dua cara
+- satu pertanyaan yang harus diajukan sebelum menulis apa pun soal status
+- perintah membaca repo dulu, dan bahwa kodebase menang atas preferensi agent
+- larangan menambah gaya kedua selagi keputusan belum ada
+
+Tidak ada daftar "pakai integer", tidak ada aturan penulisan query. Kalau kamu
+memang ingin jawabannya dicatat, `ironclad init` menulis `.agent/standards.md`
+berisi keputusan proyekmu — bukan aturan dari saya.
 
 ## Kalau kamu ingin memilih preset tanpa ditanya
 

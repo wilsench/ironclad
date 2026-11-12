@@ -1,10 +1,20 @@
 # Ironclad
 
-**Your team's engineering rules, enforced by the agent — not by memory.**
+**Make the AI agent understand that the database belongs to the team — not to it.**
 
-A skill for AI coding agents. Ten people vibe-code the same app, nobody reads the same wiki, and six months later the schema is a museum of individual taste. Ironclad gives every agent the same rulebook, the same decision procedure, and a linter that fails the build when someone drifts.
+A skill for AI coding agents. Two developers, one database: one stores status as
+`ENUM('paid')`, the other as `status_code = 2`. Both pass review. Six months later
+reports need a branch per table, new code has to guess, and nobody can say which is
+current.
 
-Ships a worked database policy as the headline example — **integer codes + lookup table + FK, not `enum`** — because that is the drift that hurts most and shows up latest.
+Ironclad changes one thing: before an agent writes anything that stores status, it
+**asks which way this project does it, and reads the codebase to check** — instead of
+quietly adding a second style.
+
+**It is not a style guide.** There is no house rule about how to write a query, and
+you do not have to adopt one. If you want your team's answer written down and checked
+automatically, the repo ships that as optional tooling; if you only wanted the
+understanding, the install is enough.
 
 ## Install
 
@@ -19,20 +29,20 @@ No questions, no second step. It puts the skill where your agent looks, adds an
 agents whose config directory already exists.
 
 That last part is why there is nothing else to do: the agent reads it at the start of
-every session, in any repo, and asks **"enforce the rules while we write, or check at
-the end?"** before touching schema.
+every session, in any repo, and asks **"which way does this project store status —
+follow the codebase, or check with the team first?"** before touching schema.
 
-Optional, once per repo, to pin the rules in git so teammates and CI share one answer:
+Optional, once per repo, to record your project's decision in git:
 
 ```bash
-ironclad init           # writes .agent/ + scripts/
-ironclad check          # verdict in a second, writes nothing
-ironclad preset strict  # switch strictness later, no reinstall
+ironclad init           # writes .agent/standards.md — a decision record
+ironclad check          # does this repo store status more than one way?
+ironclad preset strict  # severity levels, if you use the checker
 ```
 
-`init` writes `.agent/standards.md`, `.agent/standards.yml`,
-`scripts/check_schema.py`, and `scripts/presets/`. Commit all four — otherwise
-the next teammate gets a different rulebook.
+`init` writes `.agent/standards.md` (the decision record) plus, if you use the
+checker, `.agent/standards.yml`, `scripts/check_schema.py`, and `scripts/presets/`.
+Commit them — otherwise the next teammate reads a different answer.
 
 **Needs Python 3.8+** (preinstalled on macOS, most Linux, Termux) to write the block
 and to run the checker. Without `python3` the installer exits 3 and tells you how to
@@ -49,9 +59,15 @@ Hermes users can also install through the hub:
 hermes skills install wilsench/ironclad/skills/ironclad
 ```
 
-## Strictness is a setting, not a hardcoded opinion
+## Optional: the checker
 
-`ironclad init` defaults to `balanced`. The choice lands in `.agent/standards.yml` inside your repo — committed, reviewable, changeable later with `ironclad preset`, no reinstall.
+Everything below is for teams that want machine-checked consistency. None of it is
+required for the agent to understand the problem, and a repo that skips it is not
+"wrong" — it just has no automated record.
+
+`ironclad init` defaults to `balanced`. The choice lands in `.agent/standards.yml`
+inside your repo — committed, reviewable, changeable later with `ironclad preset`,
+no reinstall.
 
 | Preset | Blocks the build | Only warns | For |
 |---|---|---|---|
@@ -59,7 +75,7 @@ hermes skills install wilsench/ironclad/skills/ironclad
 | `balanced` **(default)** | DB-01, DB-02, DB-04 | the rest | normal product work |
 | `strict` | everything | — | finance, health, anything audited |
 
-The wizard pre-selects `balanced`, and non-interactive installs fall back to it silently — so an agent never blocks on a question it cannot ask. Switch whenever:
+`init` asks which level once, when a human is at the terminal, and stays silent in CI. Switch whenever:
 
 ```bash
 python3 scripts/init_standards.py . --preset strict --force
@@ -145,7 +161,7 @@ skills/ironclad/
 ├── assets/presets/*.yml      # balanced · legacy-friendly · strict
 └── scripts/
     ├── check_schema.py       # SQL / Laravel / Prisma linter
-    └── init_standards.py     # wizard + bootstrap
+    └── init_standards.py     # bootstrap
 ```
 
 Publishing your own fork: `./scripts/set-repo-owner.sh <username>`, then follow [PUBLISH.md](PUBLISH.md).

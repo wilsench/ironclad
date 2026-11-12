@@ -1,132 +1,153 @@
 ---
 name: ironclad
-description: "Use when several developers share one database — keep status/field choices consistent across the team."
-version: 0.5.0
+description: "Use when several developers share one database — make sure everyone stores status the same way before the agent writes schema."
+version: 0.6.0
 author: Chia Wilsen, Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
   hermes:
-    tags: [conventions, database, schema, code-review, team-standards]
+    tags: [conventions, database, schema, team-consistency, code-review]
     related_skills: [requesting-code-review, codebase-inspection]
 ---
 
 # Ironclad
 
-**The problem it solves:** two developers on one project, both touching the database, choosing different ways to store the same thing — one writes `status ENUM('paid')`, the other writes `status_code = 2`. Both work. Together they make the project unmaintainable: reports need branches, new code guesses, "how do we add a status?" has two answers, and nobody can say which one is current.
+**What this is:** a way to make an AI agent understand one thing before it touches
+your database — that the schema belongs to the team, not to the agent.
 
-Ironclad makes that choice **once, in a file the repo owns**, so every developer and every agent reads the same answer before writing a line. It ships the policy file (`.agent/standards.md`), a decision procedure the agent follows, and a checker CI can enforce. This skill is the executor, not the rulebook.
+**What this is not:** a style guide. There is no house rule about how to write a
+query, and no requirement that you adopt one. Read this section and you have the
+whole idea.
 
-The default answer is **integer code + lookup table + foreign key** — not because enums are forbidden, but because adding an integer code is one row of data while adding an enum value is `ALTER TABLE`. If a team chooses otherwise, it must be written down and checked, not assumed. `DB-08` catches the failure this exists to prevent: one project storing status two different ways.
+## The failure it exists to prevent
 
-Ships with a worked database policy because that is where teams drift fastest; the same shape extends to any domain via `references/extending.md`.
+Two developers, one database, both adding a status. One writes:
 
-## Install (one line, any agent)
+```sql
+status ENUM('new','paid','cancelled')
+```
+
+The other writes:
+
+```sql
+status_code smallint NOT NULL  -- 1 new, 2 paid, 3 cancelled
+```
+
+Both are correct. Both pass review. Together they make the project unmaintainable:
+reports need a branch per table, new code has to guess, "how do we add a status?"
+has two answers, and nobody can say which one is current. It shows up months later,
+when the data is already split.
+
+The problem is not `enum`. The problem is **nobody agreed**, and the agent that
+wrote the second one never noticed the first.
+
+## What the agent should do
+
+One question, before writing anything that stores status:
+
+> **Ironclad: which way does this project store status — and should I follow the
+> codebase, or check with the team first?**
+
+Then:
+
+1. **Look first.** `grep -rn status` in the repo — migrations, models, the actual
+   data layer. The codebase wins over the agent's preference. If it is already
+   consistent, follow it silently; no ceremony.
+2. **If it is inconsistent, name it once** — both styles, both files — and ask which
+   becomes the project standard. Do not choose for the team.
+3. **Do not add a second style while a decision is pending.** Ask, then wait.
+
+That is the entire behaviour. The agent does not need to know which style is
+"better"; it needs to know that it is not the one who decides.
+
+## Why asking beats a rule
+
+A rule in a skill is advice to one model in one session. The next developer uses a
+different agent, or the same agent in a new chat, and the rule is gone. Agreement
+that lives only in a prompt is not agreement.
+
+So the durable form is: **the repo answers, and the agent asks the repo.**
+
+If your team wants that answer written down and checked automatically, Ironclad
+ships optional tooling for it — a policy file, a linter, presets. You do not need
+any of it to get the understanding. Skip the rest of this file if that is all you
+wanted.
+
+## Optional: write the answer down
+
+If you want the decision to survive a new teammate and a new agent:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash          # ~/.agents/skills
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project .
+ironclad init                 # writes .agent/standards.md — a human-readable record
+git add .agent && git commit  # the answer now travels with the code
 ```
 
-Docs: <https://wilsench.my.id/ironclad/>. Python is not needed to install; only the checker needs it.
+`.agent/standards.md` is prose, not a rulebook. It answers one question: *how do we
+store status here, and why.* Reviewers read it, agents read it, and a disagreement
+becomes a diff instead of an argument.
 
-## When to Use
+## Optional: let a machine check it
 
-- Starting a new app, module, or migration inside the company
-- Reviewing someone else's schema or PR against company rules
-- A user says "we don't do it that way here" and you need it to hold for every future build
-- Don't use for: one-off scripts with no persistence, or repos with no standards file (bootstrap one with `ironclad init` instead)
-
-## Two-Layer Model (this is the whole point)
-
-| Layer | Lives in | Enforced by |
-|---|---|---|
-| Policy — what the company wants | `.agent/standards.md`, git-versioned | Code review + this skill |
-| Mechanism — what a machine can check | `scripts/check_schema.py` | CI, pre-commit, agent before commit |
-
-Never hardcode company rules in this skill. A rule that only exists in a skill does not exist for a new teammate or a new agent, and it will drift. Put it in `.agent/standards.md`, give it an ID (`DB-04`), cite that ID when you report.
-
-## Three Presets, One Default
-
-The guardrail level is a **file in the repo** (`.agent/standards.yml`), not a fact baked into this skill. Default is `balanced`.
-
-| Preset | Blocks | Warns | Use when |
-|---|---|---|---|
-| `balanced` *(default)* | DB-01, DB-02, DB-04 | DB-03, DB-05, DB-06, DB-07, DB-08 | normal product work |
-| `legacy-friendly` | — | all | brownfield repo with existing debt |
-| `strict` | all | — | regulated, audit-bearing, finance/health |
+`ironclad check` reads the repo and reports where status is stored more than one
+way. It is a **consistency detector**, not a style enforcer.
 
 ```bash
-ironclad init                 # balanced, writes .agent/ + scripts/
-ironclad check                # uses .agent/standards.yml if present
-ironclad preset strict        # switch later, no reinstall
-python3 scripts/check_schema.py --list-presets
+ironclad check                # does this repo store status one way?
+ironclad check --json         # same, for CI
+ironclad verify               # did my agent actually understand? (see below)
 ```
 
-No wizard, nothing to answer: `ironclad init` never prompts, so it is safe to
-run from an agent or CI. Switching later = `ironclad preset <name>` or edit
-`.agent/standards.yml` directly. Details in `references/presets.md`.
+Its eight rules are documented in `references/database.md`. They exist so the tool
+can point at evidence. Nothing in this skill requires your code to pass them, and a
+repo that ignores the checker is not "wrong" — it just has no automated record.
 
-## Procedure
+## Optional: prove the agent understood
 
-1. **Read the policy, and the existing choice.** `read_file` on `.agent/standards.md`. If missing, run `ironclad init` — it writes both `standards.md` (human) and `standards.yml` (severity config) with the `balanced` preset, and never prompts. Then find out how this project *already* stores status: `grep -rn "status" --include=*.sql --include=*.prisma --include=*.php .` If the project already chose enum or text, follow it and say so — consistency with the codebase beats your preference. Only when nothing exists yet do you apply the default (integer + lookup). Completion: you can name the rule IDs governing the tables you touch, the active preset, and which status style the repo already uses.
-2. **Classify every status-like field** using the decision table in `references/database.md` *before* writing DDL. Completion: each field has a written verdict and a one-line reason.
-3. **Design the schema** per the verdict — integer code + lookup table + FK + constraint + app-level named constants. Match the style the project already uses; if that style contradicts the policy, flag it once (DB-08) instead of quietly writing a third style.
-4. **Write the migration** per the naming rule. No bare integer literal compared against a status field in app code.
-5. **Run the checker** — `python3 scripts/check_schema.py <paths> --json`. Exit 0 required. Fix the schema; do not suppress the rule. Downgrading a rule to `warn`/`off` in `.agent/standards.yml` is a reviewed decision, not a shortcut — say so explicitly.
-6. **Report with citations.** Every deviation gets a line: rule ID, what you did instead, why. Undocumented deviation is a defect.
+Talking to an agent about rules proves nothing; a model will agree with anything.
+This runs the agent in a clean repo and grades the schema it produced against what
+the repo already does:
 
-## Quick Reference
-
-```
-ironclad init                                          # → .agent/standards.{md,yml}
-ironclad preset strict                                 # switch the active preset
-ironclad drill --selftest                              # prove the checker gates correctly
-ironclad drill --prompt                                # a task to hand your agent, no hints
-ironclad drill answer.sql                              # grade what the agent produced
-python3 scripts/check_schema.py . --json               # auto-uses .agent/standards.yml
-python3 scripts/check_schema.py . --preset legacy-friendly
-python3 scripts/check_schema.py --list-presets
+```bash
+ironclad drill --prompt       # hands the agent a task with no hints
+ironclad drill answer.sql     # scores the result, exit 1 if it drifted
 ```
 
-Rules: `DB-01` enum in schema, `DB-02` magic number on a status field, `DB-03` status integer with no FK/CHECK, `DB-04` text status column, `DB-05` boolean named for a non-binary concept, `DB-06` money as float, `DB-07` timestamp without timezone, `DB-08` the project mixes status styles (enum in one table, integer in another).
+`ironclad drill --selftest` checks the grader itself still works.
 
-Resolution order for severity: `--config` > `--preset` > `.agent/standards.yml` > built-in `balanced`.
+## When to use this skill
 
-## Verification
+- Two or more people (or agents) write schema in one database
+- You are about to add a status/state/type field and are not sure of the convention
+- An agent is about to write a migration in a repo it has never seen
 
-- Checker exits 0 on the repo.
-- Every status field has a verdict recorded in the PR/report.
-- Adding one status value is doable with a single data migration — prove it by writing that migration, not by asserting it.
-- `ironclad check` reports no DB-08: the whole project stores status one way, not per table or per developer.
-- `ironclad drill --selftest` passes. If it does not, the gate is broken and every green check after it is meaningless.
-- When someone asks "how do I know the agent learned this?", the answer is `ironclad drill --prompt` then `ironclad drill answer.sql` — not an assertion that it did.
-- Agent report cites a rule ID for each deviation.
+**Do not use it** for one-off scripts with no persistence, or to enforce formatting
+preferences nobody on the team asked for.
 
 ## Pitfalls
 
-1. **Shipping the skill without the policy file.** Agents then invent rules. Bootstrap `.agent/standards.md` in the same commit.
-2. **Treating the skill as enforcement.** A skill advises; a model can ignore it. The checker in CI is what makes standards hold across many programmers.
-3. **`CHECK` constraints are the exception, not a violation.** Literal codes inside `CHECK (...)` are correct DDL. The checker tracks paren depth and ignores them — do not "fix" a real constraint to silence a false positive.
-4. **Over-constraining at the DB layer while claiming flexibility.** If a `CHECK` hardcodes every legal code, you rebuilt an enum. Validate via FK to the lookup table instead.
-5. **Boolean growth.** Confirm a field cannot become 3-state before committing to `boolean`.
-6. **Substring-matching status words false-positives.** `mimeType`, `prototype`, `fileType` are not status columns. Match whole segments (`(?<![a-z])type`) and validate the checker against a real repo before trusting it in CI.
-7. **Running the checker on legacy code floods the report.** Start report-only, then gate changed files — otherwise the team disables the check outright.
-8. **Suppressing the checker to ship.** If a rule is genuinely wrong, change `.agent/standards.md` in review — that is the escape hatch.
-9. **Putting the preset in the skill instead of the repo.** A preset chosen in the skill file is invisible to CI and to the next teammate. The active preset must live in `.agent/standards.yml`, committed alongside the code.
-10. **Copying the checker without the presets.** `check_schema.py` reads presets from its own `scripts/presets/` when installed into a repo and from `assets/presets/` when running from the skill. Ship only the `.py` and `--preset` dies with `unknown preset`. Use `--with-checker`, which copies both.
-11. **`warn` is not a mute button.** A repo that warns on everything forever is a repo with no standard. Either fix the findings or move to a preset where they are errors; say which, in the PR.
+1. **Treating the agent's preference as the standard.** It should read the repo, not
+   decide. If it proposes `integer + lookup` in a repo that uses `enum`, that is the
+   exact failure — even though integer is often the better default.
+2. **Letting the question become a gate.** One line, then work. An agent that stops
+   to interrogate the user about every field is not helping.
+3. **Assuming a skill auto-loads.** Skills are picked by relevance; the standing
+   instruction in `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` is what makes the agent ask
+   reliably. That block is installed for you.
+4. **Mistaking a green check for an agreed standard.** A checker can only see what it
+   can parse. A repo with no schema files it understands exits 2 — that is "I could
+   not look", not "all clear".
+5. **Silencing the checker to ship.** If it is wrong, say so and change
+   `.agent/standards.yml` in a review. Never `|| true` your way past it.
 
 ## Files
 
-- `references/database.md` — full decision table, worked examples, migration rules
-- `references/presets.md` — how the three presets differ, how to write a custom one
-- `references/extending.md` — adding a non-database rule domain and checker rule
-- `templates/standards.md` — the policy file to copy into a repo
-- `assets/presets/balanced.yml` — the default level
-- `assets/presets/strict.yml` — everything blocks
-- `assets/presets/legacy-friendly.yml` — everything warns
-- `scripts/check_schema.py` — SQL / Laravel migration / Prisma linter
-- `scripts/init_standards.py` — bootstrap behind `ironclad init`; with `--with-checker` it copies the checker **and** the presets into the target repo (`scripts/presets/`), so `--preset` keeps working after the skill directory is gone
-- `bin/ironclad` — the `check` / `init` / `preset` / `status` command the installer links into `~/.local/bin`
+- `references/database.md` — the eight consistency rules, with examples
+- `references/presets.md` — severity levels, if you use the checker
+- `references/extending.md` — applying the same idea beyond databases
+- `templates/standards.md` — the prose record to copy into a repo
+- `assets/presets/*.yml` — `balanced` (default), `strict`, `legacy-friendly`
+- `scripts/check_schema.py` — consistency detector for SQL, Laravel, Prisma
+- `scripts/agent_files.py` — writes/removes the standing instruction block
+- `scripts/drill.py` — `--prompt`, `--grade`, `--selftest`
+- `bin/ironclad` — the `check` / `init` / `preset` / `drill` / `attach` command

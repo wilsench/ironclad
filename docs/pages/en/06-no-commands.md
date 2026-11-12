@@ -31,10 +31,10 @@ created  .gemini/GEMINI.md     (Gemini CLI)
 That is what the agent reads **at the start of every session, in any repo** — with
 nothing for you to run.
 
-## 3. Optional: pin the rules per repo
+## 3. Optional: record the project's decision
 
-If you want the rules committed so every teammate and CI share the same answer, run
-this once per repo:
+If you want the answer to "how does this project store status" committed — so a new
+teammate and a new agent read the same thing — run this once:
 
 ```bash
 cd your-repo
@@ -84,18 +84,17 @@ file to run.
 
 Open your agent, ask for any feature that touches the database. What happens:
 
-> **You:** add an order feature: orders table with status, total, created time
+> **You:** add a status column to the orders table
 >
-> **Agent:** Ironclad: enforce the rules while we write, or check at the end?
+> **Agent:** Ironclad: how does this project store status — and should I follow the
+> existing codebase, or check with the team first?
 
-Pick one and it proceeds:
+Then it **reads the repo first** (`grep -rn status`, migrations, models). If your
+project is already consistent it follows it silently — no ceremony. If it finds two
+different styles it names both, with the files, and asks which one becomes the
+standard. It does not pick for you.
 
-- **while** — rules applied as it writes, `ironclad check` run on each file before
-  reporting it done.
-- **end** — it writes first, then checks before finishing and fixes everything
-  reported.
-
-You type no commands. The agent runs them.
+You type no commands.
 
 ## Why this works
 
@@ -104,13 +103,16 @@ often comes too late: the code is written before the skill is read. Files like
 `AGENTS.md` and `CLAUDE.md` are different: they are read **every session, up
 front**, before the agent answers anything.
 
-What goes into those files:
+What goes into those files is deliberately short — understanding, not a rulebook:
 
-- when the rules apply (any schema change, Laravel and Prisma included)
-- the question to ask first, and the choices
-- the eight rules in one paragraph
-- the ban on silencing the checker to get a green build
-- the obligation to cite a rule ID when deviating
+- the failure being prevented: two people storing the same thing two ways
+- the one question to ask before writing anything about status
+- read the repo first, and the codebase wins over the agent's preference
+- do not add a second style while the decision is pending
+
+No "use integers" list, no query-writing rules. If you do want the answer recorded,
+`ironclad init` writes `.agent/standards.md` containing *your project's* decision —
+not mine.
 
 ## Choosing a preset without being asked
 
@@ -119,8 +121,8 @@ ironclad init strict
 ironclad init legacy-friendly
 ```
 
-The default is `balanced`, and the agent still asks which preset to use when
-`.agent/` is missing — it does not pick silently.
+The default is `balanced`. Without `ironclad init`, the agent simply reads the
+codebase — it does not stop to interrogate you about presets.
 
 ## If you do not want AGENTS.md touched
 

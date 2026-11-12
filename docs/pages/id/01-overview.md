@@ -176,7 +176,8 @@ isi berkas YAML-nya.
 - Pemeriksanya bekerja dengan pencocokan pola, bukan pemahaman. Ia bisa salah
   menandai kode yang sebenarnya benar, dan bisa melewatkan yang seharusnya
   ditandai. Manusia tetap lapis terakhir.
-- Ia tahu delapan aturan tentang database. Bukan dua ratus.
+- Kalau kamu memakai checker-nya, ia tahu delapan pola tentang status di database.
+  Bukan dua ratus. Yang ditanamkan ke agent cukup satu pemahaman, bukan daftar aturan.
 - **Ia tidak bisa memaksa orang membaca.** Kalau ada developer yang mengabaikan
   `.agent/standards.md` dan CI-nya tidak dipasang, tidak ada yang menangkap.
   Yang membuatnya bekerja adalah CI, bukan niat baik.

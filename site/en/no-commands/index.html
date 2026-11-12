@@ -97,9 +97,9 @@ created  .gemini/GEMINI.md     (Gemini CLI)
 </code></pre></div>
 <p>That is what the agent reads <strong>at the start of every session, in any repo</strong> — with
 nothing for you to run.</p>
-<h2 id="3-optional-pin-the-rules-per-repo">3. Optional: pin the rules per repo</h2>
-<p>If you want the rules committed so every teammate and CI share the same answer, run
-this once per repo:</p>
+<h2 id="3-optional-record-the-projects-decision">3. Optional: record the project's decision</h2>
+<p>If you want the answer to "how does this project store status" committed — so a new
+teammate and a new agent read the same thing — run this once:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">cd your-repo
 ironclad init
 </code></pre></div>
@@ -134,36 +134,36 @@ file to run.</p>
 <h2 id="4-work-as-usual">4. Work as usual</h2>
 <p>Open your agent, ask for any feature that touches the database. What happens:</p>
 <blockquote>
-<p><strong>You:</strong> add an order feature: orders table with status, total, created time</p>
-<p><strong>Agent:</strong> Ironclad: enforce the rules while we write, or check at the end?</p>
+<p><strong>You:</strong> add a status column to the orders table</p>
+<p><strong>Agent:</strong> Ironclad: how does this project store status — and should I follow the
+existing codebase, or check with the team first?</p>
 </blockquote>
-<p>Pick one and it proceeds:</p>
-<ul>
-<li><strong>while</strong> — rules applied as it writes, <code>ironclad check</code> run on each file before
-  reporting it done.</li>
-<li><strong>end</strong> — it writes first, then checks before finishing and fixes everything
-  reported.</li>
-</ul>
-<p>You type no commands. The agent runs them.</p>
+<p>Then it <strong>reads the repo first</strong> (<code>grep -rn status</code>, migrations, models). If your
+project is already consistent it follows it silently — no ceremony. If it finds two
+different styles it names both, with the files, and asks which one becomes the
+standard. It does not pick for you.</p>
+<p>You type no commands.</p>
 <h2 id="why-this-works">Why this works</h2>
 <p>A skill is only loaded when the agent judges it relevant — and that judgement
 often comes too late: the code is written before the skill is read. Files like
 <code>AGENTS.md</code> and <code>CLAUDE.md</code> are different: they are read <strong>every session, up
 front</strong>, before the agent answers anything.</p>
-<p>What goes into those files:</p>
+<p>What goes into those files is deliberately short — understanding, not a rulebook:</p>
 <ul>
-<li>when the rules apply (any schema change, Laravel and Prisma included)</li>
-<li>the question to ask first, and the choices</li>
-<li>the eight rules in one paragraph</li>
-<li>the ban on silencing the checker to get a green build</li>
-<li>the obligation to cite a rule ID when deviating</li>
+<li>the failure being prevented: two people storing the same thing two ways</li>
+<li>the one question to ask before writing anything about status</li>
+<li>read the repo first, and the codebase wins over the agent's preference</li>
+<li>do not add a second style while the decision is pending</li>
 </ul>
+<p>No "use integers" list, no query-writing rules. If you do want the answer recorded,
+<code>ironclad init</code> writes <code>.agent/standards.md</code> containing <em>your project's</em> decision —
+not mine.</p>
 <h2 id="choosing-a-preset-without-being-asked">Choosing a preset without being asked</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad init strict
 ironclad init legacy-friendly
 </code></pre></div>
-<p>The default is <code>balanced</code>, and the agent still asks which preset to use when
-<code>.agent/</code> is missing — it does not pick silently.</p>
+<p>The default is <code>balanced</code>. Without <code>ironclad init</code>, the agent simply reads the
+codebase — it does not stop to interrogate you about presets.</p>
 <h2 id="if-you-do-not-want-agentsmd-touched">If you do not want AGENTS.md touched</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad init --no-agent-files
 </code></pre></div>
@@ -192,7 +192,7 @@ intact after the Ironclad block is pulled out.</p>
         <div class="navlabel"><span>§</span>On this page</div>
         <ul><li class="lvl2"><a href="#1-install">1. Install</a></li>
 <li class="lvl2"><a href="#2-done-actually-done">2. Done — actually done</a></li>
-<li class="lvl2"><a href="#3-optional-pin-the-rules-per-repo">3. Optional: pin the rules per repo</a></li>
+<li class="lvl2"><a href="#3-optional-record-the-projects-decision">3. Optional: record the project's decision</a></li>
 <li class="lvl2"><a href="#4-work-as-usual">4. Work as usual</a></li>
 <li class="lvl2"><a href="#why-this-works">Why this works</a></li>
 <li class="lvl2"><a href="#choosing-a-preset-without-being-asked">Choosing a preset without being asked</a></li>

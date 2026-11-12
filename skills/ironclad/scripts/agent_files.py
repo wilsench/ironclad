@@ -25,47 +25,31 @@ from pathlib import Path
 BEGIN = "<!-- ironclad:begin v1 -->"
 END = "<!-- ironclad:end -->"
 
-BODY = """## Ironclad — database rules for this repo
+BODY = """## Ironclad — agree the team on one way to store status
 
-Applies to any change to database schema: SQL migrations, Laravel `Schema::` /
-`$table->`, Prisma models, or ORM entities.
+Database work on this project is shared. The failure this catches is not a bad
+query — it is two people storing the same thing two different ways in one database:
+one writes `status ENUM('paid')`, the other writes `status_code = 2`. Both work.
+Together the project becomes unmaintainable: reports branch, new code guesses, and
+"how do we add a status?" has two answers.
 
-**Before you write schema code, ask one question — one line, then wait:**
+**So before you write anything that touches status, ask — one line, then wait:**
 
-> Ironclad: enforce the rules while we write, or check at the end?
+> Ironclad: which way does this project store status — and do you want me to follow
+> the codebase, or check with the team first?
 
-- **while** — apply the rules as you write, and run `ironclad check` on each file
-  you touch before reporting it done.
-- **end** — write first, then run `ironclad check` before you finish and fix
-  everything it reports.
+Then:
 
-If `.agent/standards.md` does not exist yet, say so and ask which preset the repo
-should use (`balanced` is the default; `strict` blocks everything;
-`legacy-friendly` warns only), then run `ironclad init <preset>`. Do not pick
-silently.
+- **read first.** Before you propose anything, look at how status is already stored
+  in this repo (`grep -rn status`, the migrations, the models). The codebase wins
+  over your preference. If it is already consistent, follow it silently.
+- **if it is not consistent, say so once** — name both styles and the files — and
+  ask which one becomes the project standard. Do not pick for them.
+- **do not add a second style while a decision is pending.** Ask, then wait, rather
+  than shipping something that will have to be reverted.
 
-### The rules the checker enforces
-
-`DB-01` no native enum · `DB-02` no magic number against a status column
-`DB-03` status integer needs a FK or CHECK · `DB-04` never store a human label as
-status · `DB-05` boolean only for real binaries · `DB-06` money as integer minor
-units, not float · `DB-07` timestamps carry a timezone · `DB-08` one project, one
-way to store status.
-
-Default answer for status: **integer code + lookup table + foreign key**, with
-named constants in application code. If the repo already stores status another
-way, follow the repo — consistency beats your preference — and report the
-disagreement once instead of quietly adding a second style.
-
-### Non-negotiables
-
-- Never silence the checker (`|| true`, `--no-verify`, deleting a rule) to make a
-  build pass. Fix the schema, or explain why the rule is wrong for this repo and
-  let the user change `.agent/standards.yml` in a reviewed commit.
-- Cite the rule ID (`DB-03`) for every deviation you report.
-- If the checker says it cannot read your stack, do not treat that as a pass.
-
-Run it yourself: `ironclad check`. The user should not have to.
+You are not the one deciding how the schema is written. You are making sure that
+whatever gets decided, everyone sees the same answer.
 """
 
 # Per-repo: only files this repo owns. Written by `ironclad init`.
