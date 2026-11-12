@@ -1,0 +1,25 @@
+{
+  "name": "ironclad-db-standards",
+  "version": "0.8.0",
+  "private": true,
+  "description": "Ironclad — one way to store status per project. Installs a standing instruction into every AI coding agent's config.",
+  "license": "MIT",
+  "bin": {
+    "ironclad": "cli/index.mjs"
+  },
+  "files": [
+    "cli/index.mjs",
+    "install.sh",
+    "skills/ironclad/**/*",
+    "!**/__pycache__/**",
+    "!**/*.pyc"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wilsench/ironclad.git"
+  },
+  "homepage": "https://wilsench.my.id/ironclad/"
+}
