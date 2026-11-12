@@ -55,7 +55,7 @@ Kirim ke **satu** orang, sebaiknya yang memakai agent berbeda darimu. Yang perlu
 mereka lakukan hanya satu perintah:
 
 ```bash
-npx github:wilsench/ironclad#v0.9.0 --mode house
+npx github:wilsench/ironclad#v0.9.1 --mode house
 ```
 
 `--mode house` yang membuat semua orang otomatis memakai gaya yang sama untuk tabel

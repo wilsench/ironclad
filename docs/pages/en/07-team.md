@@ -55,7 +55,7 @@ Send it to **one** person, ideally one who uses a different agent than you. All 
 have to run is:
 
 ```bash
-npx github:wilsench/ironclad#v0.9.0 --mode house
+npx github:wilsench/ironclad#v0.9.1 --mode house
 ```
 
 `--mode house` is what makes everyone default to the same style for new tables. Without

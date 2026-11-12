@@ -1,7 +1,7 @@
 ---
 name: ironclad
 description: "Use when several developers share one database — make sure everyone stores status the same way before the agent writes schema."
-version: 0.9.0
+version: 0.9.1
 author: Chia Wilsen, Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
