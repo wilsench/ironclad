@@ -68,7 +68,11 @@ ENUM_PATTERNS = [
     (re.compile(r"\$\w+\s*->\s*enum\s*\(", re.I), "Laravel $table->enum()"),
     (re.compile(r"\bALTER\s+TABLE\b[^;]*\bADD\s+COLUMN\b[^;]*\benum\s*\(", re.I),
      "SQL enum column"),
-    (re.compile(r"^\s*\w+\s+enum\s*\(", re.I | re.M), "SQL/prisma enum column"),
+    # Not anchored to the line: `CREATE TABLE t (id bigint, status enum('a','b'))` is
+    # the shape people actually write, and an anchored pattern let every one-line
+    # definition through as a pass. Requires a word before `enum(` so a bare
+    # `ENUM(...)` in an INSERT/type cast is not mistaken for a column definition.
+    (re.compile(r"[\w\"]\s+enum\s*\(", re.I), "SQL/prisma enum column"),
     (re.compile(r"^\s*enum\s+\w+\s*\{", re.I | re.M), "prisma enum block"),
 ]
 

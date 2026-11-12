@@ -57,8 +57,10 @@ cmd_check() {
 # Ask only when a human is actually there. `curl | bash` and CI have no tty, and a
 # prompt there would hang the pipeline — so the default applies silently instead.
 ask_preset() {
+  # An explicit choice wins over everything, including CI. This used to be checked
+  # after the tty test, so IRONCLAD_PRESET=strict was silently ignored in a pipeline.
+  if [ -n "${IRONCLAD_PRESET:-}" ]; then echo "$IRONCLAD_PRESET"; return; fi
   [ -t 0 ] || { echo "balanced"; return; }
-  [ -n "${IRONCLAD_PRESET:-}" ] && { echo "$IRONCLAD_PRESET"; return; }
   echo >&2
   echo "How strict should this repo be?" >&2
   echo "  1) balanced  (default) — enum and text status block, the rest warn" >&2
