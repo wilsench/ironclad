@@ -10,7 +10,7 @@ Ships a worked database policy as the headline example — **integer codes + loo
 
 ```bash
 # 1. install the skill into the agent
-hermes skills install <owner>/ironclad/skills/ironclad
+hermes skills install wilsench/ironclad/skills/ironclad
 
 # 2. bootstrap the policy into YOUR repo (asks the strictness, balanced pre-picked)
 cd your-project && python3 scripts/init_standards.py . --with-checker
@@ -25,10 +25,10 @@ Step 2 writes `.agent/standards.md` + `.agent/standards.yml` + `scripts/check_sc
 
 ```bash
 # Hermes
-hermes skills install <owner>/ironclad/skills/ironclad
+hermes skills install wilsench/ironclad/skills/ironclad
 
 # Claude Code / Codex / Cursor / any SKILL.md agent
-curl -fsSL https://raw.githubusercontent.com/<owner>/ironclad/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/wilsench/ironclad/main/install.sh | bash
 ```
 
 The installer auto-detects `~/.hermes`, `~/.claude`, or `~/.agents`, or takes `--target hermes|claude|agents` / `--dir /path/to/skills`. Format is [agentskills.io](https://agentskills.io/specification), so it is not Hermes-only.

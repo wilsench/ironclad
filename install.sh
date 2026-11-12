@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install ironclad for the agent you actually use.
 #
-#   curl -fsSL https://raw.githubusercontent.com/<owner>/ironclad/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/wilsench/ironclad/main/install.sh | bash
 #   ./install.sh --target claude      # ~/.claude/skills
 #   ./install.sh --target hermes      # ~/.hermes/skills
 #   ./install.sh --target agents      # ~/.agents/skills  (Codex, Cursor, generic)
@@ -12,7 +12,7 @@
 set -euo pipefail
 
 SKILL_NAME="ironclad"
-REPO="${REPO:-<owner>/ironclad}"
+REPO="${REPO:-wilsench/ironclad}"
 REF="${REF:-main}"
 TARGET="auto"
 DEST=""
