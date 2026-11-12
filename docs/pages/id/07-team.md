@@ -55,8 +55,11 @@ Kirim ke **satu** orang, sebaiknya yang memakai agent berbeda darimu. Yang perlu
 mereka lakukan hanya satu perintah:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.5
+npx github:wilsench/ironclad#v0.9.0 --mode house
 ```
+
+`--mode house` yang membuat semua orang otomatis memakai gaya yang sama untuk tabel
+baru. Tanpa flag itu, installer memakai `ask` — agent akan bertanya alih-alih memilih.
 
 Lalu minta mereka buka repo pilot dan bertanya ke agent-nya:
 

@@ -1,0 +1,25 @@
+name: coherence
+title: Coherence — one project, one way (no opinion on which)
+description: >
+  For anyone who does not want a house style imposed. Nothing is forbidden on its own:
+  a native enum, a text code, and an integer with a lookup table are all acceptable.
+  What fails is the same concept stored two different ways in one project — the thing
+  this tool exists to catch. Warnings stay warnings so a first run on a real repo does
+  not look like a verdict on work nobody asked you to redo.
+rules:
+  DB-01: warn      # enum is a style choice here, not a defect
+  DB-02: error     # a magic number compared to status is a bug in any style
+  DB-03: warn      # an unconstrained status column is reported, not blocked
+  DB-04: warn      # text status is a style; mixing it with another is not
+  DB-05: warn
+  DB-06: warn      # money as binary float is still wrong everywhere
+  DB-07: warn
+  DB-08: error     # the only rule that hard-fails: two styles for one concept
+exceptions: []
+boolean_allowlist:
+  - is_active
+  - is_deleted
+  - is_published
+  - is_verified
+  - is_terminal
+  - has_invoice

@@ -81,8 +81,8 @@ case "$TARGET" in
   *) echo "unknown target: $TARGET" >&2; exit 2 ;;
 esac
 case "$PRESET" in
-  balanced|strict|legacy-friendly) ;;
-  *) echo "unknown preset: $PRESET (balanced|strict|legacy-friendly)" >&2; exit 2 ;;
+  balanced|strict|legacy-friendly|coherence) ;;
+  *) echo "unknown preset: $PRESET (balanced|strict|legacy-friendly|coherence)" >&2; exit 2 ;;
 esac
 case "${MODE:-}" in
   ""|ask|house) ;;

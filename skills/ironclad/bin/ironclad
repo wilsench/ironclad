@@ -132,12 +132,12 @@ cmd_preset() {
     echo "current: $(current_preset)"
     echo
     echo "change it:"
-    for p in balanced strict legacy-friendly; do
+    for p in balanced strict legacy-friendly coherence; do
       echo "  ironclad preset $p"
     done
     return 0
   fi
-  [ -f "$PRESETS/$want.yml" ] || die "unknown preset: $want (balanced|strict|legacy-friendly)"
+  [ -f "$PRESETS/$want.yml" ] || die "unknown preset: $want (balanced|strict|legacy-friendly|coherence)"
   [ -f "$root/.agent/standards.yml" ] || die "no .agent/standards.yml here — run 'ironclad init' first"
   cp "$PRESETS/$want.yml" "$root/.agent/standards.yml"
   echo "preset → $want  (.agent/standards.yml)"

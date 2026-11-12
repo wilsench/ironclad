@@ -55,8 +55,11 @@ Send it to **one** person, ideally one who uses a different agent than you. All 
 have to run is:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.5
+npx github:wilsench/ironclad#v0.9.0 --mode house
 ```
+
+`--mode house` is what makes everyone default to the same style for new tables. Without
+it the installer uses `ask`, and the agent asks instead of choosing.
 
 Then ask them to open the pilot repo and ask their agent:
 

@@ -430,7 +430,7 @@ def main():
         epilog="presets: " + ", ".join(sorted(p.stem for p in PRESET_DIR.glob("*.yml"))))
     ap.add_argument("paths", nargs="*", default=["."])
     ap.add_argument("--json", action="store_true")
-    ap.add_argument("--preset", help="preset name (balanced, strict, legacy-friendly)")
+    ap.add_argument("--preset", help="preset name (balanced, strict, legacy-friendly, coherence)")
     ap.add_argument("--config", help="explicit config file (overrides --preset)")
     ap.add_argument("--strict", action="store_true",
                     help="escalate every warn to an error (legacy flag, still supported)")
@@ -498,11 +498,15 @@ def main():
                     where.setdefault(s, str(f))
             detail = ", ".join(f"{s} ({where[s]})" for s in order)
             first = style_map and sorted(style_map, key=str)[0]
-            indoor = "integer code + lookup is the default"
+            # Do not advertise a house preference to people who never asked for one.
+            # Under `coherence` the point is that a choice was never made, not which.
+            indoor = ("pick one for the whole project"
+                      if cfg.get("name") == "coherence"
+                      else "integer code + lookup is the default")
             findings.append({
                 "rule": "DB-08", "severity": sev, "line": 1,
                 "msg": (f"status is stored {len(all_styles)} different ways in this "
-                        f"project: {detail} — pick one for the whole project; {indoor}"),
+                        f"project: {detail} — {indoor}"),
                 "file": str(first)})
 
     # Partial coverage is the dangerous case: green output, half a repo unchecked.

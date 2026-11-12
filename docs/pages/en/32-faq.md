@@ -39,7 +39,7 @@ If you want certainty, name it: "use the ironclad skill for this migration".
 Install:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.5
+npx github:wilsench/ironclad#v0.9.0
 ```
 
 Then, in a repo:
@@ -59,10 +59,10 @@ opencode, Antigravity. The format is the Agent Skills standard (`SKILL.md`), not
 something Hermes-specific.
 
 ```bash
-npx github:wilsench/ironclad#v0.8.5  --all              # everything detected on this machine
-npx github:wilsench/ironclad#v0.8.5  --target claude
-npx github:wilsench/ironclad#v0.8.5  --target gemini    # Antigravity, global
-npx github:wilsench/ironclad#v0.8.5  --target opencode
+npx github:wilsench/ironclad#v0.9.0  --all              # everything detected on this machine
+npx github:wilsench/ironclad#v0.9.0  --target claude
+npx github:wilsench/ironclad#v0.9.0  --target gemini    # Antigravity, global
+npx github:wilsench/ironclad#v0.9.0  --target opencode
 ```
 
 ## Can I use `wilsench/ironclad` directly?
@@ -73,7 +73,7 @@ For Hermes:
 hermes skills install wilsench/ironclad/skills/ironclad
 ```
 
-Other agents use `npx github:wilsench/ironclad#v0.8.5` — that pulls the package
+Other agents use `npx github:wilsench/ironclad#v0.9.0` — that pulls the package
 straight from the public repo, with nothing published to npm. If the machine has no
 Node, the `install.sh` mirror on `wilsench.my.id` runs the same code.
 
@@ -163,3 +163,25 @@ One thing that could count as interference: the block is read in **every session
 the agent, for every repo, because that is the point. It is ~1,150 characters. If that
 is too much, remove it with `--uninstall`; the skill and the tooling still work if you
 invoke them by hand.
+
+## I do not agree that enums are wrong. Can I still use this?
+
+Yes — preset `coherence`:
+
+```bash
+npx github:wilsench/ironclad#v0.9.0 check . --preset coherence
+```
+
+Under that preset no style is punished: `enum`, a coded text column, and integer +
+lookup are all acceptable. Only one thing fails — the same concept stored two different
+ways in one project. That is the entire thesis; the rest is taste, and your taste does
+not have to match anyone else's.
+
+## Can I try it without installing?
+
+```bash
+npx github:wilsench/ironclad#v0.9.0 check .
+```
+
+That runs the checker and exits. No files written, no agent config touched. If it comes
+back clean, your repo is already coherent — and you do not need to install anything.
