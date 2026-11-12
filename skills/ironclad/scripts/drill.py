@@ -211,6 +211,38 @@ def selftest() -> int:
             failures += 1
             print(f"  {RED}FAIL{OFF}  false positive: consistent project was flagged")
 
+        # `coherence` is the preset we offer to strangers: an enum repo that is
+        # internally consistent must pass, and a mixed one must still fail. Both
+        # halves are asserted here — a preset that nothing tests is a claim, not a
+        # feature.
+        for f in tmp.glob("*.sql"):
+            f.unlink()
+        (tmp / "one.sql").write_text(
+            "CREATE TABLE orders (\n  id bigint PRIMARY KEY,\n"
+            "  status enum('new','paid')\n);\n"
+        )
+        code, out = run_checker([str(tmp)], "coherence")
+        if code == 0:
+            print(f"  {GREEN}PASS{OFF}  coherence: consistent enum repo passes")
+        else:
+            failures += 1
+            print(f"  {RED}FAIL{OFF}  coherence punished a consistent enum repo")
+        (tmp / "two.sql").write_text(
+            "CREATE TABLE invoices (\n  id bigint PRIMARY KEY,\n"
+            "  status_code smallint NOT NULL REFERENCES s(code)\n);\n"
+        )
+        code, out = run_checker([str(tmp)], "coherence")
+        if code != 0 and "DB-08" in out:
+            print(f"  {GREEN}PASS{OFF}  coherence: mixed styles still fail (DB-08)")
+        else:
+            failures += 1
+            print(f"  {RED}FAIL{OFF}  coherence let a mixed repo through")
+        if "integer code + lookup is the default" in out:
+            failures += 1
+            print(f"  {RED}FAIL{OFF}  coherence still advertises a house preference")
+        else:
+            print(f"  {GREEN}PASS{OFF}  coherence does not advertise a preference")
+
         # The grader itself must accept both FK spellings, or it fails beginner
         # answers that a senior would call correct.
         table_fk = tmp / "table_fk.sql"
