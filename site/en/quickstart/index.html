@@ -9,7 +9,7 @@
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/quickstart/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/quickstart/">
 <meta name="color-scheme" content="light">
-<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.9.5-0cff1a72">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.10.0-0cff1a72">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -23,7 +23,7 @@
       <span class="mark" aria-hidden="true">IC</span>
       <span>
         <b>Ironclad</b>
-        <i>v0.9.5-0cff1a72 · MIT</i>
+        <i>v0.10.0-0cff1a72 · MIT</i>
       </span>
     </a>
 
@@ -45,6 +45,7 @@
 <li><a href="/ironclad/en/quickstart/" class="active" aria-current="page">Quickstart</a></li>
 <li><a href="/ironclad/en/no-commands/">Using it without commands</a></li>
 <li><a href="/ironclad/en/team/">For your team</a></li>
+<li><a href="/ironclad/en/update/">Updating</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
 <li><a href="/ironclad/en/modes/">Modes — ask or house</a></li>
@@ -87,7 +88,7 @@
         <h1 id="quickstart">Quickstart</h1>
 <p>Two minutes. No questions to answer, no files to hand-edit.</p>
 <h2 id="1-install">1. Install</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.9.5
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.10.0
 </code></pre></div>
 <p>Done. The skill is in <code>~/.agents/skills/ironclad/</code>, the <code>ironclad</code> command is in
 <code>~/.local/bin/</code>.</p>
@@ -210,6 +211,39 @@ statuses seeded as data.</p>
 </ol>
 <p>Then open a PR that adds one <code>enum</code> column — it must go red on GitHub. If it does
 not go red, your CI is wrong, not the checker.</p>
+<h2 id="7-knowing-when-a-new-version-exists">7. Knowing when a new version exists</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad update
+</code></pre></div>
+<p>If you are current, it says so and stops. If there is something newer, it shows what
+changed in plain words and offers four choices:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>installed: 0.9.4
+latest:    0.9.5
+A newer version is available.
+
+What changed since 0.9.4:
+  1 change: 1 docs
+
+  • three layers had the wrong first layer
+
+What do you want to do?
+  1) Install 0.9.5 now  (recommended)
+  2) Stay on 0.9.4 for now  (nothing changes)
+  3) Show me what changed
+  4) Stop asking on this machine
+Choose 1-4 [2]:
+</code></pre></div>
+<ul>
+<li><strong>1</strong> installs through the same command as the first time. The agent block is
+  replaced in place; a <code>standards.md</code> you have already filled in is left alone.</li>
+<li><strong>2</strong> changes nothing. The choice is remembered, so it does not ask again that day.</li>
+<li><strong>3</strong> prints the list again and returns to the menu.</li>
+<li><strong>4</strong> turns the check off for good on that machine.</li>
+</ul>
+<p>The check never blocks: at most once per 24 hours, never in a pipe or in CI, and it
+never changes the exit code of <code>ironclad check</code>. For the status without a prompt:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad update --check    # 0 = current, 10 = newer exists
+ironclad update --notes    # just the list of changes
+</code></pre></div>
 <h2 id="that-is-it">That is it</h2>
 <p>What remains is habit: <code>ironclad check</code> before you commit, and let CI run the same
 thing on every PR.</p>
@@ -220,7 +254,7 @@ thing on every PR.</p>
 <a class="next" href="/ironclad/en/no-commands/"><span>Next</span><b>Using it without commands</b></a>
         </nav>
         <footer class="docfoot">
-          <span>Ironclad v0.9.5-0cff1a72</span>
+          <span>Ironclad v0.10.0-0cff1a72</span>
           <span>MIT</span>
           <span>Chia Wilsen</span>
         </footer>
@@ -234,6 +268,7 @@ thing on every PR.</p>
 <li class="lvl2"><a href="#4-pick-a-strictness-that-will-not-make-the-team-disable-ci">4. Pick a strictness that will not make the team disable CI</a></li>
 <li class="lvl2"><a href="#5-prove-the-gate-actually-works">5. Prove the gate actually works</a></li>
 <li class="lvl2"><a href="#6-prove-the-agent-actually-understands">6. Prove the agent actually understands</a></li>
+<li class="lvl2"><a href="#7-knowing-when-a-new-version-exists">7. Knowing when a new version exists</a></li>
 <li class="lvl2"><a href="#that-is-it">That is it</a></li></ul>
       </aside>
     </div>
@@ -249,7 +284,7 @@ thing on every PR.</p>
   <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
 </div>
 
-<script src="/ironclad/assets/docs.js?v=0.9.5-0cff1a72" defer></script>
-<script src="/ironclad/assets/search-index.en.js?v=0.9.5-0cff1a72" defer></script>
+<script src="/ironclad/assets/docs.js?v=0.10.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.10.0-0cff1a72" defer></script>
 </body>
 </html>

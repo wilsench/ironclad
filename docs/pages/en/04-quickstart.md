@@ -13,7 +13,7 @@ Two minutes. No questions to answer, no files to hand-edit.
 ## 1. Install
 
 ```bash
-npx github:wilsench/ironclad#v0.9.5
+npx github:wilsench/ironclad#v0.10.0
 ```
 
 Done. The skill is in `~/.agents/skills/ironclad/`, the `ironclad` command is in
@@ -154,6 +154,47 @@ statuses seeded as data.
 
 Then open a PR that adds one `enum` column — it must go red on GitHub. If it does
 not go red, your CI is wrong, not the checker.
+
+## 7. Knowing when a new version exists
+
+```bash
+ironclad update
+```
+
+If you are current, it says so and stops. If there is something newer, it shows what
+changed in plain words and offers four choices:
+
+```
+installed: 0.9.4
+latest:    0.9.5
+A newer version is available.
+
+What changed since 0.9.4:
+  1 change: 1 docs
+
+  • three layers had the wrong first layer
+
+What do you want to do?
+  1) Install 0.9.5 now  (recommended)
+  2) Stay on 0.9.4 for now  (nothing changes)
+  3) Show me what changed
+  4) Stop asking on this machine
+Choose 1-4 [2]:
+```
+
+- **1** installs through the same command as the first time. The agent block is
+  replaced in place; a `standards.md` you have already filled in is left alone.
+- **2** changes nothing. The choice is remembered, so it does not ask again that day.
+- **3** prints the list again and returns to the menu.
+- **4** turns the check off for good on that machine.
+
+The check never blocks: at most once per 24 hours, never in a pipe or in CI, and it
+never changes the exit code of `ironclad check`. For the status without a prompt:
+
+```bash
+ironclad update --check    # 0 = current, 10 = newer exists
+ironclad update --notes    # just the list of changes
+```
 
 ## That is it
 

@@ -368,6 +368,12 @@ fi
 # ---- done -------------------------------------------------------------------
 echo
 echo "Installed ($SOURCE). Nothing else to configure."
+
+# One line about the update check, so the hint that appears weeks later is not a
+# surprise. No prompt here: this script runs in pipes and CI, where a question hangs.
+echo
+echo "From time to time, \`ironclad check\` will mention a newer version."
+echo "It only asks when you run \`ironclad update\`, and \`ironclad update --mute\` stops it."
 echo
 if [ -n "${ATTACH_FAILED:-}" ]; then
   echo "WARNING: the skill is installed, but no agent config was written. Until you"

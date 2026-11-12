@@ -9,7 +9,7 @@
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/quickstart/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/quickstart/">
 <meta name="color-scheme" content="light">
-<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.9.5-0cff1a72">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.10.0-0cff1a72">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -23,7 +23,7 @@
       <span class="mark" aria-hidden="true">IC</span>
       <span>
         <b>Ironclad</b>
-        <i>v0.9.5-0cff1a72 · MIT</i>
+        <i>v0.10.0-0cff1a72 · MIT</i>
       </span>
     </a>
 
@@ -45,6 +45,7 @@
 <li><a href="/ironclad/quickstart/" class="active" aria-current="page">Quickstart</a></li>
 <li><a href="/ironclad/no-commands/">Cara pakai tanpa command</a></li>
 <li><a href="/ironclad/team/">Untuk tim</a></li>
+<li><a href="/ironclad/update/">Memperbarui</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
 <li><a href="/ironclad/modes/">Mode — ask atau house</a></li>
@@ -88,7 +89,7 @@
 <p>Dua menit. Tidak ada pertanyaan yang harus dijawab, tidak ada berkas yang harus
 diedit tangan.</p>
 <h2 id="1-pasang">1. Pasang</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.9.5
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.10.0
 </code></pre></div>
 <p>Selesai. Skill ada di <code>~/.agents/skills/ironclad/</code>, perintah <code>ironclad</code> ada di
 <code>~/.local/bin/</code>.</p>
@@ -213,6 +214,42 @@ punya <code>REFERENCES</code> atau tidak, status di-seed sebagai data atau tidak
 </ol>
 <p>Lalu buka PR yang menambah satu kolom <code>enum</code> — PR itu harus merah di GitHub.
 Kalau tidak merah, CI-nya belum benar, bukan checkernya.</p>
+<h2 id="7-mengetahui-ada-versi-baru">7. Mengetahui ada versi baru</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad update
+</code></pre></div>
+<p>Kalau kamu sudah di versi terbaru, ia bilang begitu dan berhenti. Kalau ada yang
+lebih baru, ia menampilkan apa yang berubah dalam bahasa biasa, lalu menawarkan
+empat pilihan:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>installed: 0.9.4
+latest:    0.9.5
+A newer version is available.
+
+What changed since 0.9.4:
+  1 change: 1 docs
+
+  • three layers had the wrong first layer
+
+What do you want to do?
+  1) Install 0.9.5 now  (recommended)
+  2) Stay on 0.9.4 for now  (nothing changes)
+  3) Show me what changed
+  4) Stop asking on this machine
+Choose 1-4 [2]:
+</code></pre></div>
+<ul>
+<li><strong>1</strong> memasang versi baru lewat perintah yang sama seperti saat install pertama.
+  Blok agent diganti di tempat, <code>standards.md</code> yang sudah kamu isi tidak disentuh.</li>
+<li><strong>2</strong> tidak mengubah apa pun. Pilihan ini tersimpan, jadi kamu tidak ditanya lagi
+  hari itu.</li>
+<li><strong>3</strong> menampilkan ulang daftar perubahan, lalu kembali ke menu.</li>
+<li><strong>4</strong> mematikan pemeriksaan selamanya di mesin itu.</li>
+</ul>
+<p>Pemeriksaan ini tidak pernah memblokir: ia hanya jalan paling sering sekali per 24
+jam, tidak pernah di pipe/CI, dan tidak pernah mengubah exit code <code>ironclad check</code>.
+Kalau kamu mau melihat status tanpa diprompt:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad update --check    # 0 = terbaru, 10 = ada yang lebih baru
+ironclad update --notes    # hanya daftar perubahannya
+</code></pre></div>
 <h2 id="selesai">Selesai</h2>
 <p>Yang tersisa hanya kebiasaan: <code>ironclad check</code> sebelum commit, dan biarkan CI
 menjalankan hal yang sama pada setiap PR.</p>
@@ -223,7 +260,7 @@ menjalankan hal yang sama pada setiap PR.</p>
 <a class="next" href="/ironclad/no-commands/"><span>Berikutnya</span><b>Cara pakai tanpa command</b></a>
         </nav>
         <footer class="docfoot">
-          <span>Ironclad v0.9.5-0cff1a72</span>
+          <span>Ironclad v0.10.0-0cff1a72</span>
           <span>MIT</span>
           <span>Chia Wilsen</span>
         </footer>
@@ -237,6 +274,7 @@ menjalankan hal yang sama pada setiap PR.</p>
 <li class="lvl2"><a href="#4-pilih-tingkat-penegakan-yang-tidak-membuat-tim-matikan-ci">4. Pilih tingkat penegakan yang tidak membuat tim matikan CI</a></li>
 <li class="lvl2"><a href="#5-buktikan-gate-nya-benar-benar-bekerja">5. Buktikan gate-nya benar-benar bekerja</a></li>
 <li class="lvl2"><a href="#6-buktikan-agent-nya-benar-benar-paham">6. Buktikan agent-nya benar-benar paham</a></li>
+<li class="lvl2"><a href="#7-mengetahui-ada-versi-baru">7. Mengetahui ada versi baru</a></li>
 <li class="lvl2"><a href="#selesai">Selesai</a></li></ul>
       </aside>
     </div>
@@ -252,7 +290,7 @@ menjalankan hal yang sama pada setiap PR.</p>
   <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
 </div>
 
-<script src="/ironclad/assets/docs.js?v=0.9.5-0cff1a72" defer></script>
-<script src="/ironclad/assets/search-index.js?v=0.9.5-0cff1a72" defer></script>
+<script src="/ironclad/assets/docs.js?v=0.10.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.10.0-0cff1a72" defer></script>
 </body>
 </html>

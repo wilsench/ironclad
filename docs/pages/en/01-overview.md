@@ -99,7 +99,7 @@ office had.
 ## Try it without installing
 
 ```bash
-npx github:wilsench/ironclad#v0.9.5 check .
+npx github:wilsench/ironclad#v0.10.0 check .
 ```
 
 Runs the checker, prints findings, exits. **No files written, no agent config
@@ -109,7 +109,7 @@ need to install anything.
 If you want the neutral reading — the one that does not consider enums a defect:
 
 ```bash
-npx github:wilsench/ironclad#v0.9.5 check . --preset coherence
+npx github:wilsench/ironclad#v0.10.0 check . --preset coherence
 ```
 
 ## If you are not the one writing the code
@@ -167,5 +167,6 @@ or what is in the YAML file.
 | install now | [Install](/en/install/) |
 | know the difference between mode and preset | [Modes](/en/modes/) · [Presets](/en/presets/) |
 | see the full walkthrough | [Quickstart](/en/quickstart/) |
+| know when a new version exists | [Updating](/en/update/) |
 | know which rules are checked | [Rules](/en/rules/) |
 | know why tools like this get abandoned | [Three layers](/en/three-layers/) |

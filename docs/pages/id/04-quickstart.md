@@ -14,7 +14,7 @@ diedit tangan.
 ## 1. Pasang
 
 ```bash
-npx github:wilsench/ironclad#v0.9.5
+npx github:wilsench/ironclad#v0.10.0
 ```
 
 Selesai. Skill ada di `~/.agents/skills/ironclad/`, perintah `ironclad` ada di
@@ -157,6 +157,50 @@ punya `REFERENCES` atau tidak, status di-seed sebagai data atau tidak.
 
 Lalu buka PR yang menambah satu kolom `enum` — PR itu harus merah di GitHub.
 Kalau tidak merah, CI-nya belum benar, bukan checkernya.
+
+## 7. Mengetahui ada versi baru
+
+```bash
+ironclad update
+```
+
+Kalau kamu sudah di versi terbaru, ia bilang begitu dan berhenti. Kalau ada yang
+lebih baru, ia menampilkan apa yang berubah dalam bahasa biasa, lalu menawarkan
+empat pilihan:
+
+```
+installed: 0.9.4
+latest:    0.9.5
+A newer version is available.
+
+What changed since 0.9.4:
+  1 change: 1 docs
+
+  • three layers had the wrong first layer
+
+What do you want to do?
+  1) Install 0.9.5 now  (recommended)
+  2) Stay on 0.9.4 for now  (nothing changes)
+  3) Show me what changed
+  4) Stop asking on this machine
+Choose 1-4 [2]:
+```
+
+- **1** memasang versi baru lewat perintah yang sama seperti saat install pertama.
+  Blok agent diganti di tempat, `standards.md` yang sudah kamu isi tidak disentuh.
+- **2** tidak mengubah apa pun. Pilihan ini tersimpan, jadi kamu tidak ditanya lagi
+  hari itu.
+- **3** menampilkan ulang daftar perubahan, lalu kembali ke menu.
+- **4** mematikan pemeriksaan selamanya di mesin itu.
+
+Pemeriksaan ini tidak pernah memblokir: ia hanya jalan paling sering sekali per 24
+jam, tidak pernah di pipe/CI, dan tidak pernah mengubah exit code `ironclad check`.
+Kalau kamu mau melihat status tanpa diprompt:
+
+```bash
+ironclad update --check    # 0 = terbaru, 10 = ada yang lebih baru
+ironclad update --notes    # hanya daftar perubahannya
+```
 
 ## Selesai
 

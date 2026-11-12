@@ -101,7 +101,7 @@ persis masalah yang dihadapi kantor kami.
 ## Coba tanpa install
 
 ```bash
-npx github:wilsench/ironclad#v0.9.5 check .
+npx github:wilsench/ironclad#v0.10.0 check .
 ```
 
 Menjalankan pemeriksa, mencetak temuan, lalu berhenti. **Tidak menulis berkas,
@@ -111,7 +111,7 @@ konsisten dan kamu tidak perlu memasang apa pun.
 Kalau kamu ingin mencoba pandangan "netral" — yang tidak menganggap enum salah:
 
 ```bash
-npx github:wilsench/ironclad#v0.9.5 check . --preset coherence
+npx github:wilsench/ironclad#v0.10.0 check . --preset coherence
 ```
 
 ## Kalau kamu bukan yang menulis kode
@@ -172,5 +172,6 @@ atau isi berkas YAML-nya.
 | ingin memasang sekarang | [Pasang](/install/) |
 | ingin tahu bedanya mode dan preset | [Mode](/modes/) · [Preset](/presets/) |
 | ingin melihat langkah lengkapnya | [Quickstart](/quickstart/) |
+| ingin tahu kalau ada versi baru | [Memperbarui](/update/) |
 | ingin tahu aturan apa saja yang diperiksa | [Aturan](/rules/) |
 | ingin tahu kenapa alat seperti ini sering dicabut | [Tiga lapis](/three-layers/) |

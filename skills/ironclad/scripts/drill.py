@@ -211,6 +211,23 @@ def selftest() -> int:
             failures += 1
             print(f"  {RED}FAIL{OFF}  false positive: consistent project was flagged")
 
+        # The update check must never lie about being newer, and must never treat an
+        # unparseable version as an upgrade. Both are one-liners; both decide whether
+        # a user is told to reinstall.
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import update_check as uc
+        if uc.is_newer("0.9.5", "0.9.4") and not uc.is_newer("0.9.4", "0.9.5") \
+                and not uc.is_newer("0.9.4", "0.9.4") and not uc.is_newer("junk", "0.9.4"):
+            print(f"  {GREEN}PASS{OFF}  update check: newer, same, older, garbage")
+        else:
+            failures += 1
+            print(f"  {RED}FAIL{OFF}  update check: version comparison is wrong")
+        if uc.parse("v0.9.4") == (0, 9, 4) and uc.parse("0.10.0") > uc.parse("0.9.99"):
+            print(f"  {GREEN}PASS{OFF}  update check: tag prefix and 0.10 > 0.9.99")
+        else:
+            failures += 1
+            print(f"  {RED}FAIL{OFF}  update check: semver parsing is wrong")
+
         # `coherence` is the preset we offer to strangers: an enum repo that is
         # internally consistent must pass, and a mixed one must still fail. Both
         # halves are asserted here — a preset that nothing tests is a claim, not a

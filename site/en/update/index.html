@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Updating — Ironclad</title>
+<meta name="description" content="How to find out there is a newer version, what changed, and three ways to not update.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/update/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/update/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/update/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.10.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.10.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/update/">ID</a>
+      <a href="/ironclad/en/update/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">What this is, and who it is for</a></li>
+<li><a href="/ironclad/en/glossary/">Glossary</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+<li><a href="/ironclad/en/no-commands/">Using it without commands</a></li>
+<li><a href="/ironclad/en/team/">For your team</a></li>
+<li><a href="/ironclad/en/update/" class="active" aria-current="page">Updating</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/modes/">Modes — ask or house</a></li>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets — how hard it bites</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-08</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+<li><a href="/ironclad/en/frameworks/">Laravel, Prisma, and other backends</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Start / <b>Updating</b></span>
+      <a class="langsw-mini" href="/ironclad/update/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="updating">Updating</h1>
+<p>Ironclad has no auto-update. No daemon runs, there is no telemetry, and nothing
+contacts the network unless you ask it to.</p>
+<p>What exists is <strong>one lightweight check that you run yourself.</strong></p>
+<h2 id="ironclad-update"><code>ironclad update</code></h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad update
+</code></pre></div>
+<p>If you are current:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>installed: 0.9.5
+latest:    0.9.5
+You are on the latest version.
+</code></pre></div>
+<p>If something is newer, it shows <strong>what changed</strong> in human words, not commit hashes:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>installed: 0.9.4
+latest:    0.9.5
+A newer version is available.
+
+What changed since 0.9.4:
+  1 change: 1 docs
+
+  • three layers had the wrong first layer
+
+What do you want to do?
+  1) Install 0.9.5 now  (recommended)
+  2) Stay on 0.9.4 for now  (nothing changes)
+  3) Show me what changed
+  4) Stop asking on this machine
+Choose 1-4 [2]:
+</code></pre></div>
+<h2 id="the-four-choices-and-what-they-cost">The four choices, and what they cost</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Choice</th>
+<th>What happens</th>
+<th>Safe?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1) Install now</strong></td>
+<td>Runs the installer for the new version. The agent block is replaced in place, not stacked.</td>
+<td>Yes. A <code>.agent/standards.md</code> you filled in is left alone.</td>
+</tr>
+<tr>
+<td><strong>2) Stay on this version</strong></td>
+<td>Nothing changes. The choice is remembered, so it does not ask again that day.</td>
+<td>Yes.</td>
+</tr>
+<tr>
+<td><strong>3) Show me what changed</strong></td>
+<td>Prints the list again and returns to the menu.</td>
+<td>Yes, read-only.</td>
+</tr>
+<tr>
+<td><strong>4) Stop asking</strong></td>
+<td>Turns the check off for good on that machine.</td>
+<td>Yes. Turn it back on with <code>ironclad update</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<p>The default is <strong>2</strong> — pressing Enter does nothing.</p>
+<h2 id="when-it-checks">When it checks</h2>
+<ul>
+<li><strong>At most once per 24 hours.</strong> The result is cached in <code>~/.ironclad/</code>.</li>
+<li><strong>Never inside a pipe or CI.</strong> Without a terminal it prints the facts and exits —
+  it never hangs waiting for an answer.</li>
+<li><strong>Never changes the exit code of <code>ironclad check</code>.</strong> The gate stays 0 or 1 whether
+  or not GitHub is reachable.</li>
+<li><strong>At most one line.</strong> If a newer version exists, <code>ironclad check</code> adds one line at
+  the end:</li>
+</ul>
+<p><code>Ironclad 0.9.5 is available (you have 0.9.4). Run `ironclad update`.</code></p>
+<h2 id="for-ci-and-scripts">For CI and scripts</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad update --check     # 0 = current, 10 = newer exists, 1 = network failure
+ironclad update --notes     # print only the list of changes
+ironclad update --mute      # stop checking
+</code></pre></div>
+<p><code>--check</code> uses <strong>10</strong> deliberately, not 1, so it cannot be confused with "the schema
+has findings". If you want CI to fail when you are behind, write it yourself:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-yaml">- run: ironclad update --check || [ $? -ne 10 ]
+</code></pre></div>
+<h2 id="on-a-machine-without-internet">On a machine without internet</h2>
+<p>The check fails quietly: one line saying GitHub could not be reached, then done.
+Everything else — <code>check</code>, <code>init</code>, <code>drill</code> — works fully offline. The installed agent
+block needs no network either.</p>
+<h2 id="if-you-installed-from-a-working-tree-not-a-tag">If you installed from a working tree, not a tag</h2>
+<p>The check compares the version in <code>SKILL.md</code> against the newest release tag. If you
+installed from an unreleased working tree, it treats your version as newer than any
+tag and stays quiet. That is correct: there is nothing to update.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/team/"><span>Previous</span><b>For your team</b></a>
+<a class="next" href="/ironclad/en/modes/"><span>Next</span><b>Modes — ask or house</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.10.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#ironclad-update">ironclad update</a></li>
+<li class="lvl2"><a href="#the-four-choices-and-what-they-cost">The four choices, and what they cost</a></li>
+<li class="lvl2"><a href="#when-it-checks">When it checks</a></li>
+<li class="lvl2"><a href="#for-ci-and-scripts">For CI and scripts</a></li>
+<li class="lvl2"><a href="#on-a-machine-without-internet">On a machine without internet</a></li>
+<li class="lvl2"><a href="#if-you-installed-from-a-working-tree-not-a-tag">If you installed from a working tree, not a tag</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.10.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.10.0-0cff1a72" defer></script>
+</body>
+</html>

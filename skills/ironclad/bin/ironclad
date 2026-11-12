@@ -9,6 +9,8 @@
 #                      (ironclad drill --selftest | --prompt | answer.sql)
 #   ironclad attach    put the standing instruction into AGENTS.md / CLAUDE.md /
 #                      GEMINI.md / .cursor/rules so the agent asks before coding
+#   ironclad update    is there a newer version? ask once, in plain words
+#                      (--check read-only, --notes what changed, --mute stop asking)
 #
 # `check` and `init` work without a repo config: they fall back to the preset
 # shipped in the skill, so the first run needs no setup.
@@ -18,6 +20,7 @@ set -euo pipefail
 IRONCLAD_HOME="${IRONCLAD_HOME:-$HOME/.agents/skills/ironclad}"
 CHECKER="$IRONCLAD_HOME/scripts/check_schema.py"
 DRILL="$IRONCLAD_HOME/scripts/drill.py"
+UPDATE="$IRONCLAD_HOME/scripts/update_check.py"
 AGENT_FILES="$IRONCLAD_HOME/scripts/agent_files.py"
 TEMPLATE="$IRONCLAD_HOME/templates/standards.md"
 PRESETS="$IRONCLAD_HOME/assets/presets"
@@ -51,7 +54,16 @@ cmd_check() {
   local preset; preset="$(current_preset)"
   cd "$root"
   # pass everything through: --json, --preset, specific paths
-  python3 "$CHECKER" "${@:-.}" --preset "$preset"
+  local rc=0
+  python3 "$CHECKER" "${@:-.}" --preset "$preset" || rc=$?
+  # A one-line nudge on stderr, from cache only — no network here, and the exit code
+  # is passed through untouched. A version check must never decide whether a build
+  # passed: that would make CI depend on GitHub being reachable.
+  # No stderr redirect here: the script prints its hint on stderr, and redirecting
+  # it to /dev/null is exactly how the hint silently disappeared the first time.
+  # The script owns its own quietness (no tty, muted, or no cached update = silence).
+  [ -f "$UPDATE" ] && python3 "$UPDATE" --hint >/dev/null || true
+  return $rc
 }
 
 # Ask only when a human is actually there. `curl | bash` and CI have no tty, and a
@@ -184,6 +196,10 @@ PY
 )"
     ;;
   drill)   shift; python3 "$DRILL" "$@" ;;
+  update|upgrade)
+    shift
+    [ -f "$UPDATE" ] || die "update check is missing at $UPDATE (re-run the installer)"
+    python3 "$UPDATE" "$@" ;;
   attach)
     shift
     # `ironclad attach --global` repairs a machine where the block never got written

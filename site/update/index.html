@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Memperbarui — Ironclad</title>
+<meta name="description" content="Cara tahu ada versi baru, apa yang berubah, dan tiga pilihan yang tidak memaksa kamu memperbarui.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/update/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/update/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/update/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.10.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.10.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Bahasa">
+      <a href="/ironclad/update/" class="on" aria-current="true">ID</a>
+      <a href="/ironclad/en/update/">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/kamus/">Kamus</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+<li><a href="/ironclad/no-commands/">Cara pakai tanpa command</a></li>
+<li><a href="/ironclad/team/">Untuk tim</a></li>
+<li><a href="/ironclad/update/" class="active" aria-current="page">Memperbarui</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/modes/">Mode — ask atau house</a></li>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset — seberapa keras</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-08</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+<li><a href="/ironclad/frameworks/">Laravel, Prisma, dan backend lain</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Mulai / <b>Memperbarui</b></span>
+      <a class="langsw-mini" href="/ironclad/en/update/" aria-label="Bahasa">EN</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="memperbarui">Memperbarui</h1>
+<p>Ironclad tidak punya pembaruan otomatis. Tidak ada daemon yang berjalan, tidak ada
+telemetri, dan tidak ada yang menghubungi internet tanpa kamu memintanya.</p>
+<p>Yang ada: <strong>satu pemeriksaan ringan yang kamu jalankan sendiri.</strong></p>
+<h2 id="ironclad-update"><code>ironclad update</code></h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad update
+</code></pre></div>
+<p>Kalau kamu sudah di versi terbaru:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>installed: 0.9.5
+latest:    0.9.5
+You are on the latest version.
+</code></pre></div>
+<p>Kalau ada yang lebih baru, ia menampilkan <strong>apa yang berubah</strong> dalam bahasa manusia,
+bukan hash commit:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>installed: 0.9.4
+latest:    0.9.5
+A newer version is available.
+
+What changed since 0.9.4:
+  1 change: 1 docs
+
+  • three layers had the wrong first layer
+
+What do you want to do?
+  1) Install 0.9.5 now  (recommended)
+  2) Stay on 0.9.4 for now  (nothing changes)
+  3) Show me what changed
+  4) Stop asking on this machine
+Choose 1-4 [2]:
+</code></pre></div>
+<h2 id="empat-pilihan-dan-apa-akibatnya">Empat pilihan, dan apa akibatnya</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Pilihan</th>
+<th>Yang terjadi</th>
+<th>Aman?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1) Pasang sekarang</strong></td>
+<td>Menjalankan installer versi baru. Blok agent diganti di tempat, bukan ditumpuk.</td>
+<td>Ya. <code>.agent/standards.md</code> yang sudah kamu isi tidak disentuh.</td>
+</tr>
+<tr>
+<td><strong>2) Tetap di versi ini</strong></td>
+<td>Tidak ada yang berubah. Pilihan diingat, jadi tidak ditanya lagi hari itu.</td>
+<td>Ya.</td>
+</tr>
+<tr>
+<td><strong>3) Lihat perubahannya</strong></td>
+<td>Menampilkan daftar lagi, lalu kembali ke menu.</td>
+<td>Ya, hanya membaca.</td>
+</tr>
+<tr>
+<td><strong>4) Jangan tanya lagi</strong></td>
+<td>Pemeriksaan dimatikan selamanya di mesin itu.</td>
+<td>Ya. Nyalakan lagi dengan <code>ironclad update</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Default-nya <strong>2</strong> — kalau kamu hanya menekan Enter, tidak terjadi apa-apa.</p>
+<h2 id="kapan-ia-memeriksa">Kapan ia memeriksa</h2>
+<ul>
+<li><strong>Paling sering sekali per 24 jam.</strong> Hasilnya disimpan di <code>~/.ironclad/</code>.</li>
+<li><strong>Tidak pernah di dalam pipe atau CI.</strong> Kalau tidak ada terminal, ia mencetak
+  fakta lalu keluar — tidak menggantung menunggu jawaban.</li>
+<li><strong>Tidak pernah mengubah exit code <code>ironclad check</code>.</strong> Gate tetap 0 atau 1, tidak
+  peduli GitHub bisa dihubungi atau tidak.</li>
+<li><strong>Paling banyak satu baris.</strong> Kalau ada versi baru, <code>ironclad check</code> menambahkan
+  satu baris di akhir:</li>
+</ul>
+<p><code>Ironclad 0.9.5 is available (you have 0.9.4). Run `ironclad update`.</code></p>
+<h2 id="untuk-ci-dan-skrip">Untuk CI dan skrip</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad update --check     # 0 = terbaru, 10 = ada versi lebih baru, 1 = gagal jaringan
+ironclad update --notes     # cetak daftar perubahan saja
+ironclad update --mute      # matikan pemeriksaan
+</code></pre></div>
+<p><code>--check</code> sengaja memakai <strong>10</strong>, bukan 1, supaya bisa dibedakan dari "ada temuan
+schema". Kalau kamu ingin CI gagal karena ketinggalan versi, tulis sendiri:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">- run: ironclad update --check || [ $? -ne 10 ]
+</code></pre></div>
+<h2 id="kalau-mesinmu-tanpa-internet">Kalau mesinmu tanpa internet</h2>
+<p>Pemeriksaan gagal dengan tenang: satu baris "tidak bisa menghubungi GitHub", lalu
+selesai. Semua fitur lain — <code>check</code>, <code>init</code>, <code>drill</code> — tetap bekerja penuh secara
+offline. Blok agent yang sudah tertanam juga tidak butuh jaringan.</p>
+<h2 id="kalau-kamu-memasang-dari-file-bukan-dari-tag">Kalau kamu memasang dari file, bukan dari tag</h2>
+<p>Pemeriksaan membandingkan versi di <code>SKILL.md</code> dengan tag rilis terbaru. Kalau kamu
+memasang dari working tree yang versinya belum dirilis, ia akan menganggap versimu
+lebih baru dari tag dan diam. Itu benar: tidak ada yang perlu diperbarui.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/team/"><span>Sebelumnya</span><b>Untuk tim</b></a>
+<a class="next" href="/ironclad/modes/"><span>Berikutnya</span><b>Mode — ask atau house</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.10.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#ironclad-update">ironclad update</a></li>
+<li class="lvl2"><a href="#empat-pilihan-dan-apa-akibatnya">Empat pilihan, dan apa akibatnya</a></li>
+<li class="lvl2"><a href="#kapan-ia-memeriksa">Kapan ia memeriksa</a></li>
+<li class="lvl2"><a href="#untuk-ci-dan-skrip">Untuk CI dan skrip</a></li>
+<li class="lvl2"><a href="#kalau-mesinmu-tanpa-internet">Kalau mesinmu tanpa internet</a></li>
+<li class="lvl2"><a href="#kalau-kamu-memasang-dari-file-bukan-dari-tag">Kalau kamu memasang dari file, bukan dari tag</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.10.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.10.0-0cff1a72" defer></script>
+</body>
+</html>
