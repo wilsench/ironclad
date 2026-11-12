@@ -25,7 +25,7 @@ Tanpa argumen, ia memasang ke `~/.agents/skills/ironclad/`, lokasi yang dibaca *
 | Agent | Perintah | Folder tujuan |
 |---|---|---|
 | **Semua yang ada di mesin** | `… \| bash -s -- --all` | semua di bawah yang terdeteksi |
-| **Codex / Cursor** | `… \| bash` atau `--target agents` | `~/.agents/skills/` |
+| **Codex / Cursor** | `… \| bash` atau `--target agents` | `~/.agents/skills/` — **Codex hanya membaca `.agents/skills` di dalam repo**, jadi untuk Codex pakai `--dir .agents/skills` |
 | **Claude Code** | `… \| bash -s -- --target claude` | `~/.claude/skills/` |
 | **Hermes** | `… \| bash -s -- --target hermes` | `~/.hermes/skills/` |
 | **opencode** | `… \| bash -s -- --target opencode` | `~/.config/opencode/skills/` |
