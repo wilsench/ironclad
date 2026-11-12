@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Install company-engineering-standards for the agent you actually use.
+# Install ironclad for the agent you actually use.
 #
-#   curl -fsSL https://raw.githubusercontent.com/<owner>/company-standards-skill/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/<owner>/ironclad/main/install.sh | bash
 #   ./install.sh --target claude      # ~/.claude/skills
 #   ./install.sh --target hermes      # ~/.hermes/skills
 #   ./install.sh --target agents      # ~/.agents/skills  (Codex, Cursor, generic)
@@ -11,8 +11,8 @@
 
 set -euo pipefail
 
-SKILL_NAME="company-engineering-standards"
-REPO="${REPO:-<owner>/company-standards-skill}"
+SKILL_NAME="ironclad"
+REPO="${REPO:-<owner>/ironclad}"
 REF="${REF:-main}"
 TARGET="auto"
 DEST=""
@@ -48,7 +48,10 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
 echo "Fetching ${SKILL_NAME} from ${REPO}@${REF} ..."
-FILES="SKILL.md templates/standards.md references/database.md references/extending.md scripts/check_schema.py scripts/init_standards.py"
+FILES="SKILL.md templates/standards.md \
+  references/database.md references/presets.md references/extending.md \
+  assets/presets/balanced.yml assets/presets/strict.yml assets/presets/legacy-friendly.yml \
+  scripts/check_schema.py scripts/init_standards.py"
 for f in $FILES; do
   mkdir -p "$TMP/$(dirname "$f")"
   curl -fsSL "$BASE/$f" -o "$TMP/$f"

@@ -16,7 +16,8 @@ jobs:
           python-version: "3.11"
 
       # Report-only on the whole repo: proves the checker runs without
-      # failing the build on existing debt.
+      # failing the build on existing debt. Severity comes from the committed
+      # .agent/standards.yml, so changing the guardrail level is a normal PR.
       - name: Report existing violations
         run: |
           python scripts/check_schema.py . --json > standards-report.json || true
@@ -40,4 +41,6 @@ jobs:
             exit 0
           fi
           echo "checking: $CHANGED"
-          python scripts/check_schema.py $CHANGED --strict
+          # severity still comes from .agent/standards.yml; --strict only exists
+          # as an escape hatch for repos that have not adopted a preset yet
+          python scripts/check_schema.py $CHANGED

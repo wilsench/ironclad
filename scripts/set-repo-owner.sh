@@ -29,15 +29,15 @@ COUNT=0
 
 for f in $FILES; do
   [ -f "$f" ] || continue
-  hits=$(grep -c '<owner>\|wilsench/company-standards-skill' "$f" || true)
+  hits=$(grep -c '<owner>\|wilsench/ironclad' "$f" || true)
   [ "$hits" = "0" ] && continue
   if [ -n "$DRY" ]; then
     echo "$f: $hits hit(s)"
-    grep -n '<owner>\|wilsench/company-standards-skill' "$f" | sed 's/^/    /'
+    grep -n '<owner>\|wilsench/ironclad' "$f" | sed 's/^/    /'
   else
     sed -i \
-      -e "s|<owner>/company-standards-skill|${OWNER}/company-standards-skill|g" \
-      -e "s|wilsench/company-standards-skill|${OWNER}/company-standards-skill|g" \
+      -e "s|<owner>/ironclad|${OWNER}/ironclad|g" \
+      -e "s|wilsench/ironclad|${OWNER}/ironclad|g" \
       "$f"
     echo "$f: $hits replaced"
   fi

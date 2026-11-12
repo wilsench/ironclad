@@ -1,0 +1,24 @@
+name: legacy-friendly
+title: Legacy-friendly — brownfield, existing debt
+description: >
+  For repos that already have hundreds of violations. Nothing blocks on the first
+  run; everything is reported. Gate only new files. Switch to balanced once the
+  baseline is clean.
+rules:
+  DB-01: warn
+  DB-02: warn
+  DB-03: warn
+  DB-04: warn
+  DB-05: warn
+  DB-06: warn
+  DB-07: warn
+exceptions: []
+boolean_allowlist:
+  - is_active
+  - is_deleted
+  - is_published
+  - is_verified
+  - is_terminal
+  - has_invoice
+  - is_archived
+  - is_default

@@ -1,0 +1,20 @@
+name: strict
+title: Strict — regulated / audit-bearing systems
+description: >
+  Every rule blocks. No exceptions accepted without an allowlist entry. Use where
+  a schema migration is a compliance event: finance, health, anything with an
+  audit trail that outlives the team.
+rules:
+  DB-01: error
+  DB-02: error
+  DB-03: error      # missing FK/CHECK blocks even without --strict
+  DB-04: error
+  DB-05: error
+  DB-06: error      # money as float
+  DB-07: error      # timestamp without timezone
+exceptions: []
+boolean_allowlist:
+  - is_active
+  - is_deleted
+  - is_verified
+  - is_terminal

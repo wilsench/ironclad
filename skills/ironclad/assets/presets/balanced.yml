@@ -1,0 +1,21 @@
+name: balanced
+title: Balanced — recommended default
+description: >
+  The default. Enums are rejected but a written justification in the migration
+  comment is accepted on review. Status columns must carry a constraint; that
+  check warns instead of blocking so legacy tables do not stop a build. Boolean
+  naming is advisory.
+rules:
+  DB-01: error      # enum without justification
+  DB-02: error      # magic number compared to a status field
+  DB-03: warn       # status integer with no FK/CHECK (blocks only with --strict)
+  DB-04: error      # status stored as text
+  DB-05: warn       # boolean named for a non-binary concept
+exceptions: []
+boolean_allowlist:
+  - is_active
+  - is_deleted
+  - is_published
+  - is_verified
+  - is_terminal
+  - has_invoice

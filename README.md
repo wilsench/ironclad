@@ -1,64 +1,61 @@
-# company-engineering-standards
+# Ironclad
 
-A Hermes Agent skill that makes AI coding agents build software to *your* company's conventions instead of the model's defaults.
+**Your team's engineering rules, enforced by the agent — not by memory.**
 
-Ships a worked policy for the most common drift point: database status fields. The default position is **integer codes + lookup table + FK**, not `enum` — because enums cannot be extended without a deploy and cannot be dropped or reordered at all in Postgres.
+A skill for AI coding agents. Ten people vibe-code the same app, nobody reads the same wiki, and six months later the schema is a museum of individual taste. Ironclad gives every agent the same rulebook, the same decision procedure, and a linter that fails the build when someone drifts.
 
-## Install
+Ships a worked database policy as the headline example — **integer codes + lookup table + FK, not `enum`** — because that is the drift that hurts most and shows up latest.
 
-### Hermes Agent
-
-```bash
-# One skill, no tap required
-hermes skills install <owner>/company-standards-skill/skills/company-engineering-standards
-
-# Or subscribe to the whole repo as a tap
-hermes skills tap add <owner>/company-standards-skill
-hermes skills install company-standards-skill/company-engineering-standards
-```
-
-### Any other agent — one command
+## One command
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<owner>/company-standards-skill/main/install.sh | bash
+# Hermes
+hermes skills install <owner>/ironclad/skills/ironclad
+
+# Claude Code / Codex / Cursor / any SKILL.md agent
+curl -fsSL https://raw.githubusercontent.com/<owner>/ironclad/main/install.sh | bash
 ```
 
-Auto-detects `~/.hermes`, `~/.claude`, or `~/.agents` and copies only this skill. Override with `--target hermes|claude|agents` or `--dir /path/to/skills`.
+The installer auto-detects `~/.hermes`, `~/.claude`, or `~/.agents`, or takes `--target hermes|claude|agents` / `--dir /path/to/skills`. Format is [agentskills.io](https://agentskills.io/specification), so it is not Hermes-only.
+
+## Then, in your repo
 
 ```bash
-# from a local clone, no network
-./install.sh --dir ~/.claude/skills
+python3 scripts/init_standards.py . --with-checker   # asks which strictness, default pre-picked
+python3 scripts/check_schema.py . --json             # exit 0 or it fails CI
 ```
 
-Works with any agent that reads the [agentskills.io](https://agentskills.io/specification) `SKILL.md` format.
+## Strictness is a setting, not a hardcoded opinion
 
-Before pushing your own fork, run `./scripts/set-repo-owner.sh <your-github-username>` to rewrite the URLs above. Full publishing steps — including the fine-grained PAT scopes if you want an agent to do the push — are in [PUBLISH.md](PUBLISH.md).
+Pick a level **once**, at install. The choice lands in `.agent/standards.yml` inside your repo — committed, reviewable, changeable later with no reinstall.
 
-## What it actually does
+| Preset | Blocks the build | Only warns | For |
+|---|---|---|---|
+| `legacy-friendly` | — | everything | a repo that already has debt |
+| `balanced` **(default)** | DB-01, DB-02, DB-04 | the rest | normal product work |
+| `strict` | everything | — | finance, health, anything audited |
 
-Three layers, and you need all three:
+The wizard pre-selects `balanced`, and non-interactive installs fall back to it silently — so an agent never blocks on a question it cannot ask. Switch whenever:
 
-| Layer | File | Who enforces it |
+```bash
+python3 scripts/init_standards.py . --preset strict --force
+python3 scripts/check_schema.py . --preset legacy-friendly   # one-off, no file change
+python3 scripts/check_schema.py --list-presets
+```
+
+Or just edit `.agent/standards.yml` — seven lines, `error` / `warn` / `off`. See [presets.md](skills/ironclad/references/presets.md).
+
+## Why three layers
+
+| Layer | File | Enforced by |
 |---|---|---|
-| Policy — what the company wants | `.agent/standards.md` in *your* repo | Code review |
+| Policy — what the team wants | `.agent/standards.md` | Code review |
 | Procedure — how the agent decides | `SKILL.md` + `references/` | The agent |
 | Mechanism — what a machine checks | `scripts/check_schema.py` | CI / pre-commit |
 
-A skill alone is advice; a model can ignore it. The checker is what makes standards hold across twenty programmers. Install the skill, then wire the checker into CI.
+A skill alone is advice; a model can ignore advice. The checker is what actually holds twenty programmers to one standard. Install both, then wire the checker into CI.
 
-## Quick start
-
-```bash
-# 1. Bootstrap the policy file into your repo
-python3 scripts/init_standards.py . --with-checker
-
-# 2. Review .agent/standards.md and delete rules you don't hold
-
-# 3. Check
-python3 scripts/check_schema.py . --json
-```
-
-## The rule it enforces
+## Rules
 
 ```
 DB-01  no native enum in schema (unless justified in the migration comment)
@@ -66,36 +63,60 @@ DB-02  no magic numbers compared against status fields
 DB-03  status integer must carry a FK or CHECK
 DB-04  never store a human label as the status
 DB-05  boolean only for genuine binaries
+DB-06  money as bigint minor units + currency, never float
+DB-07  timestamps carry a timezone
 ```
 
-## Verified behaviour
+## Verified, not asserted
+
+Same fixture, three presets — this is the actual output:
 
 ```
-$ python3 scripts/check_schema.py examples/bad.sql examples/bad_migration.php --strict
-examples/bad.sql:4:  [DB-01] SQL/prisma enum column; ...
-examples/bad.sql:5:  [DB-05] `is_status` is not a binary concept; ...
-examples/bad.sql:6:  [DB-04] status stored as text (`stock_state`); ...
-examples/bad.sql:11: [DB-03] `status_code` has no FK to a lookup table ...
-examples/bad_migration.php:7: [DB-01] Laravel $table->enum(); ...
-examples/bad_migration.php:8: [DB-04] status stored as text (`departure_status`); ...
+$ check_schema.py examples/bad.sql --preset balanced
+[DB-01] ERROR  enum column
+[DB-04] ERROR  status stored as text (`stock_state`)
+[DB-03] warn   `status_code` has no FK or CHECK
+[DB-05] warn   `is_status` is not a binary concept
+→ exit 1
 
-$ python3 scripts/check_schema.py examples/good.sql --strict
-1 file(s), 0 violation(s)     # integer + lookup + FK + CHECK
+$ check_schema.py examples/bad.sql --preset legacy-friendly
+→ exit 0   (4 warnings, nothing blocks)
+
+$ check_schema.py examples/good.sql --preset strict
+→ exit 0   (integer + lookup table + FK + CHECK)
 ```
 
 ## Honest limitations
 
-- The checker is **regex-based**, not a real SQL/Prisma parser. It understands SQL DDL, Laravel migrations, and Prisma schema. It does not understand your ORM's query builder, raw query strings built at runtime, or TypeScript types.
-- It will not catch a status field that is *semantically* wrong but syntactically fine.
-- Run it report-only first, then gate changed files. Gating a legacy repo on day one is how teams end up disabling the check.
+- The checker is **regex-based**, not a real SQL/Prisma parser. It reads SQL DDL, Laravel migrations, and Prisma schema. It does not see your ORM's query builder, runtime-built SQL, or TypeScript types.
+- It will not catch a status field that is *semantically* wrong but syntactically fine. A human reviewer is still the last line.
+- Run it report-only first, then gate changed files. Gating an entire legacy repo on day one is how the check gets deleted from CI by lunch.
 
 ## Why `00` is not the answer
 
-If "empty stock = 00" is your plan: `00` in an integer column is just `0`. The two-digit form is display formatting, never storage. Storing `00` means a string column (worse than an enum) or a precision that disappears the moment someone sums the column. What you actually want is a named constant plus a lookup table:
+If "empty stock = 00" is the plan: `00` in an integer column is just `0`. Two-digit form is display formatting, never storage. What you want is a named constant plus a lookup table:
 
 ```ts
 const STOCK = { EMPTY: 0, LOW: 1, AVAILABLE: 2, RESERVED: 3 } as const;
 ```
+
+## Repo layout
+
+```
+skills/ironclad/
+├── SKILL.md                  # procedure + pitfalls
+├── references/
+│   ├── database.md           # decision table, worked SQL/TS/PHP
+│   ├── presets.md            # strictness levels, custom presets
+│   └── extending.md          # adding API-/SEC- rule domains
+├── templates/standards.md    # policy file for your repo
+├── assets/presets/*.yml      # balanced · legacy-friendly · strict
+└── scripts/
+    ├── check_schema.py       # SQL / Laravel / Prisma linter
+    └── init_standards.py     # wizard + bootstrap
+```
+
+Publishing your own fork: `./scripts/set-repo-owner.sh <username>`, then follow [PUBLISH.md](PUBLISH.md).
 
 ## License
 

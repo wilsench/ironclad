@@ -1,7 +1,7 @@
 ---
-name: company-engineering-standards
-description: "Enforce company DB and app conventions on every build."
-version: 0.2.0
+name: ironclad
+description: "Enforce team engineering standards with presets."
+version: 0.3.0
 author: Chia Wilsen, Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
@@ -11,7 +11,7 @@ metadata:
     related_skills: [requesting-code-review, codebase-inspection]
 ---
 
-# Company Engineering Standards Skill
+# Ironclad
 
 Makes an agent build software the way *this company* builds it, not the way the model personally prefers. Ships a policy file the repo owns, a decision procedure the agent follows, and a checker that CI can enforce. The rules live in the repo (`.agent/standards.md`) — this skill is the executor, not the rulebook.
 
@@ -33,24 +33,47 @@ Ships with a worked database policy (integer codes over enums) because that is w
 
 Never hardcode company rules in this skill. A rule that only exists in a skill does not exist for a new teammate or a new agent, and it will drift. Put it in `.agent/standards.md`, give it an ID (`DB-04`), cite that ID when you report.
 
+## Three Presets, One Default
+
+The guardrail level is a **file in the repo** (`.agent/standards.yml`), not a fact baked into this skill. Default is `balanced`.
+
+| Preset | Blocks | Warns | Use when |
+|---|---|---|---|
+| `balanced` *(default)* | DB-01, DB-02, DB-04 | DB-03, DB-05, DB-06, DB-07 | normal product work |
+| `legacy-friendly` | — | all | brownfield repo with existing debt |
+| `strict` | all | — | regulated, audit-bearing, finance/health |
+
+```bash
+python3 scripts/init_standards.py .                                  # wizard, balanced pre-selected
+python3 scripts/init_standards.py . --preset strict --yes            # non-interactive
+python3 scripts/init_standards.py . --preset strict --force          # switch later
+python3 scripts/check_schema.py --list-presets
+```
+
+Switching later = edit `.agent/standards.yml` (or re-run with `--force`). No reinstall, no code change. Details in `references/presets.md`.
+
 ## Procedure
 
-1. **Read the policy.** `read_file` on `.agent/standards.md`. If missing, run `python3 scripts/init_standards.py` to bootstrap `templates/standards.md` into the repo, then tell the user to review it. Completion: you can name the rule IDs governing the tables you are about to touch.
+1. **Read the policy.** `read_file` on `.agent/standards.md`. If missing, run `python3 scripts/init_standards.py` — it writes both `standards.md` (human) and `standards.yml` (severity config), asking the user which preset if a TTY is available and defaulting to `balanced` otherwise. Completion: you can name the rule IDs governing the tables you are about to touch, and say which preset is active.
 2. **Classify every status-like field** using the decision table in `references/database.md` *before* writing DDL. Completion: each field has a written verdict and a one-line reason.
 3. **Design the schema** per the verdict — integer code + lookup table + FK + constraint + app-level named constants.
 4. **Write the migration** per the naming rule. No bare integer literal compared against a status field in app code.
-5. **Run the checker** — `python3 scripts/check_schema.py <paths> --json`. Exit 0 required. Fix the schema; do not suppress the rule.
+5. **Run the checker** — `python3 scripts/check_schema.py <paths> --json`. Exit 0 required. Fix the schema; do not suppress the rule. Downgrading a rule to `warn`/`off` in `.agent/standards.yml` is a reviewed decision, not a shortcut — say so explicitly.
 6. **Report with citations.** Every deviation gets a line: rule ID, what you did instead, why. Undocumented deviation is a defect.
 
 ## Quick Reference
 
 ```
-python3 scripts/init_standards.py .              # bootstrap .agent/standards.md
-python3 scripts/check_schema.py . --json         # whole repo
-python3 scripts/check_schema.py database/migrations --strict
+python3 scripts/init_standards.py .                    # wizard → .agent/standards.{md,yml}
+python3 scripts/init_standards.py . --preset strict --yes
+python3 scripts/check_schema.py . --json               # auto-uses .agent/standards.yml
+python3 scripts/check_schema.py . --preset legacy-friendly
+python3 scripts/check_schema.py --list-presets
 ```
 
-Checker rules: `DB-01` enum in schema, `DB-02` magic number on a status field, `DB-03` status column with no lookup/FK (strict), `DB-04` text status column, `DB-05` boolean named for a non-binary concept.
+Rules: `DB-01` enum in schema, `DB-02` magic number on a status field, `DB-03` status integer with no FK/CHECK, `DB-04` text status column, `DB-05` boolean named for a non-binary concept, `DB-06` money as float, `DB-07` timestamp without timezone.
+
+Resolution order for severity: `--config` > `--preset` > `.agent/standards.yml` > built-in `balanced`.
 
 ## Verification
 
@@ -69,11 +92,17 @@ Checker rules: `DB-01` enum in schema, `DB-02` magic number on a status field, `
 6. **Substring-matching status words false-positives.** `mimeType`, `prototype`, `fileType` are not status columns. Match whole segments (`(?<![a-z])type`) and validate the checker against a real repo before trusting it in CI.
 7. **Running the checker on legacy code floods the report.** Start report-only, then gate changed files — otherwise the team disables the check outright.
 8. **Suppressing the checker to ship.** If a rule is genuinely wrong, change `.agent/standards.md` in review — that is the escape hatch.
+9. **Putting the preset in the skill instead of the repo.** A preset chosen in the skill file is invisible to CI and to the next teammate. The active preset must live in `.agent/standards.yml`, committed alongside the code.
+10. **`warn` is not a mute button.** A repo that warns on everything forever is a repo with no standard. Either fix the findings or move to a preset where they are errors; say which, in the PR.
 
 ## Files
 
 - `references/database.md` — full decision table, worked examples, migration rules
+- `references/presets.md` — how the three presets differ, how to write a custom one
 - `references/extending.md` — adding a non-database rule domain and checker rule
 - `templates/standards.md` — the policy file to copy into a repo
+- `assets/presets/balanced.yml` — the default level
+- `assets/presets/strict.yml` — everything blocks
+- `assets/presets/legacy-friendly.yml` — everything warns
 - `scripts/check_schema.py` — SQL / Laravel migration / Prisma linter
-- `scripts/init_standards.py` — policy bootstrap
+- `scripts/init_standards.py` — wizard + bootstrap

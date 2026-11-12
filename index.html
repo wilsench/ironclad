@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>company-engineering-standards — skill untuk AI agent</title>
+<title>ironclad — skill untuk AI agent</title>
 <style>
   :root{
     --ink:#1a1410; --ink-soft:#5b4a3a; --paper:#f4ede0; --paper-2:#fbf6ea;
@@ -120,12 +120,12 @@
 
   <div class="stack">
     <h2>Pasang di Hermes</h2>
-    <div class="cmd"><button class="copy" data-target="c1">SALIN</button><pre id="c1" style="margin:0"><span class="c">$</span> hermes skills install wilsench/company-standards-skill/skills/company-engineering-standards</pre></div>
+    <div class="cmd"><button class="copy" data-target="c1">SALIN</button><pre id="c1" style="margin:0"><span class="c">$</span> hermes skills install wilsench/ironclad/skills/ironclad</pre></div>
   </div>
 
   <div class="stack">
     <h2>Pasang di agent lain (Claude Code · Codex · Cursor)</h2>
-    <div class="cmd"><button class="copy" data-target="c2">SALIN</button><pre id="c2" style="margin:0"><span class="c">$</span> curl -fsSL https://raw.githubusercontent.com/wilsench/company-standards-skill/main/install.sh | bash
+    <div class="cmd"><button class="copy" data-target="c2">SALIN</button><pre id="c2" style="margin:0"><span class="c">$</span> curl -fsSL https://raw.githubusercontent.com/wilsench/ironclad/main/install.sh | bash
 <span class="d"># auto-deteksi ~/.hermes · ~/.claude · ~/.agents</span></pre></div>
   </div>
 
@@ -180,12 +180,12 @@
   <h2>Isi paket</h2>
   <ul class="files">
     <li><a href="README.md">README.md</a> <span>ringkasan, cara pasang, batasan jujur</span></li>
-    <li><a href="skills/company-engineering-standards/SKILL.md">SKILL.md</a> <span>prosedur 6 langkah + pitfalls</span></li>
-    <li><a href="skills/company-engineering-standards/references/database.md">references/database.md</a> <span>tabel keputusan, contoh SQL/TS/PHP</span></li>
-    <li><a href="skills/company-engineering-standards/references/extending.md">references/extending.md</a> <span>menambah domain aturan baru</span></li>
-    <li><a href="skills/company-engineering-standards/templates/standards.md">templates/standards.md</a> <span>policy file untuk repo</span></li>
-    <li><a href="skills/company-engineering-standards/scripts/check_schema.py">scripts/check_schema.py</a> <span>linter SQL · Laravel · Prisma</span></li>
-    <li><a href="skills/company-engineering-standards/scripts/init_standards.py">scripts/init_standards.py</a> <span>bootstrap policy</span></li>
+    <li><a href="skills/ironclad/SKILL.md">SKILL.md</a> <span>prosedur 6 langkah + pitfalls</span></li>
+    <li><a href="skills/ironclad/references/database.md">references/database.md</a> <span>tabel keputusan, contoh SQL/TS/PHP</span></li>
+    <li><a href="skills/ironclad/references/extending.md">references/extending.md</a> <span>menambah domain aturan baru</span></li>
+    <li><a href="skills/ironclad/templates/standards.md">templates/standards.md</a> <span>policy file untuk repo</span></li>
+    <li><a href="skills/ironclad/scripts/check_schema.py">scripts/check_schema.py</a> <span>linter SQL · Laravel · Prisma</span></li>
+    <li><a href="skills/ironclad/scripts/init_standards.py">scripts/init_standards.py</a> <span>bootstrap policy</span></li>
     <li><a href="examples/bad.sql">examples/bad.sql</a> <span>fixture yang harus gagal</span></li>
     <li><a href="examples/good.sql">examples/good.sql</a> <span>fixture yang harus lolos</span></li>
   </ul>
