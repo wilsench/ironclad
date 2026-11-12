@@ -9,7 +9,7 @@
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/faq/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/faq/">
 <meta name="color-scheme" content="light">
-<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.8.4-0cff1a72">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.8.5-0cff1a72">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -23,7 +23,7 @@
       <span class="mark" aria-hidden="true">IC</span>
       <span>
         <b>Ironclad</b>
-        <i>v0.8.4-0cff1a72 · MIT</i>
+        <i>v0.8.5-0cff1a72 · MIT</i>
       </span>
     </a>
 
@@ -104,7 +104,7 @@ decides, the same way it decides which tool to call.</p>
 <p>If you want certainty, name it: "use the ironclad skill for this migration".</p>
 <h2 id="can-it-be-shorter-than-this">Can it be shorter than this?</h2>
 <p>Install:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.4
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.5
 </code></pre></div>
 <p>Then, in a repo:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check      # look
@@ -116,16 +116,16 @@ the rules pinned in git for your team.</p>
 <p>Yes — that is its main target. Six targets: Hermes, Claude Code, Codex, Cursor,
 opencode, Antigravity. The format is the Agent Skills standard (<code>SKILL.md</code>), not
 something Hermes-specific.</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.4  --all              # everything detected on this machine
-npx github:wilsench/ironclad#v0.8.4  --target claude
-npx github:wilsench/ironclad#v0.8.4  --target gemini    # Antigravity, global
-npx github:wilsench/ironclad#v0.8.4  --target opencode
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.5  --all              # everything detected on this machine
+npx github:wilsench/ironclad#v0.8.5  --target claude
+npx github:wilsench/ironclad#v0.8.5  --target gemini    # Antigravity, global
+npx github:wilsench/ironclad#v0.8.5  --target opencode
 </code></pre></div>
 <h2 id="can-i-use-wilsenchironclad-directly">Can I use <code>wilsench/ironclad</code> directly?</h2>
 <p>For Hermes:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">hermes skills install wilsench/ironclad/skills/ironclad
 </code></pre></div>
-<p>Other agents use <code>npx github:wilsench/ironclad#v0.8.4</code> — that pulls the package
+<p>Other agents use <code>npx github:wilsench/ironclad#v0.8.5</code> — that pulls the package
 straight from the public repo, with nothing published to npm. If the machine has no
 Node, the <code>install.sh</code> mirror on <code>wilsench.my.id</code> runs the same code.</p>
 <h2 id="is-curl-bash-safe">Is <code>curl | bash</code> safe?</h2>
@@ -168,11 +168,31 @@ everyone automatically.</p>
 <p><code>SKILL.md</code> is roughly 7 KB, but the agent loads it only when the task matches.
 What is always in context is one description line. The references
 (<code>database.md</code>, <code>presets.md</code>) are read only when the agent needs detail.</p>
+<h2 id="i-already-have-other-skills-and-rules-installed-does-this-conflict">I already have other skills and rules installed. Does this conflict?</h2>
+<p>Nothing is overwritten. The installer only appends one fenced block at the <strong>end</strong> of
+the config file that already exists:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>&lt;!-- ironclad:begin v1 --&gt;  ...  &lt;!-- ironclad:end --&gt;
+</code></pre></div>
+<p>Rules, styles or other skills in that same file stay exactly where they are — before
+and after the block. The only thing ever removed is what sits between those two
+markers, and only when you re-run the installer or <code>--uninstall</code>.</p>
+<p>Three things are tested:</p>
+<ul>
+<li><strong>Installing twice</strong> — produces no duplicate block (<code>unchanged</code>).</li>
+<li><strong>Uninstall</strong> — the file returns to exactly what it was, other rules intact,
+  line count included.</li>
+<li><strong><code>ironclad init</code> in a repo that already has <code>AGENTS.md</code> and <code>.agent/standards.md</code></strong> —
+  the team's rules survive, and a <code>standards.md</code> you filled in is not replaced.</li>
+</ul>
+<p>One thing that could count as interference: the block is read in <strong>every session</strong> of
+the agent, for every repo, because that is the point. It is ~1,150 characters. If that
+is too much, remove it with <code>--uninstall</code>; the skill and the tooling still work if you
+invoke them by hand.</p>
         <nav class="pager" aria-label="Next page">
           <a class="prev" href="/ironclad/en/troubleshooting/"><span>Previous</span><b>Troubleshooting</b></a>
         </nav>
         <footer class="docfoot">
-          <span>Ironclad v0.8.4-0cff1a72</span>
+          <span>Ironclad v0.8.5-0cff1a72</span>
           <span>MIT</span>
           <span>Chia Wilsen</span>
         </footer>
@@ -192,7 +212,8 @@ What is always in context is one description line. The references
 <li class="lvl2"><a href="#does-this-replace-code-review">Does this replace code review?</a></li>
 <li class="lvl2"><a href="#what-if-our-company-rules-are-different">What if our company rules are different?</a></li>
 <li class="lvl2"><a href="#is-there-auto-update">Is there auto-update?</a></li>
-<li class="lvl2"><a href="#what-is-the-context-cost">What is the context cost?</a></li></ul>
+<li class="lvl2"><a href="#what-is-the-context-cost">What is the context cost?</a></li>
+<li class="lvl2"><a href="#i-already-have-other-skills-and-rules-installed-does-this-conflict">I already have other skills and rules installed. Does this conflict?</a></li></ul>
       </aside>
     </div>
   </main>
@@ -207,7 +228,7 @@ What is always in context is one description line. The references
   <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
 </div>
 
-<script src="/ironclad/assets/docs.js?v=0.8.4-0cff1a72" defer></script>
-<script src="/ironclad/assets/search-index.en.js?v=0.8.4-0cff1a72" defer></script>
+<script src="/ironclad/assets/docs.js?v=0.8.5-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.8.5-0cff1a72" defer></script>
 </body>
 </html>

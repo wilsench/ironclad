@@ -9,7 +9,7 @@
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/faq/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/faq/">
 <meta name="color-scheme" content="light">
-<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.8.4-0cff1a72">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.8.5-0cff1a72">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -23,7 +23,7 @@
       <span class="mark" aria-hidden="true">IC</span>
       <span>
         <b>Ironclad</b>
-        <i>v0.8.4-0cff1a72 · MIT</i>
+        <i>v0.8.5-0cff1a72 · MIT</i>
       </span>
     </a>
 
@@ -94,7 +94,7 @@
 <p>Kalau kamu ingin memastikan, sebut namanya: <code>pakai skill ironclad</code>.</p>
 <h2 id="kalau-tidak-mau-sepanjang-ini-cukup-satu-perintah">Kalau tidak mau sepanjang ini, cukup satu perintah?</h2>
 <p>Ya:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.4
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.5
 </code></pre></div>
 <p>Itu saja. Tidak ada langkah kedua — agent sudah bertanya sendiri di repo mana pun.</p>
 <p>Kalau kamu ingin aturannya ikut git supaya seluruh tim dan CI memakai jawaban yang sama:</p>
@@ -103,16 +103,16 @@
 <p>Satu perintah, tanpa clone, tanpa baca dokumen — dan tanpa <code>ironclad init</code> kecuali kamu ingin aturannya ikut git.</p>
 <h2 id="installer-ini-bisa-untuk-selain-hermes">Installer ini bisa untuk selain Hermes?</h2>
 <p>Ya, dan itu target utamanya. Enam target: Hermes, Claude Code, Codex, Cursor, opencode, Antigravity. Formatnya standar Agent Skills (<code>SKILL.md</code>), bukan format khusus Hermes.</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.4  --all              # semua agent yang terdeteksi
-npx github:wilsench/ironclad#v0.8.4  --target claude
-npx github:wilsench/ironclad#v0.8.4  --target gemini    # Antigravity global
-npx github:wilsench/ironclad#v0.8.4  --target opencode
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.8.5  --all              # semua agent yang terdeteksi
+npx github:wilsench/ironclad#v0.8.5  --target claude
+npx github:wilsench/ironclad#v0.8.5  --target gemini    # Antigravity global
+npx github:wilsench/ironclad#v0.8.5  --target opencode
 </code></pre></div>
 <h2 id="bisa-langsung-pakai-wilsenchironclad">Bisa langsung pakai <code>wilsench/ironclad</code>?</h2>
 <p>Untuk Hermes, ya — begitu repo GitHub-nya terbit:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">hermes skills install wilsench/ironclad/skills/ironclad
 </code></pre></div>
-<p>Untuk agent lain, pakai <code>npx github:wilsench/ironclad#v0.8.4</code> — itu menarik paket langsung dari repo GitHub tanpa publish ke npm. Kalau tidak ada Node, mirror <code>install.sh</code> di <code>wilsench.my.id</code> menjalankan kode yang sama persis.</p>
+<p>Untuk agent lain, pakai <code>npx github:wilsench/ironclad#v0.8.5</code> — itu menarik paket langsung dari repo GitHub tanpa publish ke npm. Kalau tidak ada Node, mirror <code>install.sh</code> di <code>wilsench.my.id</code> menjalankan kode yang sama persis.</p>
 <h2 id="apakah-curl-bash-aman">Apakah <code>curl | bash</code> aman?</h2>
 <p>Installer-nya 180 baris bash dan bisa kamu baca dulu:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | less
@@ -134,11 +134,31 @@ npx github:wilsench/ironclad#v0.8.4  --target opencode
 <p>Belum. <code>hermes skills update</code> memakai URL saat install; agent lain perlu menjalankan ulang installer. Belum ada changelog bertanda versi. Kalau kamu mengubah aturan, yang perlu dibagikan adalah <code>.agent/standards.md</code> di repo — itu ikut git dan otomatis sampai ke semua orang.</p>
 <h2 id="berapa-biaya-konteksnya">Berapa biaya konteksnya?</h2>
 <p><code>SKILL.md</code> sekitar 7 KB, tapi agent hanya memuatnya saat tugasnya cocok. Yang selalu ada di konteks hanyalah satu baris deskripsi. Referensi (<code>database.md</code>, <code>presets.md</code>) hanya dibaca kalau agent perlu detail.</p>
+<h2 id="kalau-saya-sudah-punya-skill-atau-aturan-lain-apa-yang-terjadi">Kalau saya sudah punya skill atau aturan lain, apa yang terjadi?</h2>
+<p>Tidak ada yang tertimpa. Installer hanya menambahkan satu blok berpagar di <strong>akhir</strong>
+file konfigurasi yang sudah ada:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>&lt;!-- ironclad:begin v1 --&gt;  ...  &lt;!-- ironclad:end --&gt;
+</code></pre></div>
+<p>Aturan, gaya, atau skill lain di file yang sama tetap utuh di tempatnya — baik sebelum
+maupun sesudah blok. Yang dihapus hanya isi di antara dua penanda itu, dan hanya kalau
+kamu menjalankan installer lagi atau <code>--uninstall</code>.</p>
+<p>Tiga hal yang sudah diuji:</p>
+<ul>
+<li><strong>Install dua kali</strong> — tidak menghasilkan blok ganda (<code>unchanged</code>).</li>
+<li><strong>Uninstall</strong> — file kembali persis seperti sebelumnya, aturan orang lain utuh,
+  termasuk jumlah barisnya.</li>
+<li><strong><code>ironclad init</code> di repo yang sudah punya <code>AGENTS.md</code> dan <code>.agent/standards.md</code></strong> —
+  aturan tim tetap ada, dan <code>standards.md</code> yang sudah kamu isi tidak diganti.</li>
+</ul>
+<p>Satu hal yang bisa dianggap "gangguan": blok itu ikut terbaca di <strong>setiap sesi</strong> agent,
+untuk semua repo, karena memang itu maksudnya. Ukurannya ~1.150 karakter. Kalau itu
+mengganggu, lepas dengan <code>--uninstall</code>; skill dan alat lainnya tetap bisa dipakai
+manual.</p>
         <nav class="pager" aria-label="Halaman berikutnya">
           <a class="prev" href="/ironclad/troubleshooting/"><span>Sebelumnya</span><b>Troubleshooting</b></a>
         </nav>
         <footer class="docfoot">
-          <span>Ironclad v0.8.4-0cff1a72</span>
+          <span>Ironclad v0.8.5-0cff1a72</span>
           <span>MIT</span>
           <span>Chia Wilsen</span>
         </footer>
@@ -158,7 +178,8 @@ npx github:wilsench/ironclad#v0.8.4  --target opencode
 <li class="lvl2"><a href="#apakah-ini-menggantikan-review-code">Apakah ini menggantikan review code?</a></li>
 <li class="lvl2"><a href="#kalau-aturan-perusahaan-kami-berbeda">Kalau aturan perusahaan kami berbeda?</a></li>
 <li class="lvl2"><a href="#apakah-ada-auto-update">Apakah ada auto-update?</a></li>
-<li class="lvl2"><a href="#berapa-biaya-konteksnya">Berapa biaya konteksnya?</a></li></ul>
+<li class="lvl2"><a href="#berapa-biaya-konteksnya">Berapa biaya konteksnya?</a></li>
+<li class="lvl2"><a href="#kalau-saya-sudah-punya-skill-atau-aturan-lain-apa-yang-terjadi">Kalau saya sudah punya skill atau aturan lain, apa yang terjadi?</a></li></ul>
       </aside>
     </div>
   </main>
@@ -173,7 +194,7 @@ npx github:wilsench/ironclad#v0.8.4  --target opencode
   <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
 </div>
 
-<script src="/ironclad/assets/docs.js?v=0.8.4-0cff1a72" defer></script>
-<script src="/ironclad/assets/search-index.js?v=0.8.4-0cff1a72" defer></script>
+<script src="/ironclad/assets/docs.js?v=0.8.5-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.8.5-0cff1a72" defer></script>
 </body>
 </html>

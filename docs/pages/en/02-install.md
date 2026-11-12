@@ -9,7 +9,7 @@ summary: One command, no questions. The agent starts asking on its own — no se
 # Install into your agent
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4
+npx github:wilsench/ironclad#v0.8.5
 ```
 
 Or, if you would rather not use Node:
@@ -20,7 +20,7 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 
 Both run the same installer. No questions, no menu, no second step.
 
-Use a version tag (`#v0.8.4`), not `main`. Without a tag, every commit you push becomes
+Use a version tag (`#v0.8.5`), not `main`. Without a tag, every commit you push becomes
 the version your whole team runs — including commits that have not been tested. With a
 tag, you hand out one state you have actually checked. To move forward, change the tag.
 
@@ -76,19 +76,19 @@ The default is `~/.agents/skills`. For agents with their own directory:
 
 ```bash
 # Claude Code
-npx github:wilsench/ironclad#v0.8.4 --target claude
+npx github:wilsench/ironclad#v0.8.5 --target claude
 
 # Hermes
-npx github:wilsench/ironclad#v0.8.4 --target hermes
+npx github:wilsench/ironclad#v0.8.5 --target hermes
 
 # opencode (native)
-npx github:wilsench/ironclad#v0.8.4 --target opencode
+npx github:wilsench/ironclad#v0.8.5 --target opencode
 
 # Antigravity, global
-npx github:wilsench/ironclad#v0.8.4 --target gemini
+npx github:wilsench/ironclad#v0.8.5 --target gemini
 
 # everything installed on this machine
-npx github:wilsench/ironclad#v0.8.4 --all
+npx github:wilsench/ironclad#v0.8.5 --all
 ```
 
 | Agent | Directory |
@@ -105,7 +105,7 @@ npx github:wilsench/ironclad#v0.8.4 --all
 > inside the repo so it travels with the code:
 >
 > ```bash
-> npx github:wilsench/ironclad#v0.8.4 --dir .agents/skills
+> npx github:wilsench/ironclad#v0.8.5 --dir .agents/skills
 > ```
 
 ## If you want the rules to travel with the repo
@@ -114,7 +114,7 @@ This is what makes a whole team use the same rulebook — the skill is in git, n
 only on one person's laptop:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4 --dir .agents/skills
+npx github:wilsench/ironclad#v0.8.5 --dir .agents/skills
 git add .agents/skills/ironclad && git commit -m "chore: add ironclad skill"
 ```
 
@@ -124,7 +124,7 @@ There are no prompts in the first place, so there is nothing to suppress. For a
 pipeline that wants everything at once:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4 --target agents --project . --preset legacy-friendly
+npx github:wilsench/ironclad#v0.8.5 --target agents --project . --preset legacy-friendly
 ```
 
 ## Uninstall
@@ -137,7 +137,7 @@ install.
 sweeps every agent:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4 --uninstall
+npx github:wilsench/ironclad#v0.8.5 --uninstall
 ```
 
 Removes `~/.agents/skills/ironclad`, `~/.claude/skills/ironclad`,
@@ -151,7 +151,7 @@ installer artefact, so it is left alone by default. To remove it from disk too:
 
 ```bash
 cd your-repo
-npx github:wilsench/ironclad#v0.8.4 --uninstall --purge
+npx github:wilsench/ironclad#v0.8.5 --uninstall --purge
 ```
 
 If those files were committed, purge only clears the disk — Git still tracks them:

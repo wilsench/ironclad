@@ -29,7 +29,7 @@ Kalau kamu ingin memastikan, sebut namanya: `pakai skill ironclad`.
 Ya:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4
+npx github:wilsench/ironclad#v0.8.5
 ```
 
 Itu saja. Tidak ada langkah kedua — agent sudah bertanya sendiri di repo mana pun.
@@ -47,10 +47,10 @@ Satu perintah, tanpa clone, tanpa baca dokumen — dan tanpa `ironclad init` kec
 Ya, dan itu target utamanya. Enam target: Hermes, Claude Code, Codex, Cursor, opencode, Antigravity. Formatnya standar Agent Skills (`SKILL.md`), bukan format khusus Hermes.
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4  --all              # semua agent yang terdeteksi
-npx github:wilsench/ironclad#v0.8.4  --target claude
-npx github:wilsench/ironclad#v0.8.4  --target gemini    # Antigravity global
-npx github:wilsench/ironclad#v0.8.4  --target opencode
+npx github:wilsench/ironclad#v0.8.5  --all              # semua agent yang terdeteksi
+npx github:wilsench/ironclad#v0.8.5  --target claude
+npx github:wilsench/ironclad#v0.8.5  --target gemini    # Antigravity global
+npx github:wilsench/ironclad#v0.8.5  --target opencode
 ```
 
 ## Bisa langsung pakai `wilsench/ironclad`?
@@ -61,7 +61,7 @@ Untuk Hermes, ya — begitu repo GitHub-nya terbit:
 hermes skills install wilsench/ironclad/skills/ironclad
 ```
 
-Untuk agent lain, pakai `npx github:wilsench/ironclad#v0.8.4` — itu menarik paket langsung dari repo GitHub tanpa publish ke npm. Kalau tidak ada Node, mirror `install.sh` di `wilsench.my.id` menjalankan kode yang sama persis.
+Untuk agent lain, pakai `npx github:wilsench/ironclad#v0.8.5` — itu menarik paket langsung dari repo GitHub tanpa publish ke npm. Kalau tidak ada Node, mirror `install.sh` di `wilsench.my.id` menjalankan kode yang sama persis.
 
 ## Apakah `curl | bash` aman?
 
@@ -104,3 +104,29 @@ Belum. `hermes skills update` memakai URL saat install; agent lain perlu menjala
 ## Berapa biaya konteksnya?
 
 `SKILL.md` sekitar 7 KB, tapi agent hanya memuatnya saat tugasnya cocok. Yang selalu ada di konteks hanyalah satu baris deskripsi. Referensi (`database.md`, `presets.md`) hanya dibaca kalau agent perlu detail.
+
+## Kalau saya sudah punya skill atau aturan lain, apa yang terjadi?
+
+Tidak ada yang tertimpa. Installer hanya menambahkan satu blok berpagar di **akhir**
+file konfigurasi yang sudah ada:
+
+```
+<!-- ironclad:begin v1 -->  ...  <!-- ironclad:end -->
+```
+
+Aturan, gaya, atau skill lain di file yang sama tetap utuh di tempatnya — baik sebelum
+maupun sesudah blok. Yang dihapus hanya isi di antara dua penanda itu, dan hanya kalau
+kamu menjalankan installer lagi atau `--uninstall`.
+
+Tiga hal yang sudah diuji:
+
+- **Install dua kali** — tidak menghasilkan blok ganda (`unchanged`).
+- **Uninstall** — file kembali persis seperti sebelumnya, aturan orang lain utuh,
+  termasuk jumlah barisnya.
+- **`ironclad init` di repo yang sudah punya `AGENTS.md` dan `.agent/standards.md`** —
+  aturan tim tetap ada, dan `standards.md` yang sudah kamu isi tidak diganti.
+
+Satu hal yang bisa dianggap "gangguan": blok itu ikut terbaca di **setiap sesi** agent,
+untuk semua repo, karena memang itu maksudnya. Ukurannya ~1.150 karakter. Kalau itu
+mengganggu, lepas dengan `--uninstall`; skill dan alat lainnya tetap bisa dipakai
+manual.

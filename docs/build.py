@@ -409,14 +409,9 @@ def check_version_agreement() -> None:
         if n != ver:
             raise SystemExit(
                 f"version drift: package.json says {n}, skills/ironclad/SKILL.md says {ver}")
-    tag_cmd = ["git", "-C", str(ROOT.parent), "tag", "--points-at", "HEAD"]
-    try:
-        tag = subprocess.run(tag_cmd, capture_output=True, text=True, timeout=5).stdout.split()
-    except Exception:
-        return
-    if tag and f"v{ver}" not in tag:
-        raise SystemExit(
-            f"version drift: HEAD is tagged {', '.join(tag)} but SKILL.md says {ver}")
+    # Deliberately NOT checking the tag on HEAD here. A release is built before the tag
+    # is moved onto the commit, so that check would block every legitimate release.
+    # Whether the tag matches what shipped is release-check.sh's job, run after tagging.
 
 
 def main():

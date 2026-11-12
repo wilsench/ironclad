@@ -55,7 +55,7 @@ Send it to **one** person, ideally one who uses a different agent than you. All 
 have to run is:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4
+npx github:wilsench/ironclad#v0.8.5
 ```
 
 Then ask them to open the pilot repo and ask their agent:

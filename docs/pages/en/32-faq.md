@@ -39,7 +39,7 @@ If you want certainty, name it: "use the ironclad skill for this migration".
 Install:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4
+npx github:wilsench/ironclad#v0.8.5
 ```
 
 Then, in a repo:
@@ -59,10 +59,10 @@ opencode, Antigravity. The format is the Agent Skills standard (`SKILL.md`), not
 something Hermes-specific.
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4  --all              # everything detected on this machine
-npx github:wilsench/ironclad#v0.8.4  --target claude
-npx github:wilsench/ironclad#v0.8.4  --target gemini    # Antigravity, global
-npx github:wilsench/ironclad#v0.8.4  --target opencode
+npx github:wilsench/ironclad#v0.8.5  --all              # everything detected on this machine
+npx github:wilsench/ironclad#v0.8.5  --target claude
+npx github:wilsench/ironclad#v0.8.5  --target gemini    # Antigravity, global
+npx github:wilsench/ironclad#v0.8.5  --target opencode
 ```
 
 ## Can I use `wilsench/ironclad` directly?
@@ -73,7 +73,7 @@ For Hermes:
 hermes skills install wilsench/ironclad/skills/ironclad
 ```
 
-Other agents use `npx github:wilsench/ironclad#v0.8.4` — that pulls the package
+Other agents use `npx github:wilsench/ironclad#v0.8.5` — that pulls the package
 straight from the public repo, with nothing published to npm. If the machine has no
 Node, the `install.sh` mirror on `wilsench.my.id` runs the same code.
 
@@ -137,3 +137,29 @@ everyone automatically.
 `SKILL.md` is roughly 7 KB, but the agent loads it only when the task matches.
 What is always in context is one description line. The references
 (`database.md`, `presets.md`) are read only when the agent needs detail.
+
+## I already have other skills and rules installed. Does this conflict?
+
+Nothing is overwritten. The installer only appends one fenced block at the **end** of
+the config file that already exists:
+
+```
+<!-- ironclad:begin v1 -->  ...  <!-- ironclad:end -->
+```
+
+Rules, styles or other skills in that same file stay exactly where they are — before
+and after the block. The only thing ever removed is what sits between those two
+markers, and only when you re-run the installer or `--uninstall`.
+
+Three things are tested:
+
+- **Installing twice** — produces no duplicate block (`unchanged`).
+- **Uninstall** — the file returns to exactly what it was, other rules intact,
+  line count included.
+- **`ironclad init` in a repo that already has `AGENTS.md` and `.agent/standards.md`** —
+  the team's rules survive, and a `standards.md` you filled in is not replaced.
+
+One thing that could count as interference: the block is read in **every session** of
+the agent, for every repo, because that is the point. It is ~1,150 characters. If that
+is too much, remove it with `--uninstall`; the skill and the tooling still work if you
+invoke them by hand.

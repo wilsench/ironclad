@@ -48,7 +48,7 @@ python3 scripts/check_schema.py --list-presets   # kalau kosong, ini penyebabnya
 **Perbaikan:**
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4 --project . --preset balanced
+npx github:wilsench/ironclad#v0.8.5 --project . --preset balanced
 ```
 
 ## `no .sql/.php/.prisma files found`
@@ -163,7 +163,7 @@ ironclad version
 Kalau angkanya bukan versi yang kamu tuju:
 
 ```bash
-npx --yes github:wilsench/ironclad#v0.8.4 --force
+npx --yes github:wilsench/ironclad#v0.8.5 --force
 ```
 
 `--force` membuat installer menimpa payload yang ada. Kalau masih lama, bersihkan

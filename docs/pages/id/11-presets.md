@@ -46,7 +46,7 @@ yang salah pilihan tapi bisa diubah (lihat bagian berikut).
 Langsung dari installer:
 
 ```bash
-npx github:wilsench/ironclad#v0.8.4 --project . --preset strict
+npx github:wilsench/ironclad#v0.8.5 --project . --preset strict
 ```
 
 Atau belakangan, dari dalam repo:
