@@ -80,6 +80,28 @@ CREATE TABLE orders (
 """,
         "strict", 1, "DB-07",
     ),
+    # Most real migrations wrap the constraint onto a second line. Reading only the
+    # column's own line called this a violation — a false positive on correct SQL,
+    # which is worse than a miss because it teaches people to distrust the tool.
+    "multi-line FOREIGN KEY accepted": (
+        """CREATE TABLE order_status (code smallint PRIMARY KEY);
+CREATE TABLE orders (
+  id bigint PRIMARY KEY,
+  status_code smallint NOT NULL,
+  CONSTRAINT orders_status_fk FOREIGN KEY (status_code)
+      REFERENCES order_status (code)
+);
+""",
+        "strict", 0, None,
+    ),
+    "status integer with no FK blocked": (
+        """CREATE TABLE orders (
+  id bigint PRIMARY KEY,
+  status_code smallint NOT NULL
+);
+""",
+        "strict", 1, "DB-03",
+    ),
 }
 
 

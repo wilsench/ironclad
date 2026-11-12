@@ -307,7 +307,18 @@ def check_file(path, cfg):
                                 f"use timestamptz (or createdAt/updatedAt in Laravel)")
 
     # DB-03: a status code column with no FK/CHECK anywhere in the file
+    #
+    # A constraint is very often written across two lines, which is the house style
+    # in most migrations:
+    #
+    #     CONSTRAINT orders_status_fk FOREIGN KEY (status_code)
+    #         REFERENCES order_status (code)
+    #
+    # Reading only the column's own line calls that a violation and would fail a
+    # correct schema. So: build a window around the line and also accept a
+    # table-level FOREIGN KEY that names the column anywhere in the file.
     if migration:
+        window = 6
         for i, line in enumerate(lines, 1):
             m = re.search(rf"\b([a-z0-9_]*{STATUS_WORD}[a-z0-9_]*(?:_code)?)\b\s+"
                           rf"(?:smallint|tinyint|integer|int|bigint)", line, re.I)
@@ -316,8 +327,21 @@ def check_file(path, cfg):
             col = m.group(1)
             if not STATUS_COL.match(col):
                 continue
-            if re.search(rf"{re.escape(col)}[^\n]*(REFERENCES|references|constrained|CHECK|check)",
-                         text, re.I):
+            lo = max(0, i - 1 - window)
+            hi = min(len(lines), i + window)
+            near = "\n".join(lines[lo:hi])
+
+            inline = re.search(
+                rf"\b{re.escape(col)}\b[^\n]{{0,200}}?(?:\bREFERENCES\b|\bconstrained\b|\bCHECK\b)",
+                near, re.I)
+            # table-level: FOREIGN KEY (col) ... REFERENCES, possibly split over lines
+            table_level = re.search(
+                rf"\bFOREIGN\s+KEY\s*\(\s*{re.escape(col)}\s*\)[^;]{{0,400}}?\bREFERENCES\b",
+                text, re.I | re.S)
+            # a column-level CHECK inside the same CREATE TABLE block
+            block = re.search(rf"\b{re.escape(col)}\b[^;]{{0,300}}?\bCHECK\s*\(",
+                              text, re.I | re.S)
+            if inline or table_level or block:
                 continue
             add("DB-03", i, f"`{col}` has no FK to a lookup table or CHECK constraint")
 
