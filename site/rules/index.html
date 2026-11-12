@@ -47,8 +47,9 @@
 <li><a href="/ironclad/team/">Untuk tim</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/modes/">Mode — ask atau house</a></li>
 <li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
-<li><a href="/ironclad/presets/">Preset</a></li>
+<li><a href="/ironclad/presets/">Preset — seberapa keras</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
 <li><a href="/ironclad/rules/" class="active" aria-current="page">Aturan DB-01…DB-08</a></li>
@@ -265,8 +266,12 @@ inkonsistensi adalah sifat proyek, bukan sifat satu tabel.</p>
 data; menambah nilai enum berarti <code>ALTER TABLE</code> yang mengunci tabel. Bukan soal
 selera, soal biaya saat status bertambah.</p>
 <p><strong>Menyimpang dengan sadar:</strong> kalau tim memilih enum, tulis alasannya di
-<code>.agent/standards.md</code> dan set <code>DB-01</code>/<code>DB-08</code> ke <code>warn</code> atau <code>off</code>. Yang dilarang
-bukan pilihan yang berbeda — yang dilarang adalah tidak ada pilihan sama sekali.</p>
+<code>.agent/standards.md</code>. Yang dilarang bukan pilihan yang berbeda — yang dilarang
+adalah tidak ada pilihan sama sekali.</p>
+<p>Kalau kamu tidak ingin mengurus berkas config sama sekali, preset <code>coherence</code>
+melakukan hal yang sama untuk seluruh proyek: <code>DB-01</code> di sana hanya peringatan,
+dan <code>DB-08</code> tetap error. Jadi repo yang konsisten memakai enum akan hijau, sementara
+repo yang mencampur tetap merah — tanpa kamu menulis apa pun.</p>
 <hr />
 <h2 id="uji-sendiri">Uji sendiri</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash"># harus lolos semua preset
@@ -279,7 +284,7 @@ python3 scripts/check_schema.py examples/bad.sql --preset strict
 </code></pre></div>
 <p><code>examples/good.sql</code> memakai kode <code>88/89/90</code> dan <code>990…993</code> dengan sengaja — untuk membuktikan bahwa kode tak berurutan itu sah, selama terdaftar di lookup table dan dipakai lewat FK.</p>
         <nav class="pager" aria-label="Halaman berikutnya">
-          <a class="prev" href="/ironclad/presets/"><span>Sebelumnya</span><b>Preset</b></a>
+          <a class="prev" href="/ironclad/presets/"><span>Sebelumnya</span><b>Preset — seberapa keras</b></a>
 <a class="next" href="/ironclad/checker/"><span>Berikutnya</span><b>Checker</b></a>
         </nav>
         <footer class="docfoot">

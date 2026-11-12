@@ -209,8 +209,13 @@ data; menambah nilai enum berarti `ALTER TABLE` yang mengunci tabel. Bukan soal
 selera, soal biaya saat status bertambah.
 
 **Menyimpang dengan sadar:** kalau tim memilih enum, tulis alasannya di
-`.agent/standards.md` dan set `DB-01`/`DB-08` ke `warn` atau `off`. Yang dilarang
-bukan pilihan yang berbeda — yang dilarang adalah tidak ada pilihan sama sekali.
+`.agent/standards.md`. Yang dilarang bukan pilihan yang berbeda — yang dilarang
+adalah tidak ada pilihan sama sekali.
+
+Kalau kamu tidak ingin mengurus berkas config sama sekali, preset `coherence`
+melakukan hal yang sama untuk seluruh proyek: `DB-01` di sana hanya peringatan,
+dan `DB-08` tetap error. Jadi repo yang konsisten memakai enum akan hijau, sementara
+repo yang mencampur tetap merah — tanpa kamu menulis apa pun.
 
 ---
 

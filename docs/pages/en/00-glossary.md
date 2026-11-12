@@ -95,12 +95,18 @@ Ironclad never asks, for exactly this reason.
 
 ## Ironclad-specific terms
 
-**Preset** — how hard the rules bite. Three exist:
+**Preset** — how hard the rules bite. Four exist:
 
 - `legacy-friendly` — everything is a warning, the build never fails. For an old
   repo that already has problems.
+- `coherence` — no style is punished; only **mixing** styles fails. For anyone who
+  does not want a style imposed.
 - `balanced` — the most dangerous patterns block, the rest warn. This is the default.
 - `strict` — everything blocks. For a new or already-clean repo.
+
+**Mode** — who decides when the repo has no answer yet. `ask` (default): the agent
+asks. `house`: the agent applies the office default. Difference from a preset: a
+mode acts **before** code is written, a preset acts **after**.
 
 **Rule ID** — a rule's number, e.g. `DB-04`. It makes discussion short: "this breaks
 DB-04" beats a paragraph of explanation.

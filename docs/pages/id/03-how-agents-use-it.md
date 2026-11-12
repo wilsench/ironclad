@@ -23,7 +23,7 @@ Artinya: skill ini **tidak** "menjalankan segalanya". Ia menunggu ada pekerjaan 
 Deskripsi Ironclad sengaja dibuat pendek dan tajam, karena itulah satu-satunya yang dilihat agent saat memilih:
 
 ```
-Enforce team engineering standards with presets.
+Use when several developers share one database — make sure everyone stores status the same way before the agent writes schema.
 ```
 
 ## Kapan ia aktif sendiri

@@ -19,7 +19,7 @@ python3 scripts/check_schema.py [paths…] [opsi]
 | Opsi | Arti |
 |---|---|
 | `paths…` | file atau direktori; default `.` |
-| `--preset NAME` | `balanced` · `strict` · `legacy-friendly` |
+| `--preset NAME` | `balanced` · `coherence` · `strict` · `legacy-friendly` |
 | `--config FILE` | config eksplisit, menimpa `--preset` |
 | `--json` | keluaran mesin |
 | `--strict` | eskalasi semua warn jadi error (flag lama) |

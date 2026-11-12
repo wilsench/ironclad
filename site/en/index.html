@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Apa ini, untuk siapa — Ironclad</title>
-<meta name="description" content="The plain-language explanation — what problem it solves, what you have to do, and what you never have to touch.">
+<title>What this is, and who it is for — Ironclad</title>
+<meta name="description" content="One page without jargon — the problem it solves, what you decide for yourself, and what you never have to touch.">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/en/overview/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/overview/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/overview/">
@@ -38,7 +38,7 @@
 
     <nav class="nav" aria-label="Documentation">
       <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
-<li><a href="/ironclad/en/overview/" class="active" aria-current="page">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/en/overview/" class="active" aria-current="page">What this is, and who it is for</a></li>
 <li><a href="/ironclad/en/glossary/">Glossary</a></li>
 <li><a href="/ironclad/en/install/">Install</a></li>
 <li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
@@ -47,8 +47,9 @@
 <li><a href="/ironclad/en/team/">For your team</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/modes/">Modes — ask or house</a></li>
 <li><a href="/ironclad/en/three-layers/">Three layers</a></li>
-<li><a href="/ironclad/en/presets/">Presets</a></li>
+<li><a href="/ironclad/en/presets/">Presets — how hard it bites</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
 <li><a href="/ironclad/en/rules/">Rules DB-01…DB-08</a></li>
@@ -76,7 +77,7 @@
       <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span>
       </button>
-      <span class="crumb">Start / <b>Apa ini, untuk siapa</b></span>
+      <span class="crumb">Start / <b>What this is, and who it is for</b></span>
       <a class="langsw-mini" href="/ironclad/overview/" aria-label="Language">ID</a>
       <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
     </header>
@@ -84,129 +85,142 @@
     <div class="pagegrid">
       <article class="prose">
         <h1 id="ironclad-without-the-jargon">Ironclad, without the jargon</h1>
-<p><strong>Ironclad keeps one project consistent when more than one person works on its
-database.</strong></p>
-<p>Not an app, not a subscription. It is two things: a rules file inside your repo,
-and a checker that rejects work which breaks those rules.</p>
-<h2 id="the-real-problem-two-developers-two-styles">The real problem: two developers, two styles</h2>
+<p><strong>Ironclad keeps one project consistent when more than one person — or more than
+one AI — works on its database.</strong></p>
+<p>Not an app. Not a subscription. Not a replacement for code review. It is one
+understanding that agents read before writing code, one decision file that lives
+in git, and one checker you can use if you want to.</p>
+<h2 id="where-to-start">Where to start</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>If you are…</th>
+<th>Read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>not a programmer</strong> — you commission or oversee this work</td>
+<td>keep reading this page, then <a href="/ironclad/en/en/team/">For teams</a></td>
+</tr>
+<tr>
+<td><strong>a developer who wants to try before installing</strong></td>
+<td><a href="#try-it-without-installing">Try it without installing</a> below</td>
+</tr>
+<tr>
+<td><strong>a developer who is already convinced</strong></td>
+<td><a href="/ironclad/en/en/quickstart/">Quickstart</a></td>
+</tr>
+<tr>
+<td><strong>a developer who wants to know why it is built this way</strong></td>
+<td><a href="/ironclad/en/en/three-layers/">Three layers</a>, then <a href="/ironclad/en/en/modes/">Modes</a></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="the-problem-two-developers-two-styles">The problem: two developers, two styles</h2>
 <p>This is not a story about AI. It is a story about teams.</p>
-<p>One project. Three developers. All three touch the database — add a column, create
-a table, change a status.</p>
+<p>One project. Three developers. All three touch the database.</p>
 <p>Developer A stores order status as an <strong>enum</strong>:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">status ENUM('new', 'paid', 'shipped')
 </code></pre></div>
 <p>Developer B stores the same thing as an <strong>integer</strong>:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">status_code smallint NOT NULL
 </code></pre></div>
-<p>Both work. Both survive review, because each makes sense on its own. What is
-missing: a shared decision about which one this project uses.</p>
-<p>Six months later, one table stores status as an enum, another as an integer, a
-third as free text. Every report needs three different queries for the same
-question. And when a client asks for a new status — "delayed by weather" —
-developer C first has to work out which table uses which approach, because adding
-an enum value and adding a lookup row are two very different jobs.</p>
-<p>None of this is anyone's fault. What was missing is one thing: <strong>a written rule
-everybody reads before they start.</strong></p>
-<h2 id="the-recommendation-integer-not-enum">The recommendation: integer, not enum</h2>
-<p>Ironclad leans toward <strong>integer + lookup table</strong> as the default. The reason is not
-taste:</p>
-<ul>
-<li><strong>Adding an enum value changes the database structure.</strong> In MySQL that is
-  <code>ALTER TABLE</code>, and on a large table it locks the table while it runs. Business
-  status always grows — and every growth should not be a maintenance event.</li>
-<li><strong>Adding one integer code adds one row of data.</strong> An ordinary operation, no lock,
-  no deploy.</li>
-<li><strong>A registered number is no more fragile than text.</strong> As long as the code exists
-  in a lookup table and is guarded by a foreign key, the database rejects numbers
-  that were never registered. <code>88</code> is safe when <code>88</code> is registered; <code>87</code> is refused.</li>
-</ul>
-<p>So the rule is not "never use enum". The rule is: <strong>one approach per project</strong>, and
-the approach is integer + lookup — unless there is a written reason to deviate, and
-that reason goes through review.</p>
-<h2 id="why-this-is-expensive-to-fix-later">Why this is expensive to fix later</h2>
-<p>Think of renovating a house.</p>
-<p>You are free to choose paint colours, door handles, furniture layout — cheap to
-change any time. But plumbing and wiring have to follow one standard. Not because
-anyone loves rules, but because fixing them means tearing open walls.</p>
-<p>The database is the plumbing. A UI can be replaced in a day. An inconsistent data
-structure sticks around for years, and the cost rises every time new data lands.</p>
-<h2 id="ai-accelerates-this-problem-it-does-not-cause-it">AI accelerates this problem; it does not cause it</h2>
-<p>If one developer writes enum and another writes integer, that happens because each
-decided alone. AI makes those decisions happen <strong>faster and in greater numbers</strong> —
-it writes in seconds, across many files, and never asks "how does this project
-usually do it?"</p>
-<p>That is why Ironclad puts the rules where the agent reads them: not to make the AI
-smarter, but so it does not become a fourth team member with its own style.</p>
-<h2 id="what-ironclad-actually-does">What Ironclad actually does</h2>
-<p>Three things, and only three:</p>
-<p><strong>1. It writes the team's decisions into the repo.</strong>
-<code>.agent/standards.md</code> holds decisions already made: how status is stored, how money
-is stored, how dates are stored. Not one person's preference — an agreement that
-gets committed.</p>
-<p><strong>2. It makes the AI read them before starting.</strong>
-The agent reads that file before writing the database. A new developer — human or
-AI — reads the same file on day one.</p>
-<p><strong>3. It checks the result automatically.</strong>
-<code>check_schema.py</code> reads the database code and points at violations with a rule
-number. You can run it by hand, or wire it into CI so a pull request that violates a
-rule cannot be merged. This is what catches a developer who does not use AI at all —
-or who simply forgot.</p>
-<p>Points 1 and 2 are advice. Point 3 is enforcement. You need both: advice without
-enforcement gets ignored under deadline, and enforcement without written rules just
-produces a list of errors nobody knows how to fix.</p>
-<h2 id="what-you-have-to-do">What you have to do</h2>
-<p>Two commands. Nothing to answer.</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash"># 1. install (once per machine)
-npx github:wilsench/ironclad#v0.9.0
+<p>Both work. Both pass review, because each one makes sense on its own. What is
+missing is a shared decision about which one this project uses.</p>
+<p>Six months later: one table enum, one integer, one free text. A report needs three
+different queries for the same thing. When a client asks for a new status,
+developer C has to work out which table does which — because adding an enum value
+and adding a lookup row are two very different jobs.</p>
+<p>Nobody did anything wrong. One thing is missing: <strong>a decision, written down and
+read before anyone starts.</strong> AI makes that gap wider — it writes in seconds,
+across many files, and never asks "how does this project usually do it?"</p>
+<h2 id="four-things-you-can-configure">Four things you can configure</h2>
+<p>Ironclad has four parts. Each works on its own, and none is mandatory.</p>
+<p><strong>1. The understanding that sits next to your agent.</strong>
+On install, a short block is written into the global config of whichever agents
+are on the machine. It is read at the start of every session, in any repo: <em>read
+the repo first, follow the style already there, never add a third.</em> This is the part
+that stops an agent inventing its own taste.</p>
+<p><strong>2. The decision that lives in git.</strong>
+<code>.agent/standards.md</code> holds what the team already agreed. Not one person's
+preference — something you can quote in a PR review and a new hire can read on day
+one.</p>
+<p><strong>3. How hard the rules bite — a <em>preset</em>.</strong>
+Four levels, from "everything warns" to "everything blocks". This decides whether
+CI goes red. See <a href="/ironclad/en/en/presets/">Presets</a>.</p>
+<p><strong>4. Who decides when the repo has no answer yet — a <em>mode</em>.</strong>
+Two choices: <code>ask</code> (the agent asks) or <code>house</code> (the agent applies the office
+default). This is what separates "a neutral tool for anyone" from "a tool for one
+team". See <a href="/ironclad/en/en/modes/">Modes</a>.</p>
+<p>Presets and modes get confused constantly. One sentence:</p>
+<blockquote>
+<p><strong>Mode</strong> decides what happens <em>before</em> a decision exists.
+<strong>Preset</strong> decides what happens <em>after</em> the code is written.</p>
+</blockquote>
+<h2 id="ironclad-has-an-opinion-and-you-do-not-have-to-share-it">Ironclad has an opinion, and you do not have to share it</h2>
+<p>We lean toward <strong>integer + lookup table</strong> for status. The reason is technical, not
+aesthetic: adding an enum value means <code>ALTER TABLE</code>, which can lock a large table;
+adding an integer code means adding one row. Code <code>88</code> is safe as long as <code>88</code>
+exists in the lookup and is guarded by a foreign key; <code>87</code> is rejected.</p>
+<p>But that is an <strong>opinion</strong>, not a law. If you already use enums consistently and do
+not want to change, use the <code>coherence</code> preset: no style is punished there. Only one
+thing fails — the same concept stored two different ways in one project. That is the
+one claim we can defend to anybody, and it is also exactly the problem our own
+office had.</p>
+<h2 id="try-it-without-installing">Try it without installing</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.9.0 check .
 </code></pre></div>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash"># 2. inside your repo — look only, changes nothing
-ironclad check
+<p>Runs the checker, prints findings, exits. <strong>No files written, no agent config
+touched.</strong> If it comes back clean, your repo is already coherent and you do not
+need to install anything.</p>
+<p>If you want the neutral reading — the one that does not consider enums a defect:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.9.0 check . --preset coherence
 </code></pre></div>
-<p>If the result makes sense, make it permanent:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad init
-</code></pre></div>
-<p>Then commit the four files it writes. From that commit on, everyone in the project —
-and every agent — reads the same rules.</p>
-<p>Walkthrough: <a href="/ironclad/en/quickstart/">Quickstart</a>.</p>
-<h2 id="if-you-are-not-the-one-writing-code">If you are not the one writing code</h2>
-<p>You can still use this. What you do:</p>
-<p><strong>Send this page to your developer.</strong> Ask them to run the two commands above, then
-commit the result.</p>
-<p><strong>Then ask three questions.</strong> The answers show whether this is actually installed or
-merely promised:</p>
+<h2 id="if-you-are-not-the-one-writing-the-code">If you are not the one writing the code</h2>
+<p>You can still use this, and you never have to read a line of code.</p>
+<p><strong>Send this page to your developer.</strong> Ask them to run the two commands in the
+<a href="/ironclad/en/en/quickstart/">Quickstart</a>, then commit the result.</p>
+<p><strong>Then ask these four questions.</strong> The answers tell you whether this was actually
+installed or merely promised:</p>
 <ol>
-<li>"Which preset are we on?" — the right answer is one of <code>balanced</code>, <code>strict</code>, or
-   <code>legacy-friendly</code>. If the answer is "what's a preset", it has not been run.</li>
-<li>"How many findings right now?" — a number. Not "it's fine".</li>
-<li>"Does a violating pull request actually fail?" — if it was never tested, the gate
-   is unproven.</li>
+<li><strong>"Is this repo consistent, or mixed?"</strong> — the right answer names a number of
+   findings, not "it's done".</li>
+<li><strong>"Which preset is it on?"</strong> — one of <code>legacy-friendly</code>, <code>strict</code>, <code>balanced</code>,
+   or <code>coherence</code>. If the answer is "what is a preset", it hasn't been run.</li>
+<li><strong>"Does a violating pull request actually fail?"</strong> — if they have never tested
+   it with a real PR, the gate is unproven.</li>
+<li><strong>"When a new table needs a status, who decides the style?"</strong> — a good answer
+   names one file (<code>.agent/standards.md</code>) or one mode (<code>house</code>). "Depends on the
+   developer" means the problem is still there.</li>
 </ol>
-<p><strong>A fourth question, specific to the enum problem:</strong> "Is status stored as an enum or
-an integer in this project?" If the answer is "it depends", the problem is still
-there — and that is exactly what Ironclad solves.</p>
-<p><strong>What you never need to learn:</strong> how the checker works, what a foreign key is, or
-what is inside the YAML file.</p>
+<p><strong>What you do not need to learn:</strong> how the checker works, what a foreign key is,
+or what is in the YAML file.</p>
 <h2 id="what-ironclad-does-not-do">What Ironclad does not do</h2>
 <ul>
-<li><strong>Not a replacement for a programmer.</strong> It does not write features or fix bugs.</li>
-<li><strong>Not a replacement for review.</strong> It catches wrong patterns; it does not know
-  whether your business logic is right.</li>
-<li><strong>Not a security tool.</strong> It does not check for data leaks or access holes.</li>
-<li><strong>Does not change your app's appearance.</strong> Nothing to do with design.</li>
-<li><strong>Does not send data anywhere.</strong> Everything runs on your own machine.</li>
+<li><strong>It is not a replacement for a programmer.</strong> It writes no features, fixes no bugs.</li>
+<li><strong>It is not a replacement for review.</strong> It catches patterns; it cannot know whether
+  your business logic is right.</li>
+<li><strong>It is not a security tool.</strong> It does not look for data leaks or access holes.</li>
+<li><strong>It does not change how your app looks.</strong> Nothing to do with design.</li>
+<li><strong>It sends no data anywhere.</strong> Everything runs on your own machine.</li>
 </ul>
 <h2 id="the-honest-limits">The honest limits</h2>
 <ul>
-<li>The checker works by pattern matching, not understanding. It can flag code that is
-  actually fine, and it can miss things it should have flagged. A human is still the
-  last layer.</li>
-<li>It knows eight rules about databases. Not two hundred.</li>
-<li><strong>It cannot force anyone to read.</strong> If a developer ignores <code>.agent/standards.md</code>
-  and CI is never wired up, nothing catches it. What makes this work is CI, not good
-  intentions.</li>
-<li>There is no auto-update. For a newer version, re-run the installer.</li>
+<li><strong>The checker matches patterns, it does not understand code.</strong> It can flag
+  something correct and miss something wrong. A human stays the last layer.</li>
+<li><strong>The scope is deliberately narrow.</strong> Eight patterns about how status, money, and
+  time are stored. Not two hundred database rules. A tool that tries to catch
+  everything loses to a dedicated linter, and nobody installs it twice.</li>
+<li><strong>Unsupported frameworks stop honestly</strong> (<code>exit 2</code>) instead of pretending to be green.</li>
+<li><strong>It cannot force anyone to read.</strong> If CI is not wired up and
+  <code>.agent/standards.md</code> is ignored, nothing catches it. The gate does the work, not
+  good intentions.</li>
+<li><strong>There are no users outside our own team yet.</strong> We cannot claim this helps
+  strangers — only that it solves one real problem here.</li>
+<li><strong>There is no auto-update.</strong> For a new version, run the installer again.</li>
 </ul>
-<h2 id="where-to-go-next">Where to go next</h2>
+<h2 id="where-next">Where next</h2>
 <div class="tablewrap"><table>
 <thead>
 <tr>
@@ -216,24 +230,28 @@ what is inside the YAML file.</p>
 </thead>
 <tbody>
 <tr>
-<td>look up a term used here</td>
-<td><a href="/ironclad/en/glossary/">Glossary</a></td>
+<td>know the vocabulary used here</td>
+<td><a href="/ironclad/en/en/glossary/">Glossary</a></td>
 </tr>
 <tr>
-<td>install right now</td>
-<td><a href="/ironclad/en/install/">Install</a></td>
+<td>install now</td>
+<td><a href="/ironclad/en/en/install/">Install</a></td>
 </tr>
 <tr>
-<td>see every step</td>
-<td><a href="/ironclad/en/quickstart/">Quickstart</a></td>
+<td>know the difference between mode and preset</td>
+<td><a href="/ironclad/en/en/modes/">Modes</a> · <a href="/ironclad/en/en/presets/">Presets</a></td>
 </tr>
 <tr>
-<td>know what it checks</td>
-<td><a href="/ironclad/en/rules/">Rules</a></td>
+<td>see the full walkthrough</td>
+<td><a href="/ironclad/en/en/quickstart/">Quickstart</a></td>
 </tr>
 <tr>
-<td>worry the team will rip it out</td>
-<td><a href="/ironclad/en/three-layers/">Three layers</a></td>
+<td>know which rules are checked</td>
+<td><a href="/ironclad/en/en/rules/">Rules</a></td>
+</tr>
+<tr>
+<td>know why tools like this get abandoned</td>
+<td><a href="/ironclad/en/en/three-layers/">Three layers</a></td>
 </tr>
 </tbody>
 </table></div>
@@ -249,16 +267,15 @@ what is inside the YAML file.</p>
 
       <aside class="toc" aria-label="On this page">
         <div class="navlabel"><span>§</span>On this page</div>
-        <ul><li class="lvl2"><a href="#the-real-problem-two-developers-two-styles">The real problem: two developers, two styles</a></li>
-<li class="lvl2"><a href="#the-recommendation-integer-not-enum">The recommendation: integer, not enum</a></li>
-<li class="lvl2"><a href="#why-this-is-expensive-to-fix-later">Why this is expensive to fix later</a></li>
-<li class="lvl2"><a href="#ai-accelerates-this-problem-it-does-not-cause-it">AI accelerates this problem; it does not cause it</a></li>
-<li class="lvl2"><a href="#what-ironclad-actually-does">What Ironclad actually does</a></li>
-<li class="lvl2"><a href="#what-you-have-to-do">What you have to do</a></li>
-<li class="lvl2"><a href="#if-you-are-not-the-one-writing-code">If you are not the one writing code</a></li>
+        <ul><li class="lvl2"><a href="#where-to-start">Where to start</a></li>
+<li class="lvl2"><a href="#the-problem-two-developers-two-styles">The problem: two developers, two styles</a></li>
+<li class="lvl2"><a href="#four-things-you-can-configure">Four things you can configure</a></li>
+<li class="lvl2"><a href="#ironclad-has-an-opinion-and-you-do-not-have-to-share-it">Ironclad has an opinion, and you do not have to share it</a></li>
+<li class="lvl2"><a href="#try-it-without-installing">Try it without installing</a></li>
+<li class="lvl2"><a href="#if-you-are-not-the-one-writing-the-code">If you are not the one writing the code</a></li>
 <li class="lvl2"><a href="#what-ironclad-does-not-do">What Ironclad does not do</a></li>
 <li class="lvl2"><a href="#the-honest-limits">The honest limits</a></li>
-<li class="lvl2"><a href="#where-to-go-next">Where to go next</a></li></ul>
+<li class="lvl2"><a href="#where-next">Where next</a></li></ul>
       </aside>
     </div>
   </main>

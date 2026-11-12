@@ -1,25 +1,34 @@
 ---
-title: Apa ini, untuk siapa
+title: What this is, and who it is for
 slug: overview
 group: Start
 order: 1
-summary: The plain-language explanation — what problem it solves, what you have to do, and what you never have to touch.
+summary: One page without jargon — the problem it solves, what you decide for yourself, and what you never have to touch.
 ---
 
 # Ironclad, without the jargon
 
-**Ironclad keeps one project consistent when more than one person works on its
-database.**
+**Ironclad keeps one project consistent when more than one person — or more than
+one AI — works on its database.**
 
-Not an app, not a subscription. It is two things: a rules file inside your repo,
-and a checker that rejects work which breaks those rules.
+Not an app. Not a subscription. Not a replacement for code review. It is one
+understanding that agents read before writing code, one decision file that lives
+in git, and one checker you can use if you want to.
 
-## The real problem: two developers, two styles
+## Where to start
+
+| If you are… | Read |
+|---|---|
+| **not a programmer** — you commission or oversee this work | keep reading this page, then [For teams](/en/team/) |
+| **a developer who wants to try before installing** | [Try it without installing](#try-it-without-installing) below |
+| **a developer who is already convinced** | [Quickstart](/en/quickstart/) |
+| **a developer who wants to know why it is built this way** | [Three layers](/en/three-layers/), then [Modes](/en/modes/) |
+
+## The problem: two developers, two styles
 
 This is not a story about AI. It is a story about teams.
 
-One project. Three developers. All three touch the database — add a column, create
-a table, change a status.
+One project. Three developers. All three touch the database.
 
 Developer A stores order status as an **enum**:
 
@@ -33,154 +42,130 @@ Developer B stores the same thing as an **integer**:
 status_code smallint NOT NULL
 ```
 
-Both work. Both survive review, because each makes sense on its own. What is
-missing: a shared decision about which one this project uses.
+Both work. Both pass review, because each one makes sense on its own. What is
+missing is a shared decision about which one this project uses.
 
-Six months later, one table stores status as an enum, another as an integer, a
-third as free text. Every report needs three different queries for the same
-question. And when a client asks for a new status — "delayed by weather" —
-developer C first has to work out which table uses which approach, because adding
-an enum value and adding a lookup row are two very different jobs.
+Six months later: one table enum, one integer, one free text. A report needs three
+different queries for the same thing. When a client asks for a new status,
+developer C has to work out which table does which — because adding an enum value
+and adding a lookup row are two very different jobs.
 
-None of this is anyone's fault. What was missing is one thing: **a written rule
-everybody reads before they start.**
+Nobody did anything wrong. One thing is missing: **a decision, written down and
+read before anyone starts.** AI makes that gap wider — it writes in seconds,
+across many files, and never asks "how does this project usually do it?"
 
-## The recommendation: integer, not enum
+## Four things you can configure
 
-Ironclad leans toward **integer + lookup table** as the default. The reason is not
-taste:
+Ironclad has four parts. Each works on its own, and none is mandatory.
 
-- **Adding an enum value changes the database structure.** In MySQL that is
-  `ALTER TABLE`, and on a large table it locks the table while it runs. Business
-  status always grows — and every growth should not be a maintenance event.
-- **Adding one integer code adds one row of data.** An ordinary operation, no lock,
-  no deploy.
-- **A registered number is no more fragile than text.** As long as the code exists
-  in a lookup table and is guarded by a foreign key, the database rejects numbers
-  that were never registered. `88` is safe when `88` is registered; `87` is refused.
+**1. The understanding that sits next to your agent.**
+On install, a short block is written into the global config of whichever agents
+are on the machine. It is read at the start of every session, in any repo: *read
+the repo first, follow the style already there, never add a third.* This is the part
+that stops an agent inventing its own taste.
 
-So the rule is not "never use enum". The rule is: **one approach per project**, and
-the approach is integer + lookup — unless there is a written reason to deviate, and
-that reason goes through review.
+**2. The decision that lives in git.**
+`.agent/standards.md` holds what the team already agreed. Not one person's
+preference — something you can quote in a PR review and a new hire can read on day
+one.
 
-## Why this is expensive to fix later
+**3. How hard the rules bite — a *preset*.**
+Four levels, from "everything warns" to "everything blocks". This decides whether
+CI goes red. See [Presets](/en/presets/).
 
-Think of renovating a house.
+**4. Who decides when the repo has no answer yet — a *mode*.**
+Two choices: `ask` (the agent asks) or `house` (the agent applies the office
+default). This is what separates "a neutral tool for anyone" from "a tool for one
+team". See [Modes](/en/modes/).
 
-You are free to choose paint colours, door handles, furniture layout — cheap to
-change any time. But plumbing and wiring have to follow one standard. Not because
-anyone loves rules, but because fixing them means tearing open walls.
+Presets and modes get confused constantly. One sentence:
 
-The database is the plumbing. A UI can be replaced in a day. An inconsistent data
-structure sticks around for years, and the cost rises every time new data lands.
+> **Mode** decides what happens *before* a decision exists.
+> **Preset** decides what happens *after* the code is written.
 
-## AI accelerates this problem; it does not cause it
+## Ironclad has an opinion, and you do not have to share it
 
-If one developer writes enum and another writes integer, that happens because each
-decided alone. AI makes those decisions happen **faster and in greater numbers** —
-it writes in seconds, across many files, and never asks "how does this project
-usually do it?"
+We lean toward **integer + lookup table** for status. The reason is technical, not
+aesthetic: adding an enum value means `ALTER TABLE`, which can lock a large table;
+adding an integer code means adding one row. Code `88` is safe as long as `88`
+exists in the lookup and is guarded by a foreign key; `87` is rejected.
 
-That is why Ironclad puts the rules where the agent reads them: not to make the AI
-smarter, but so it does not become a fourth team member with its own style.
+But that is an **opinion**, not a law. If you already use enums consistently and do
+not want to change, use the `coherence` preset: no style is punished there. Only one
+thing fails — the same concept stored two different ways in one project. That is the
+one claim we can defend to anybody, and it is also exactly the problem our own
+office had.
 
-## What Ironclad actually does
-
-Three things, and only three:
-
-**1. It writes the team's decisions into the repo.**
-`.agent/standards.md` holds decisions already made: how status is stored, how money
-is stored, how dates are stored. Not one person's preference — an agreement that
-gets committed.
-
-**2. It makes the AI read them before starting.**
-The agent reads that file before writing the database. A new developer — human or
-AI — reads the same file on day one.
-
-**3. It checks the result automatically.**
-`check_schema.py` reads the database code and points at violations with a rule
-number. You can run it by hand, or wire it into CI so a pull request that violates a
-rule cannot be merged. This is what catches a developer who does not use AI at all —
-or who simply forgot.
-
-Points 1 and 2 are advice. Point 3 is enforcement. You need both: advice without
-enforcement gets ignored under deadline, and enforcement without written rules just
-produces a list of errors nobody knows how to fix.
-
-## What you have to do
-
-Two commands. Nothing to answer.
+## Try it without installing
 
 ```bash
-# 1. install (once per machine)
-npx github:wilsench/ironclad#v0.9.0
+npx github:wilsench/ironclad#v0.9.0 check .
 ```
+
+Runs the checker, prints findings, exits. **No files written, no agent config
+touched.** If it comes back clean, your repo is already coherent and you do not
+need to install anything.
+
+If you want the neutral reading — the one that does not consider enums a defect:
 
 ```bash
-# 2. inside your repo — look only, changes nothing
-ironclad check
+npx github:wilsench/ironclad#v0.9.0 check . --preset coherence
 ```
 
-If the result makes sense, make it permanent:
+## If you are not the one writing the code
 
-```bash
-ironclad init
-```
+You can still use this, and you never have to read a line of code.
 
-Then commit the four files it writes. From that commit on, everyone in the project —
-and every agent — reads the same rules.
+**Send this page to your developer.** Ask them to run the two commands in the
+[Quickstart](/en/quickstart/), then commit the result.
 
-Walkthrough: [Quickstart](/quickstart/).
+**Then ask these four questions.** The answers tell you whether this was actually
+installed or merely promised:
 
-## If you are not the one writing code
+1. **"Is this repo consistent, or mixed?"** — the right answer names a number of
+   findings, not "it's done".
+2. **"Which preset is it on?"** — one of `legacy-friendly`, `strict`, `balanced`,
+   or `coherence`. If the answer is "what is a preset", it hasn't been run.
+3. **"Does a violating pull request actually fail?"** — if they have never tested
+   it with a real PR, the gate is unproven.
+4. **"When a new table needs a status, who decides the style?"** — a good answer
+   names one file (`.agent/standards.md`) or one mode (`house`). "Depends on the
+   developer" means the problem is still there.
 
-You can still use this. What you do:
-
-**Send this page to your developer.** Ask them to run the two commands above, then
-commit the result.
-
-**Then ask three questions.** The answers show whether this is actually installed or
-merely promised:
-
-1. "Which preset are we on?" — the right answer is one of `balanced`, `strict`, or
-   `legacy-friendly`. If the answer is "what's a preset", it has not been run.
-2. "How many findings right now?" — a number. Not "it's fine".
-3. "Does a violating pull request actually fail?" — if it was never tested, the gate
-   is unproven.
-
-**A fourth question, specific to the enum problem:** "Is status stored as an enum or
-an integer in this project?" If the answer is "it depends", the problem is still
-there — and that is exactly what Ironclad solves.
-
-**What you never need to learn:** how the checker works, what a foreign key is, or
-what is inside the YAML file.
+**What you do not need to learn:** how the checker works, what a foreign key is,
+or what is in the YAML file.
 
 ## What Ironclad does not do
 
-- **Not a replacement for a programmer.** It does not write features or fix bugs.
-- **Not a replacement for review.** It catches wrong patterns; it does not know
-  whether your business logic is right.
-- **Not a security tool.** It does not check for data leaks or access holes.
-- **Does not change your app's appearance.** Nothing to do with design.
-- **Does not send data anywhere.** Everything runs on your own machine.
+- **It is not a replacement for a programmer.** It writes no features, fixes no bugs.
+- **It is not a replacement for review.** It catches patterns; it cannot know whether
+  your business logic is right.
+- **It is not a security tool.** It does not look for data leaks or access holes.
+- **It does not change how your app looks.** Nothing to do with design.
+- **It sends no data anywhere.** Everything runs on your own machine.
 
 ## The honest limits
 
-- The checker works by pattern matching, not understanding. It can flag code that is
-  actually fine, and it can miss things it should have flagged. A human is still the
-  last layer.
-- It knows eight rules about databases. Not two hundred.
-- **It cannot force anyone to read.** If a developer ignores `.agent/standards.md`
-  and CI is never wired up, nothing catches it. What makes this work is CI, not good
-  intentions.
-- There is no auto-update. For a newer version, re-run the installer.
+- **The checker matches patterns, it does not understand code.** It can flag
+  something correct and miss something wrong. A human stays the last layer.
+- **The scope is deliberately narrow.** Eight patterns about how status, money, and
+  time are stored. Not two hundred database rules. A tool that tries to catch
+  everything loses to a dedicated linter, and nobody installs it twice.
+- **Unsupported frameworks stop honestly** (`exit 2`) instead of pretending to be green.
+- **It cannot force anyone to read.** If CI is not wired up and
+  `.agent/standards.md` is ignored, nothing catches it. The gate does the work, not
+  good intentions.
+- **There are no users outside our own team yet.** We cannot claim this helps
+  strangers — only that it solves one real problem here.
+- **There is no auto-update.** For a new version, run the installer again.
 
-## Where to go next
+## Where next
 
 | If you want to… | Read |
 |---|---|
-| look up a term used here | [Glossary](/glossary/) |
-| install right now | [Install](/install/) |
-| see every step | [Quickstart](/quickstart/) |
-| know what it checks | [Rules](/rules/) |
-| worry the team will rip it out | [Three layers](/three-layers/) |
+| know the vocabulary used here | [Glossary](/en/glossary/) |
+| install now | [Install](/en/install/) |
+| know the difference between mode and preset | [Modes](/en/modes/) · [Presets](/en/presets/) |
+| see the full walkthrough | [Quickstart](/en/quickstart/) |
+| know which rules are checked | [Rules](/en/rules/) |
+| know why tools like this get abandoned | [Three layers](/en/three-layers/) |

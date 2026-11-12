@@ -38,7 +38,7 @@
 
     <nav class="nav" aria-label="Documentation">
       <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
-<li><a href="/ironclad/en/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/en/overview/">What this is, and who it is for</a></li>
 <li><a href="/ironclad/en/glossary/">Glossary</a></li>
 <li><a href="/ironclad/en/install/">Install</a></li>
 <li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
@@ -47,8 +47,9 @@
 <li><a href="/ironclad/en/team/">For your team</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/modes/">Modes — ask or house</a></li>
 <li><a href="/ironclad/en/three-layers/">Three layers</a></li>
-<li><a href="/ironclad/en/presets/">Presets</a></li>
+<li><a href="/ironclad/en/presets/">Presets — how hard it bites</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
 <li><a href="/ironclad/en/rules/">Rules DB-01…DB-08</a></li>
@@ -110,7 +111,8 @@ ironclad init
   1) balanced  (default) — enum and text status block, the rest warn
   2) strict    — everything blocks; use for new or clean repos
   3) legacy-friendly — everything warns; use for an old repo with debt
-Choose 1-3 [1]:
+  4) coherence — no style punished; only mixing enum and integer fails
+Choose 1-4 [1]:
 </code></pre></div>
 <p>Then writes:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>wrote   .agent/standards.yml      ← this repo's rules (reviewable in a PR)

@@ -24,7 +24,7 @@ Yang benar:
 ```
 ---
 name: ironclad
-description: Enforce team engineering standards with presets.
+description: Use when several developers share one database — make sure everyone stores status the same way before the agent writes schema.
 ```
 
 | Penyebab | Perbaikan |

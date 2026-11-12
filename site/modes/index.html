@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mode — ask atau house — Ironclad</title>
+<meta name="description" content="Siapa yang memutuskan gaya status saat repo belum punya jawaban. Satu flag saat install, dan itu yang membedakan alat netral dari alat milik satu tim.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/modes/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/modes/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/modes/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.9.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.9.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Bahasa">
+      <a href="/ironclad/modes/" class="on" aria-current="true">ID</a>
+      <a href="/ironclad/en/modes/">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/kamus/">Kamus</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+<li><a href="/ironclad/no-commands/">Cara pakai tanpa command</a></li>
+<li><a href="/ironclad/team/">Untuk tim</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/modes/" class="active" aria-current="page">Mode — ask atau house</a></li>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset — seberapa keras</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-08</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+<li><a href="/ironclad/frameworks/">Laravel, Prisma, dan backend lain</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Konsep / <b>Mode — ask atau house</b></span>
+      <a class="langsw-mini" href="/ironclad/en/modes/" aria-label="Bahasa">EN</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="mode-siapa-yang-memutuskan">Mode — siapa yang memutuskan</h1>
+<p>Ini pertanyaan yang paling sering luput, dan penyebab dua orang memakai alat yang
+sama dengan hasil berbeda:</p>
+<blockquote>
+<p>Repo ini belum punya tabel dengan kolom status. Kamu minta agent menambah tabel
+<code>invoices</code>. <strong>Siapa yang memutuskan statusnya disimpan sebagai apa?</strong></p>
+</blockquote>
+<p>Ada tiga jawaban yang mungkin, dan hanya dua yang kami dukung:</p>
+<ul>
+<li>agent menebak → <strong>tidak</strong>, itu sumber masalahnya</li>
+<li>agent bertanya → mode <strong><code>ask</code></strong></li>
+<li>agent memakai keputusan tim → mode <strong><code>house</code></strong></li>
+</ul>
+<h2 id="bedanya-satu-baris">Bedanya satu baris</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th><code>ask</code> (default)</th>
+<th><code>house</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repo sudah punya gaya</td>
+<td>ikuti gaya itu</td>
+<td>ikuti gaya itu</td>
+</tr>
+<tr>
+<td>Repo punya dua gaya</td>
+<td>berhenti, sebut keduanya</td>
+<td>berhenti, sebut keduanya</td>
+</tr>
+<tr>
+<td>Repo belum punya apa pun</td>
+<td><strong>bertanya dulu</strong></td>
+<td><strong>langsung <code>status_code</code> + lookup</strong></td>
+</tr>
+<tr>
+<td>Cocok untuk</td>
+<td>siapa saja, repo apa pun</td>
+<td>satu tim dengan keputusan yang sama</td>
+</tr>
+</tbody>
+</table></div>
+<p>Perhatikan baris kedua: <strong><code>house</code> tidak memaksa repo lama menyeragamkan gaya.</strong>
+Kalau repo-mu sudah konsisten memakai enum, <code>house</code> tetap mengikuti enum. Yang
+ditanamkan bukan "integer di mana-mana", tapi "kalau belum ada keputusan, ini
+keputusan kami".</p>
+<h2 id="memasang">Memasang</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash"># netral — agent akan bertanya kalau belum ada apa pun
+npx github:wilsench/ironclad#v0.9.0
+
+# kantor — agent langsung memakai gaya yang disepakati
+npx github:wilsench/ironclad#v0.9.0 --mode house
+</code></pre></div>
+<p>Tanpa flag, hasilnya <code>ask</code>. Itu disengaja: orang yang menemukan alat ini dari
+mesin pencari tidak sedang menyetujui pilihan database orang lain.</p>
+<h2 id="yang-ditulis-house-ke-blok-agent">Yang ditulis <code>house</code> ke blok agent</h2>
+<p>Bagian ini hanya muncul di mode <code>house</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-markdown">- **no status anywhere yet** -&gt; use the house default. Do not ask.
+  `status_code SMALLINT NOT NULL` + lookup table (`code` PK, `label`) + FK
+  from the column, plus named constants in code. Any integer codes are fine
+  (10/20/30, 1/2/3) as long as every code exists in the lookup table and is
+  never reused.
+  Say &quot;house default: status_code + lookup&quot; in one line, then write it.
+</code></pre></div>
+<p>Tiga hal yang diperhatikan dari bunyi itu:</p>
+<ul>
+<li><strong>"Do not ask"</strong> — agent tidak menggantung menunggu jawaban yang tidak akan
+  datang di sesi otomatis.</li>
+<li><strong>"Any integer codes are fine"</strong> — kode tidak harus kelipatan 10. <code>88</code> dan <code>99</code>
+  sah, asal terdaftar di lookup dan dijaga FK.</li>
+<li><strong>"Say it in one line"</strong> — kamu tetap tahu keputusan apa yang diambil, tanpa
+  dialog. Satu baris di jawaban agent, bukan pertanyaan.</li>
+</ul>
+<h2 id="mengubah-mode-setelah-install">Mengubah mode setelah install</h2>
+<p>Mode disimpan di berkas, bukan hanya di lingkungan shell. Artinya:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.9.0 --mode ask     # turunkan jadi netral
+npx github:wilsench/ironclad#v0.9.0 --mode house   # naikkan jadi berpihak
+</code></pre></div>
+<p>Installer membaca mode yang tersimpan lebih dulu. Mesin <code>house</code> yang di-install
+ulang tanpa flag <strong>tetap</strong> <code>house</code> — tidak turun diam-diam hanya karena kamu lupa
+menyertakan flag.</p>
+<h2 id="mode-bukan-pengganti-keputusan">Mode bukan pengganti keputusan</h2>
+<p><code>house</code> hanya mengisi kekosongan. Ia tidak:</p>
+<ul>
+<li>menyatukan dua gaya yang sudah ada (itu pekerjaan migrasi, bukan installer)</li>
+<li>mengubah tabel lama</li>
+<li>mengalahkan <code>.agent/standards.md</code> yang sudah kamu tulis — berkas itu selalu
+  menang, karena keputusan proyek lebih spesifik daripada default alat</li>
+</ul>
+<p>Kalau kamu ingin <strong>memaksa</strong> keseragaman di repo yang sudah campur, itu urusan
+<a href="/ironclad/presets/">Preset</a> dan <code>DB-08</code>, bukan mode.</p>
+<h2 id="untuk-orang-yang-tidak-memakai-ai-agent">Untuk orang yang tidak memakai AI agent</h2>
+<p>Mode tidak relevan kalau kamu tidak memakai agent — tidak ada yang perlu
+diberi tahu. Yang tetap berguna: <code>check</code> untuk melihat apakah repo campur, dan
+<code>init</code> untuk mencatat keputusan tim. Lihat <a href="/ironclad/checker/">Checker</a>.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/team/"><span>Sebelumnya</span><b>Untuk tim</b></a>
+<a class="next" href="/ironclad/three-layers/"><span>Berikutnya</span><b>Tiga lapis</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.9.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#bedanya-satu-baris">Bedanya satu baris</a></li>
+<li class="lvl2"><a href="#memasang">Memasang</a></li>
+<li class="lvl2"><a href="#yang-ditulis-house-ke-blok-agent">Yang ditulis house ke blok agent</a></li>
+<li class="lvl2"><a href="#mengubah-mode-setelah-install">Mengubah mode setelah install</a></li>
+<li class="lvl2"><a href="#mode-bukan-pengganti-keputusan">Mode bukan pengganti keputusan</a></li>
+<li class="lvl2"><a href="#untuk-orang-yang-tidak-memakai-ai-agent">Untuk orang yang tidak memakai AI agent</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.9.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.9.0-0cff1a72" defer></script>
+</body>
+</html>

@@ -3,24 +3,32 @@ title: Apa ini, untuk siapa
 slug: overview
 group: Mulai
 order: 1
-summary: Penjelasan tanpa jargon — masalah apa yang diselesaikan, apa yang harus kamu lakukan, dan apa yang tidak perlu kamu sentuh.
+summary: Satu halaman tanpa jargon — masalah apa yang diselesaikan, apa yang kamu putuskan sendiri, dan apa yang tidak perlu kamu sentuh.
 ---
 
 # Ironclad, tanpa jargon
 
-**Ironclad menjaga satu proyek tetap konsisten saat lebih dari satu orang
-menggarap bagian database-nya.**
+**Ironclad menjaga satu proyek tetap konsisten saat lebih dari satu orang — atau
+lebih dari satu AI — menggarap bagian database-nya.**
 
-Bukan aplikasi, bukan layanan berlangganan. Isinya dua hal: satu berkas aturan di
-dalam repo kamu, dan satu pemeriksa yang menolak hasil kerja yang melanggar aturan
-itu.
+Bukan aplikasi. Bukan layanan berlangganan. Bukan pengganti code review. Isinya
+satu berkas pemahaman yang dibaca agent sebelum menulis kode, satu berkas
+keputusan yang ikut git, dan satu pemeriksa yang bisa kamu pakai kalau mau.
 
-## Masalah sebenarnya: dua developer, dua gaya
+## Mulai dari mana
+
+| Kalau kamu… | Baca |
+|---|---|
+| **bukan programmer** — kamu memesan atau mengawasi pekerjaan ini | lanjut baca halaman ini, lalu [Untuk tim](/team/) |
+| **developer, ingin coba dulu tanpa memasang apa pun** | [Coba tanpa install](#coba-tanpa-install) di bawah |
+| **developer, sudah yakin mau pakai** | [Quickstart](/quickstart/) |
+| **developer, ingin tahu kenapa desainnya begitu** | [Tiga lapis](/three-layers/) lalu [Mode](/modes/) |
+
+## Masalahnya: dua developer, dua gaya
 
 Ini bukan cerita tentang AI. Ini cerita tentang tim.
 
-Satu proyek. Tiga developer. Ketiganya menyentuh database — menambah kolom,
-membuat tabel baru, mengubah status.
+Satu proyek. Tiga developer. Ketiganya menyentuh database.
 
 Developer A menyimpan status pesanan sebagai **enum**:
 
@@ -38,157 +46,131 @@ Dua-duanya jalan. Dua-duanya lolos review, karena masing-masing masuk akal kalau
 dilihat sendirian. Yang tidak ada: keputusan bersama tentang mana yang dipakai
 proyek ini.
 
-Enam bulan kemudian, satu tabel statusnya enum, tabel lain integer, tabel ketiga
-teks bebas. Laporan harus menulis tiga query berbeda untuk hal yang sama. Dan saat
-klien minta status baru — "ditunda karena cuaca" — developer C harus tahu dulu
-tabel mana yang pakai cara apa, karena menambah nilai enum dan menambah baris
-lookup table adalah dua pekerjaan yang sangat berbeda.
+Enam bulan kemudian, satu tabel enum, tabel lain integer, tabel ketiga teks
+bebas. Laporan harus menulis tiga query untuk hal yang sama. Saat klien minta
+status baru, developer C harus tahu dulu tabel mana yang pakai cara apa.
 
-Tidak ada yang salah di sini. Yang hilang cuma satu: **aturan tertulis yang dibaca
-semua orang sebelum mulai.**
+Tidak ada yang salah. Yang hilang cuma satu: **keputusan yang tertulis dan
+dibaca semua orang sebelum mulai.** AI mempercepat hilangnya keputusan itu —
+ia menulis dalam hitungan detik, di banyak berkas, dan tidak pernah bertanya
+"proyek ini biasanya pakai cara yang mana?"
 
-## Rekomendasinya: integer, bukan enum
+## Empat hal yang bisa kamu setel
 
-Ironclad condong ke **integer + lookup table** sebagai default. Alasannya bukan
-selera:
+Ironclad punya empat bagian. Empat-empatnya bisa dipakai terpisah, dan tidak ada
+yang wajib.
 
-- **Menambah nilai enum berarti mengubah struktur database.** Di MySQL itu
-  `ALTER TABLE`, dan pada tabel besar ia mengunci tabel selama proses. Status
-  bisnis selalu tumbuh — dan tiap pertumbuhan tidak seharusnya jadi acara
-  pemeliharaan.
-- **Menambah satu kode integer berarti menambah satu baris data.** Operasi biasa,
-  tidak mengunci apa pun, bisa dilakukan tanpa deploy.
-- **Angka yang terdaftar tidak lebih rawan daripada teks.** Selama kodenya ada di
-  lookup table dan dijaga foreign key, database menolak angka yang tidak pernah
-  didaftarkan. `88` aman kalau `88` terdaftar; `87` ditolak.
+**1. Pemahaman yang menempel di agent.**
+Saat install, satu blok pendek ditulis ke konfigurasi global agent yang ada di
+komputermu. Blok itu dibaca di awal setiap sesi, di repo mana pun: *baca repo
+dulu, ikuti gaya yang sudah ada, jangan tambah gaya ketiga.* Ini bagian yang
+membuat agent berhenti bertanya hal yang salah dan mulai mengikuti proyeknya.
 
-Jadi aturannya bukan "jangan pernah pakai enum". Aturannya: **satu cara untuk satu
-proyek**, dan cara yang dipilih adalah integer + lookup — kecuali ada alasan
-tertulis untuk menyimpang, dan alasan itu masuk review.
+**2. Keputusan yang ikut git.**
+`.agent/standards.md` berisi keputusan yang sudah diambil tim. Bukan preferensi
+satu orang — kesepakatan yang bisa dikutip di review PR, dan dibaca anggota baru
+di hari pertama.
 
-## Kenapa ini mahal diperbaiki nanti
+**3. Seberapa keras aturannya — *preset*.**
+Empat tingkat, dari "semua warning" sampai "semua memblokir". Ini yang
+menentukan apakah CI merah. Lihat [Preset](/presets/).
 
-Analogi renovasi rumah.
+**4. Siapa yang memutuskan saat repo belum punya jawaban — *mode*.**
+Dua pilihan: `ask` (agent bertanya) atau `house` (agent langsung memakai gaya
+kantor). Ini yang membedakan "alat netral untuk siapa saja" dari "alat milik satu
+tim". Lihat [Mode](/modes/).
 
-Kamu bebas memilih warna cat, gagang pintu, atau tata letak furnitur — murah
-diubah kapan saja. Tapi pipa air dan instalasi listrik harus mengikuti satu
-standar. Bukan karena kita suka aturan, tapi karena memperbaikinya berarti
-membongkar dinding.
+Preset dan mode sering tertukar. Bedanya satu kalimat:
 
-Database itu pipa dan listriknya. Tampilan bisa diganti dalam sehari. Struktur
-data yang tidak konsisten menempel bertahun-tahun, dan biayanya naik setiap kali
-ada data baru masuk.
+> **Mode** menentukan apa yang terjadi sebelum keputusan ada.
+> **Preset** menentukan apa yang terjadi setelah kode ditulis.
 
-## AI mempercepat masalah ini, bukan menyebabkannya
+## Ironclad punya pendapat, dan kamu tidak harus ikut
 
-Kalau satu developer menulis enum dan yang lain integer, itu terjadi karena
-masing-masing memutuskan sendiri. AI membuat keputusan itu terjadi **lebih cepat
-dan lebih banyak** — ia menulis dalam hitungan detik, di banyak berkas, dan tidak
-pernah bertanya "proyek ini biasanya pakai cara yang mana?"
+Kami condong ke **integer + lookup table** untuk status. Alasannya teknis, bukan
+selera: menambah nilai enum berarti `ALTER TABLE` yang bisa mengunci tabel;
+menambah kode integer berarti menambah satu baris data. Kode `88` aman selama
+`88` terdaftar di lookup dan dijaga foreign key; `87` ditolak database.
 
-Itu sebabnya Ironclad menaruh aturannya di tempat yang dibaca agent: bukan supaya
-AI jadi pintar, tapi supaya AI tidak jadi anggota tim keempat yang punya gaya
-sendiri.
+Tapi ini **pendapat**, bukan hukum. Kalau kamu sudah konsisten memakai enum dan
+tidak mau diubah, pakai preset `coherence`: tidak ada gaya yang dihukum di sana.
+Yang gagal hanya satu hal — konsep yang sama disimpan dua cara berbeda dalam satu
+proyek. Itu satu-satunya klaim yang bisa kami bela untuk siapa pun, dan itu juga
+persis masalah yang dihadapi kantor kami.
 
-## Apa yang Ironclad lakukan
-
-Tiga hal, dan hanya tiga:
-
-**1. Menuliskan keputusan tim di dalam repo.**
-Berkas `.agent/standards.md` berisi keputusan yang sudah diambil: status disimpan
-bagaimana, uang disimpan bagaimana, tanggal disimpan bagaimana. Bukan preferensi
-satu orang — kesepakatan yang ikut ter-commit.
-
-**2. Membuat AI membacanya sebelum mulai.**
-Agent membaca berkas itu sebelum menulis database. Developer baru — manusia atau
-AI — membaca berkas yang sama di hari pertama.
-
-**3. Memeriksa hasilnya otomatis.**
-Skrip `check_schema.py` membaca kode database dan menunjuk pelanggaran dengan nomor
-aturan. Bisa dijalankan manual, bisa dipasang di CI sehingga pull request yang
-melanggar tidak bisa digabung. Ini yang menangkap developer yang tidak memakai AI
-sama sekali — atau yang lupa.
-
-Poin 1 dan 2 itu saran. Poin 3 itu penegakan. Kamu butuh keduanya: saran tanpa
-penegakan akan diabaikan saat tenggat, dan penegakan tanpa aturan tertulis cuma
-menghasilkan daftar kesalahan yang tidak jelas cara betulkannya.
-
-## Apa yang harus kamu lakukan
-
-Dua perintah. Tidak ada yang perlu dijawab.
+## Coba tanpa install
 
 ```bash
-# 1. pasang (sekali per komputer)
-npx github:wilsench/ironclad#v0.9.0
+npx github:wilsench/ironclad#v0.9.0 check .
 ```
+
+Menjalankan pemeriksa, mencetak temuan, lalu berhenti. **Tidak menulis berkas,
+tidak menyentuh konfigurasi agent.** Kalau hasilnya bersih, repo-mu sudah
+konsisten dan kamu tidak perlu memasang apa pun.
+
+Kalau kamu ingin mencoba pandangan "netral" — yang tidak menganggap enum salah:
 
 ```bash
-# 2. di dalam repo — lihat dulu, tidak mengubah apa pun
-ironclad check
+npx github:wilsench/ironclad#v0.9.0 check . --preset coherence
 ```
-
-Kalau hasilnya masuk akal, jadikan permanen:
-
-```bash
-ironclad init
-```
-
-Lalu commit empat berkas yang ditulisnya. Sejak commit itu, setiap orang di proyek
-— dan setiap agent — membaca aturan yang sama.
-
-Panduan lengkap: [Quickstart](/quickstart/).
 
 ## Kalau kamu bukan yang menulis kode
 
-Kamu tetap bisa memakai ini. Yang perlu kamu lakukan:
+Kamu tetap bisa memakai ini, dan kamu tidak perlu membaca satu baris pun kode.
 
-**Kirim halaman ini ke developer kamu.** Minta mereka menjalankan dua perintah di
-atas, lalu commit hasilnya.
+**Kirim halaman ini ke developer kamu.** Minta mereka menjalankan dua perintah
+di [Quickstart](/quickstart/), lalu commit hasilnya.
 
-**Ajukan tiga pertanyaan ini** sesudahnya. Jawabannya menunjukkan apakah ini
+**Setelah itu ajukan empat pertanyaan ini.** Jawabannya menunjukkan apakah ini
 benar-benar dipasang atau cuma dijanjikan:
 
-1. "Preset apa yang dipakai?" — jawaban yang benar salah satu dari `balanced`,
-   `strict`, atau `legacy-friendly`. Kalau jawabannya "apa itu preset", berarti
-   belum dijalankan.
-2. "Berapa temuan saat ini?" — angka. Bukan "sudah beres".
-3. "Apakah pull request yang melanggar benar-benar gagal?" — kalau belum pernah
-   diuji, gate-nya belum terbukti bekerja.
+1. **"Repo ini sudah konsisten atau campur?"** — jawaban yang benar menyebut
+   angka temuan, bukan "sudah beres".
+2. **"Preset apa yang dipakai?"** — salah satu dari `legacy-friendly`,
+   `strict`, `balanced`, atau `coherence`. Kalau jawabannya "apa itu preset",
+   berarti belum dijalankan.
+3. **"Pull request yang melanggar benar-benar gagal?"** — kalau belum pernah
+   diuji dengan PR sungguhan, gate-nya belum terbukti bekerja.
+4. **"Kalau ada tabel baru, siapa yang memutuskan gaya statusnya?"** — jawaban
+   yang baik menyebut satu nama berkas (`.agent/standards.md`) atau satu mode
+   (`house`). Jawaban "tergantung developer-nya" berarti masalahnya masih ada.
 
-**Pertanyaan keempat, khusus untuk masalah enum:** "Status di proyek ini pakai
-enum atau integer?" Kalau jawabannya "tergantung", berarti masalahnya masih ada —
-dan itu persis yang diselesaikan Ironclad.
-
-**Yang tidak perlu kamu pelajari:** cara kerja checker, apa itu foreign key, atau
-isi berkas YAML-nya.
+**Yang tidak perlu kamu pelajari:** cara kerja pemeriksa, apa itu foreign key,
+atau isi berkas YAML-nya.
 
 ## Yang tidak dilakukan Ironclad
 
-- **Bukan pengganti programmer.** Ia tidak menulis fitur, tidak memperbaiki bug.
-- **Bukan pengganti review.** Ia menangkap pola yang salah; ia tidak tahu apakah
-  logika bisnismu benar.
+- **Bukan pengganti programmer.** Tidak menulis fitur, tidak memperbaiki bug.
+- **Bukan pengganti review.** Ia menangkap pola; ia tidak tahu apakah logika
+  bisnismu benar.
 - **Bukan alat keamanan.** Tidak memeriksa kebocoran data atau celah akses.
 - **Tidak mengubah tampilan aplikasi.** Tidak ada hubungannya dengan desain.
 - **Tidak mengirim data ke mana pun.** Semuanya berjalan di komputermu sendiri.
 
 ## Batas jujurnya
 
-- Pemeriksanya bekerja dengan pencocokan pola, bukan pemahaman. Ia bisa salah
-  menandai kode yang sebenarnya benar, dan bisa melewatkan yang seharusnya
-  ditandai. Manusia tetap lapis terakhir.
-- Kalau kamu memakai checker-nya, ia tahu delapan pola tentang status di database.
-  Bukan dua ratus. Yang ditanamkan ke agent cukup satu pemahaman, bukan daftar aturan.
-- **Ia tidak bisa memaksa orang membaca.** Kalau ada developer yang mengabaikan
-  `.agent/standards.md` dan CI-nya tidak dipasang, tidak ada yang menangkap.
-  Yang membuatnya bekerja adalah CI, bukan niat baik.
-- Belum ada pembaruan otomatis. Untuk versi baru, jalankan ulang installer.
+- **Pemeriksanya mencocokkan pola, bukan memahami kode.** Ia bisa salah menandai
+  yang benar dan melewatkan yang salah. Manusia tetap lapis terakhir.
+- **Cakupannya sempit dengan sengaja.** Delapan pola tentang cara menyimpan
+  status, uang, dan waktu. Bukan dua ratus aturan database. Alat yang mencoba
+  menangkap segalanya kalah dari linter khusus, dan tidak ada yang memasangnya
+  dua kali.
+- **Framework yang belum didukung akan berhenti dengan jujur** (`exit 2`), bukan
+  berpura-pura hijau.
+- **Ia tidak bisa memaksa orang membaca.** Kalau CI tidak dipasang dan
+  `.agent/standards.md` diabaikan, tidak ada yang menangkap. Yang membuatnya
+  bekerja adalah gate, bukan niat baik.
+- **Belum ada pengguna di luar tim kami.** Kami belum bisa bilang ini membantu
+  orang lain — hanya bahwa ia menyelesaikan satu masalah nyata di sini.
+- **Belum ada pembaruan otomatis.** Untuk versi baru, jalankan ulang installer.
 
 ## Arah selanjutnya
 
 | Kalau kamu… | Baca |
 |---|---|
 | ingin tahu istilah yang dipakai di sini | [Kamus](/kamus/) |
-| ingin memasang sekarang | [Pasang di agent](/install/) |
+| ingin memasang sekarang | [Pasang](/install/) |
+| ingin tahu bedanya mode dan preset | [Mode](/modes/) · [Preset](/presets/) |
 | ingin melihat langkah lengkapnya | [Quickstart](/quickstart/) |
 | ingin tahu aturan apa saja yang diperiksa | [Aturan](/rules/) |
 | ingin tahu kenapa alat seperti ini sering dicabut | [Tiga lapis](/three-layers/) |

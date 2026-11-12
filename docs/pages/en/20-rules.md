@@ -182,8 +182,13 @@ an enum value is `ALTER TABLE`, which locks the table. Not taste — cost, when 
 grows.
 
 **Deviating on purpose:** if the team chooses enum, write the reason in
-`.agent/standards.md` and set `DB-01`/`DB-08` to `warn` or `off`. What is forbidden
-is not a different choice — what is forbidden is having no choice at all.
+`.agent/standards.md`. What is forbidden is not a different choice — what is
+forbidden is having no choice at all.
+
+If you would rather not manage a config file at all, the `coherence` preset does the
+same thing project-wide: `DB-01` only warns there, and `DB-08` stays an error. A repo
+that consistently uses enums stays green, a repo that mixes stays red — with nothing
+for you to write.
 
 ---
 

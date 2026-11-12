@@ -29,7 +29,7 @@ python3 scripts/check_schema.py . --preset balanced
 | Argument | Meaning |
 |---|---|
 | `paths…` | files or directories; default `.` |
-| `--preset NAME` | `balanced`, `strict`, `legacy-friendly` |
+| `--preset NAME` | `balanced`, `coherence`, `strict`, `legacy-friendly` |
 | `--strict` | shorthand for `--preset strict` |
 | `--json` | JSON on stdout instead of the human report |
 | `--list-presets` | print the presets it can see, with error/warn counts |

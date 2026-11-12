@@ -38,7 +38,7 @@
 
     <nav class="nav" aria-label="Documentation">
       <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
-<li><a href="/ironclad/en/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/en/overview/">What this is, and who it is for</a></li>
 <li><a href="/ironclad/en/glossary/">Glossary</a></li>
 <li><a href="/ironclad/en/install/">Install</a></li>
 <li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
@@ -47,8 +47,9 @@
 <li><a href="/ironclad/en/team/">For your team</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/modes/">Modes — ask or house</a></li>
 <li><a href="/ironclad/en/three-layers/">Three layers</a></li>
-<li><a href="/ironclad/en/presets/">Presets</a></li>
+<li><a href="/ironclad/en/presets/">Presets — how hard it bites</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
 <li><a href="/ironclad/en/rules/">Rules DB-01…DB-08</a></li>
@@ -139,13 +140,19 @@ out within a week.</p>
 <td>enum &amp; text-status block, the rest warns</td>
 </tr>
 <tr>
+<td>repo already consistent on enums, do not want to change</td>
+<td><code>coherence</code></td>
+<td>no style punished; only mixing fails</td>
+</tr>
+<tr>
 <td>old repo, hundreds of findings</td>
 <td><code>legacy-friendly</code></td>
 <td>everything warns, build stays green</td>
 </tr>
 </tbody>
 </table></div>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad preset legacy-friendly   # old repo: install, then clean up slowly
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad preset coherence         # consistent repo: green, no style imposed
+ironclad preset legacy-friendly   # old repo: install, then clean up slowly
 ironclad preset balanced          # once the baseline is clean
 ironclad preset strict            # once nothing is left warning
 </code></pre></div>

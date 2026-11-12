@@ -30,7 +30,7 @@ window would be gone before you asked your first question.
 The `description` field in `SKILL.md`:
 
 ```yaml
-description: "Enforce team engineering standards with presets."
+description: "Use when several developers share one database — make sure everyone stores status the same way before the agent writes schema."
 ```
 
 The agent matches your request against that sentence. Which means:

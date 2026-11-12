@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Preset — Ironclad</title>
-<meta name="description" content="Tiga tingkat penegakan, satu default otomatis. Pilih sekali saat install, ubah kapan saja lewat satu baris di repo.">
+<title>Preset — seberapa keras — Ironclad</title>
+<meta name="description" content="Empat tingkat penegakan. Ini yang menentukan apakah CI merah, dan yang membedakan "menegur" dari "menolak".">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/presets/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/presets/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/presets/">
@@ -47,8 +47,9 @@
 <li><a href="/ironclad/team/">Untuk tim</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/modes/">Mode — ask atau house</a></li>
 <li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
-<li><a href="/ironclad/presets/" class="active" aria-current="page">Preset</a></li>
+<li><a href="/ironclad/presets/" class="active" aria-current="page">Preset — seberapa keras</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
 <li><a href="/ironclad/rules/">Aturan DB-01…DB-08</a></li>
@@ -76,16 +77,22 @@
       <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
         <span></span><span></span>
       </button>
-      <span class="crumb">Konsep / <b>Preset</b></span>
+      <span class="crumb">Konsep / <b>Preset — seberapa keras</b></span>
       <a class="langsw-mini" href="/ironclad/en/presets/" aria-label="Bahasa">EN</a>
       <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
     </header>
 
     <div class="pagegrid">
       <article class="prose">
-        <h1 id="preset-guardrail-yang-bisa-disetel">Preset — guardrail yang bisa disetel</h1>
-<p>Masalah nyata sebuah linter perusahaan: repo lama punya ratusan pelanggaran, dan gate yang menyala di hari pertama akan dimatikan di hari yang sama. Preset ada supaya kamu bisa <strong>mulai longgar, lalu mengencangkan</strong> tanpa mengubah kode.</p>
-<h2 id="tiga-preset">Tiga preset</h2>
+        <h1 id="preset-seberapa-keras-aturannya">Preset — seberapa keras aturannya</h1>
+<p>Preset tidak mengubah apa yang <strong>diketahui</strong> Ironclad. Ia hanya mengubah apa yang
+<strong>memblokir</strong>. Repo lama dengan ratusan temuan akan mematikan gate di hari pertama
+kalau semuanya merah — jadi tingkatnya bisa disetel.</p>
+<blockquote>
+<p>Bingung dengan <strong>mode</strong>? Itu pertanyaan berbeda: siapa yang memutuskan sebelum
+kode ditulis. Lihat <a href="/ironclad/modes/">Mode</a>.</p>
+</blockquote>
+<h2 id="empat-preset">Empat preset</h2>
 <div class="tablewrap"><table>
 <thead>
 <tr>
@@ -100,13 +107,19 @@
 <td><code>legacy-friendly</code></td>
 <td>—</td>
 <td>semua</td>
-<td>repo yang sudah punya utang teknis</td>
+<td>repo tua dengan utang teknis</td>
 </tr>
 <tr>
-<td><code>balanced</code> <strong>(default)</strong></td>
-<td>DB-01, DB-02, DB-04</td>
+<td><code>coherence</code></td>
+<td>DB-08 (gaya campur)</td>
 <td>sisanya</td>
-<td>pekerjaan produk normal</td>
+<td><strong>siapa saja</strong> yang tidak mau dipaksa satu gaya</td>
+</tr>
+<tr>
+<td><code>balanced</code></td>
+<td>DB-01, DB-02, DB-04</td>
+<td>DB-03, DB-05…DB-08</td>
+<td>pekerjaan produk normal; default kantor</td>
 </tr>
 <tr>
 <td><code>strict</code></td>
@@ -117,10 +130,24 @@
 </tbody>
 </table></div>
 <p>Angka nyata dari fixture yang sama (<code>examples/bad.sql</code>):</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>balanced           errors=3 warns=2
-legacy-friendly    errors=0 warns=7
-strict             errors=7 warns=0
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>balanced           errors=3 warns=5
+coherence          errors=2 warns=6
+legacy-friendly    errors=0 warns=8
+strict             errors=8 warns=0
 </code></pre></div>
+<p>Perhatikan <code>coherence</code>: ia punya <strong>lebih sedikit</strong> error daripada <code>balanced</code>, dan
+itu maksudnya. Di preset itu enum tidak dihukum. Yang gagal hanya DB-08 — konsep
+yang sama disimpan dua cara berbeda dalam satu proyek.</p>
+<h2 id="kapan-memilih-yang-mana">Kapan memilih yang mana</h2>
+<p><strong>Kamu tidak setuju enum dianggap salah, dan repo-mu sudah konsisten.</strong>
+→ <code>coherence</code>. Hasilnya hijau. Itu benar, bukan bug.</p>
+<p><strong>Kamu punya tim yang sudah sepakat memakai integer + lookup.</strong>
+→ <code>balanced</code> (default). Enum dan status-teks memblokir; sisanya warning.</p>
+<p><strong>Repo-mu lama, campur, dan kamu baru mau mulai.</strong>
+→ <code>legacy-friendly</code> dulu. Semua dilaporkan, build tetap hijau. Naikkan setelah
+baseline bersih.</p>
+<p><strong>Sistemnya mengurus uang atau audit.</strong>
+→ <code>strict</code>. Uang sebagai float dan timestamp tanpa zona ikut memblokir.</p>
 <h2 id="default-otomatis">Default otomatis</h2>
 <p>Tidak ada pertanyaan. <code>ironclad init</code> tanpa argumen memakai <code>balanced</code>:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>$ ironclad init
@@ -128,38 +155,36 @@ wrote   .agent/standards.yml (preset: balanced)
 wrote   .agent/standards.md
 wrote   scripts/check_schema.py + scripts/presets/
 </code></pre></div>
-<p>Ini disengaja. Perintah yang bertanya akan menggantung di CI dan di agent yang
-tidak punya TTY — dan perintah yang menggantung lebih buruk daripada perintah
-yang salah pilihan tapi bisa diubah (lihat bagian berikut).</p>
+<p>Perintah yang bertanya akan menggantung di CI dan di agent tanpa TTY — dan
+perintah yang menggantung lebih buruk daripada pilihan yang bisa diubah.</p>
 <h2 id="memilih-saat-install">Memilih saat install</h2>
-<p>Langsung dari installer:</p>
+<p>Kalau kamu ingin repo langsung memakai preset tertentu:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.9.0 --project . --preset strict
 </code></pre></div>
 <p>Atau belakangan, dari dalam repo:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad init strict
 </code></pre></div>
 <h2 id="mengubah-setelah-install">Mengubah setelah install</h2>
-<p>Pilihanmu hidup di <code>.agent/standards.yml</code> <strong>di dalam repo</strong>, bukan di dalam skill. Tiga cara mengubahnya, semuanya sah:</p>
+<p>Pilihanmu hidup di <code>.agent/standards.yml</code> <strong>di dalam repo</strong>, bukan di dalam skill,
+jadi ia ikut git dan terlihat di diff PR.</p>
 <p><strong>1. Tulis ulang dari preset:</strong></p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad preset strict
 </code></pre></div>
-<p><strong>2. Edit langsung — tujuh baris, bisa di-review di PR:</strong></p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">name: balanced
+<p><strong>2. Edit langsung — bisa di-review:</strong></p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">name: coherence
 rules:
-  DB-01: error      # enum dilarang
-  DB-02: error      # magic number pada kolom status
-  DB-03: warn       # status tanpa FK/CHECK
-  DB-04: error      # label manusia disimpan sebagai status
-  DB-05: warn       # boolean untuk konsep non-biner
-  DB-06: warn       # uang sebagai float
-  DB-07: warn       # timestamp tanpa zona waktu
+  DB-01: warn       # pemakaian enum dilaporkan, tidak diblokir
+  DB-02: error
+  DB-03: warn
+  DB-04: warn       # teks berkode sah; hanya dilaporkan
+  DB-05: warn
+  DB-06: warn
+  DB-07: warn
+  DB-08: error      # satu-satunya yang memblokir: gaya campur
 exceptions: []
-boolean_allowlist:
-  - is_active
-  - is_deleted
 </code></pre></div>
 <p><strong>3. Sekali jalan, tanpa mengubah berkas:</strong></p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --preset legacy-friendly
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --preset coherence
 </code></pre></div>
 <h2 id="urutan-adopsi-yang-tidak-menyakitkan">Urutan adopsi yang tidak menyakitkan</h2>
 <div class="tablewrap"><table>
@@ -178,7 +203,7 @@ boolean_allowlist:
 </tr>
 <tr>
 <td>Minggu 2–3</td>
-<td><code>balanced</code> + gate hanya file berubah</td>
+<td><code>balanced</code> + gate hanya berkas yang berubah</td>
 <td>temuan baru diblokir, utang lama dibiarkan</td>
 </tr>
 <tr>
@@ -201,22 +226,25 @@ rules:
   DB-05: off        # proyek ini memang penuh flag biner
   DB-06: error
   DB-07: warn
+  DB-08: error
 exceptions:
   - migrations/2023_legacy_import.sql
 boolean_allowlist:
   - is_active
   - is_deleted
 </code></pre></div>
-<p>Lalu:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --config presets/tim.yml
 </code></pre></div>
 <blockquote>
-<p><strong><code>off</code> bukan tombol bisu.</strong> Mematikan satu aturan adalah keputusan yang di-review dan dicatat, bukan jalan pintas agar build hijau. Kalau alasannya tidak bisa ditulis dalam satu baris PR, berarti aturannya belum perlu dimatikan.</p>
+<p><strong><code>off</code> bukan tombol bisu.</strong> Mematikan satu aturan adalah keputusan yang
+di-review dan dicatat, bukan jalan pintas agar build hijau. Kalau alasannya
+tidak bisa ditulis dalam satu baris PR, berarti aturannya belum perlu dimatikan.</p>
 </blockquote>
 <h2 id="prioritas-pembacaan">Prioritas pembacaan</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>--config  &gt;  --preset  &gt;  .agent/standards.yml  &gt;  built-in balanced
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>--config  &gt;  --preset  &gt;  .agent/standards.yml  &gt;  preset bawaan
 </code></pre></div>
-<p>Yang paling kanan adalah jaring pengaman: kalau semua berkas hilang, checker tetap jalan dengan <code>balanced</code>, bukan crash.</p>
+<p>Yang paling kanan adalah jaring pengaman: kalau semua berkas hilang, checker tetap
+jalan, bukan crash.</p>
         <nav class="pager" aria-label="Halaman berikutnya">
           <a class="prev" href="/ironclad/three-layers/"><span>Sebelumnya</span><b>Tiga lapis</b></a>
 <a class="next" href="/ironclad/rules/"><span>Berikutnya</span><b>Aturan DB-01…DB-08</b></a>
@@ -230,7 +258,8 @@ boolean_allowlist:
 
       <aside class="toc" aria-label="Di halaman ini">
         <div class="navlabel"><span>§</span>Di halaman ini</div>
-        <ul><li class="lvl2"><a href="#tiga-preset">Tiga preset</a></li>
+        <ul><li class="lvl2"><a href="#empat-preset">Empat preset</a></li>
+<li class="lvl2"><a href="#kapan-memilih-yang-mana">Kapan memilih yang mana</a></li>
 <li class="lvl2"><a href="#default-otomatis">Default otomatis</a></li>
 <li class="lvl2"><a href="#memilih-saat-install">Memilih saat install</a></li>
 <li class="lvl2"><a href="#mengubah-setelah-install">Mengubah setelah install</a></li>

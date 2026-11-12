@@ -49,7 +49,8 @@ How strict should this repo be?
   1) balanced  (default) — enum and text status block, the rest warn
   2) strict    — everything blocks; use for new or clean repos
   3) legacy-friendly — everything warns; use for an old repo with debt
-Choose 1-3 [1]:
+  4) coherence — no style punished; only mixing enum and integer fails
+Choose 1-4 [1]:
 ```
 
 Then writes:

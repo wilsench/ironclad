@@ -70,9 +70,11 @@ out within a week.
 |---|---|---|
 | new, or already clean | `strict` | everything blocks, no debt |
 | live product, normal debt | `balanced` (default) | enum & text-status block, the rest warns |
+| repo already consistent on enums, do not want to change | `coherence` | no style punished; only mixing fails |
 | old repo, hundreds of findings | `legacy-friendly` | everything warns, build stays green |
 
 ```bash
+ironclad preset coherence         # consistent repo: green, no style imposed
 ironclad preset legacy-friendly   # old repo: install, then clean up slowly
 ironclad preset balanced          # once the baseline is clean
 ironclad preset strict            # once nothing is left warning

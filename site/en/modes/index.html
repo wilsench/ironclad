@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Modes — ask or house — Ironclad</title>
+<meta name="description" content="Who decides the status style when the repo has no answer yet. One flag at install, and it is what separates a neutral tool from a team's tool.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/modes/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/modes/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/modes/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.9.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.9.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/modes/">ID</a>
+      <a href="/ironclad/en/modes/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">What this is, and who it is for</a></li>
+<li><a href="/ironclad/en/glossary/">Glossary</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+<li><a href="/ironclad/en/no-commands/">Using it without commands</a></li>
+<li><a href="/ironclad/en/team/">For your team</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/modes/" class="active" aria-current="page">Modes — ask or house</a></li>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets — how hard it bites</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-08</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+<li><a href="/ironclad/en/frameworks/">Laravel, Prisma, and other backends</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Concepts / <b>Modes — ask or house</b></span>
+      <a class="langsw-mini" href="/ironclad/modes/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="modes-who-decides">Modes — who decides</h1>
+<p>This is the question people skip, and the reason two people can install the same
+tool and get different results:</p>
+<blockquote>
+<p>This repo has no table with a status column. You ask the agent to add an
+<code>invoices</code> table. <strong>Who decides how its status is stored?</strong></p>
+</blockquote>
+<p>Three answers are possible, and we only support two:</p>
+<ul>
+<li>the agent guesses → <strong>no</strong>, that is the original problem</li>
+<li>the agent asks → mode <strong><code>ask</code></strong></li>
+<li>the agent applies the team decision → mode <strong><code>house</code></strong></li>
+</ul>
+<h2 id="the-difference-is-one-row">The difference is one row</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th><code>ask</code> (default)</th>
+<th><code>house</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repo already has a style</td>
+<td>follow it</td>
+<td>follow it</td>
+</tr>
+<tr>
+<td>Repo has two styles</td>
+<td>stop, name both</td>
+<td>stop, name both</td>
+</tr>
+<tr>
+<td>Repo has nothing yet</td>
+<td><strong>ask first</strong></td>
+<td><strong>write <code>status_code</code> + lookup</strong></td>
+</tr>
+<tr>
+<td>Fits</td>
+<td>anyone, any repo</td>
+<td>one team with a shared decision</td>
+</tr>
+</tbody>
+</table></div>
+<p>Note the second row: <strong><code>house</code> does not force an old repo to standardise.</strong> If your
+repo consistently uses enums, <code>house</code> keeps following enums. What gets installed is
+not "integer everywhere", it is "if no decision exists yet, here is ours".</p>
+<h2 id="installing">Installing</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash"># neutral — the agent asks when nothing exists yet
+npx github:wilsench/ironclad#v0.9.0
+
+# office — the agent applies the agreed style immediately
+npx github:wilsench/ironclad#v0.9.0 --mode house
+</code></pre></div>
+<p>Without the flag you get <code>ask</code>. That is deliberate: someone who found this from a
+search engine is not thereby agreeing with another company's database choices.</p>
+<h2 id="what-house-writes-into-the-agent-block">What <code>house</code> writes into the agent block</h2>
+<p>Only the <code>house</code> mode gets this paragraph:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-markdown">- **no status anywhere yet** -&gt; use the house default. Do not ask.
+  `status_code SMALLINT NOT NULL` + lookup table (`code` PK, `label`) + FK
+  from the column, plus named constants in code. Any integer codes are fine
+  (10/20/30, 1/2/3) as long as every code exists in the lookup table and is
+  never reused.
+  Say &quot;house default: status_code + lookup&quot; in one line, then write it.
+</code></pre></div>
+<p>Three things matter in that wording:</p>
+<ul>
+<li><strong>"Do not ask"</strong> — the agent does not hang waiting for an answer that will never
+  arrive in an automated session.</li>
+<li><strong>"Any integer codes are fine"</strong> — codes need not step by 10. <code>88</code> and <code>99</code> are
+  valid, as long as they exist in the lookup and are guarded by a foreign key.</li>
+<li><strong>"Say it in one line"</strong> — you still learn which decision was taken, without a
+  dialogue. One line in the agent's reply, not a question.</li>
+</ul>
+<h2 id="changing-the-mode-later">Changing the mode later</h2>
+<p>The mode is stored in a file, not just in your shell environment. So:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.9.0 --mode ask     # back to neutral
+npx github:wilsench/ironclad#v0.9.0 --mode house   # back to opinionated
+</code></pre></div>
+<p>The installer reads the stored mode first. A <code>house</code> machine that gets reinstalled
+without the flag <strong>stays</strong> <code>house</code> — it does not silently drop because you forgot
+the flag.</p>
+<h2 id="a-mode-is-not-a-decision">A mode is not a decision</h2>
+<p><code>house</code> only fills a gap. It does not:</p>
+<ul>
+<li>unify two styles that already exist (that is migration work, not an installer)</li>
+<li>change old tables</li>
+<li>override a <code>.agent/standards.md</code> you already wrote — that file always wins,
+  because a project decision is more specific than a tool default</li>
+</ul>
+<p>If you want to <strong>enforce</strong> uniformity in a repo that is already mixed, that is
+<a href="/ironclad/en/en/presets/">Presets</a> and <code>DB-08</code>, not the mode.</p>
+<h2 id="if-you-do-not-use-an-ai-agent">If you do not use an AI agent</h2>
+<p>The mode is irrelevant without agents — there is nobody to inform. What is still
+useful: <code>check</code> to see whether the repo is mixed, and <code>init</code> to record the team
+decision. See <a href="/ironclad/en/en/checker/">Checker</a>.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/team/"><span>Previous</span><b>For your team</b></a>
+<a class="next" href="/ironclad/en/three-layers/"><span>Next</span><b>Three layers</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.9.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#the-difference-is-one-row">The difference is one row</a></li>
+<li class="lvl2"><a href="#installing">Installing</a></li>
+<li class="lvl2"><a href="#what-house-writes-into-the-agent-block">What house writes into the agent block</a></li>
+<li class="lvl2"><a href="#changing-the-mode-later">Changing the mode later</a></li>
+<li class="lvl2"><a href="#a-mode-is-not-a-decision">A mode is not a decision</a></li>
+<li class="lvl2"><a href="#if-you-do-not-use-an-ai-agent">If you do not use an AI agent</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.9.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.9.0-0cff1a72" defer></script>
+</body>
+</html>

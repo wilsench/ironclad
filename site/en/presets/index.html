@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Presets — Ironclad</title>
-<meta name="description" content="Three enforcement levels, one automatic default. Set it once at init, change it later with one command.">
+<title>Presets — how hard it bites — Ironclad</title>
+<meta name="description" content="Four enforcement levels. This is what turns CI red, and what separates "it warns" from "it refuses".">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/en/presets/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/presets/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/presets/">
@@ -38,7 +38,7 @@
 
     <nav class="nav" aria-label="Documentation">
       <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
-<li><a href="/ironclad/en/overview/">Apa ini, untuk siapa</a></li>
+<li><a href="/ironclad/en/overview/">What this is, and who it is for</a></li>
 <li><a href="/ironclad/en/glossary/">Glossary</a></li>
 <li><a href="/ironclad/en/install/">Install</a></li>
 <li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
@@ -47,8 +47,9 @@
 <li><a href="/ironclad/en/team/">For your team</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/modes/">Modes — ask or house</a></li>
 <li><a href="/ironclad/en/three-layers/">Three layers</a></li>
-<li><a href="/ironclad/en/presets/" class="active" aria-current="page">Presets</a></li>
+<li><a href="/ironclad/en/presets/" class="active" aria-current="page">Presets — how hard it bites</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
 <li><a href="/ironclad/en/rules/">Rules DB-01…DB-08</a></li>
@@ -76,22 +77,27 @@
       <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span>
       </button>
-      <span class="crumb">Concepts / <b>Presets</b></span>
+      <span class="crumb">Concepts / <b>Presets — how hard it bites</b></span>
       <a class="langsw-mini" href="/ironclad/presets/" aria-label="Language">ID</a>
       <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
     </header>
 
     <div class="pagegrid">
       <article class="prose">
-        <h1 id="presets-guardrails-you-pick">Presets — guardrails you pick</h1>
-<p>A rule system with a single strictness gets abandoned. Too soft and it catches
-nothing; too hard and the first legacy repo kills it. So enforcement is a setting.</p>
-<h2 id="the-three-levels">The three levels</h2>
+        <h1 id="presets-how-hard-the-rules-bite">Presets — how hard the rules bite</h1>
+<p>A preset does not change what Ironclad <strong>knows</strong>. It changes what <strong>blocks</strong>. A
+legacy repo with hundreds of findings would kill the gate on day one if everything
+were red — so the level is a setting.</p>
+<blockquote>
+<p>Confused with <strong>mode</strong>? That is a different question: who decides before code is
+written. See <a href="/ironclad/en/en/modes/">Modes</a>.</p>
+</blockquote>
+<h2 id="the-four-presets">The four presets</h2>
 <div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Preset</th>
-<th>Blocks the build</th>
+<th>Blocks</th>
 <th>Only warns</th>
 <th>For</th>
 </tr>
@@ -104,10 +110,16 @@ nothing; too hard and the first legacy repo kills it. So enforcement is a settin
 <td>a repo that already has debt</td>
 </tr>
 <tr>
-<td><code>balanced</code> <strong>(default)</strong></td>
-<td>DB-01, DB-02, DB-04</td>
+<td><code>coherence</code></td>
+<td>DB-08 (mixed styles)</td>
 <td>the rest</td>
-<td>normal product work</td>
+<td><strong>anyone</strong> who does not want a style imposed</td>
+</tr>
+<tr>
+<td><code>balanced</code></td>
+<td>DB-01, DB-02, DB-04</td>
+<td>DB-03, DB-05…DB-08</td>
+<td>normal product work; the office default</td>
 </tr>
 <tr>
 <td><code>strict</code></td>
@@ -118,60 +130,120 @@ nothing; too hard and the first legacy repo kills it. So enforcement is a settin
 </tbody>
 </table></div>
 <p>Real numbers from the same fixture (<code>examples/bad.sql</code>):</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>balanced           errors=3 warns=2
-legacy-friendly    errors=0 warns=7
-strict             errors=7 warns=0
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>balanced           errors=3 warns=5
+coherence          errors=2 warns=6
+legacy-friendly    errors=0 warns=8
+strict             errors=8 warns=0
 </code></pre></div>
+<p>Note that <code>coherence</code> has <strong>fewer</strong> errors than <code>balanced</code>, and that is the point.
+Under that preset an enum is not punished. Only DB-08 fails — the same concept
+stored two different ways in one project.</p>
+<h2 id="which-one-to-pick">Which one to pick</h2>
+<p><strong>You disagree that enums are wrong, and your repo is already consistent.</strong>
+→ <code>coherence</code>. It comes back green. That is correct, not a bug.</p>
+<p><strong>You have a team that already agreed on integer + lookup.</strong>
+→ <code>balanced</code> (default). Enums and text status block; the rest warns.</p>
+<p><strong>Your repo is old, mixed, and you are just starting.</strong>
+→ <code>legacy-friendly</code> first. Everything is reported, the build stays green. Tighten
+after the baseline is clean.</p>
+<p><strong>It handles money or audits.</strong>
+→ <code>strict</code>. Float money and naive timestamps block too.</p>
 <h2 id="the-automatic-default">The automatic default</h2>
-<p>No prompts. <code>ironclad init</code> with no argument uses <code>balanced</code>:</p>
+<p>No question asked. <code>ironclad init</code> with no argument uses <code>balanced</code>:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>$ ironclad init
 wrote   .agent/standards.yml (preset: balanced)
 wrote   .agent/standards.md
 wrote   scripts/check_schema.py + scripts/presets/
 </code></pre></div>
-<p>This is deliberate. A command that asks questions hangs in CI and hangs inside an
-agent with no TTY — and a command that hangs is worse than one that picks the
-wrong option but can be changed (see below).</p>
-<h2 id="choosing-at-install">Choosing at install</h2>
-<p>Straight from the installer:</p>
+<p>A command that asks will hang in CI and in an agent with no TTY — and a hanging
+command is worse than a choice you can change.</p>
+<h2 id="choosing-at-install-time">Choosing at install time</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">npx github:wilsench/ironclad#v0.9.0 --project . --preset strict
 </code></pre></div>
 <p>Or later, from inside the repo:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad init strict
 </code></pre></div>
-<h2 id="changing-it-afterwards">Changing it afterwards</h2>
-<p>Your choice lives in <code>.agent/standards.yml</code> <strong>inside your repo</strong>, not inside the
-skill. Three ways to change it, all valid:</p>
+<h2 id="changing-it-after-install">Changing it after install</h2>
+<p>Your choice lives in <code>.agent/standards.yml</code> <strong>inside the repo</strong>, not inside the
+skill, so it is committed and visible in the PR diff.</p>
 <p><strong>1. Rewrite from a preset:</strong></p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad preset strict
 </code></pre></div>
-<p><strong>2. Edit it directly — seven lines, reviewable in a PR:</strong></p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-yaml">name: balanced
+<p><strong>2. Edit it directly — reviewable:</strong></p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-yaml">name: coherence
 rules:
-  DB-01: error      # enum forbidden
-  DB-02: error      # magic number on a status column
-  DB-03: warn       # status without FK/CHECK
-  DB-04: error      # human labels stored as status
-  DB-05: warn       # boolean for a non-binary concept
-  DB-06: warn       # money as float
-  DB-07: warn       # timestamp without a timezone
+  DB-01: warn       # enum use is reported, not blocked
+  DB-02: error
+  DB-03: warn
+  DB-04: warn       # a coded text column is a style; only mixing is a defect
+  DB-05: warn
+  DB-06: warn
+  DB-07: warn
+  DB-08: error      # the only hard failure: two styles for one concept
 exceptions: []
 </code></pre></div>
-<p><strong>3. Per-rule overrides</strong>, when one rule genuinely does not apply:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-yaml">name: balanced
-rules:
-  DB-06: off        # this service stores cents as integer; no money columns
+<p><strong>3. One-off, without changing the file:</strong></p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">python3 scripts/check_schema.py . --preset coherence
 </code></pre></div>
-<p>A rule turned <code>off</code> is a decision someone made, visible in the diff. That is the
-point — not that every rule is on, but that every exception is written down.</p>
-<h2 id="what-a-preset-is-not">What a preset is not</h2>
-<p>It is not a maturity badge. Do not move to <code>strict</code> because it sounds better.
-Move when the finding count is near zero and the team agrees the gate should
-hold, not before.</p>
-<h2 id="writing-your-own">Writing your own</h2>
-<p><code>assets/presets/*.yml</code> are plain YAML with the same schema. Copy <code>balanced.yml</code>,
-change severities, commit it, and point <code>.agent/standards.yml</code> at it. The
-<a href="/ironclad/en/extending/">extending</a> page covers adding new rule domains.</p>
+<h2 id="an-adoption-order-that-does-not-hurt">An adoption order that does not hurt</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Preset</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Week 1</td>
+<td><code>legacy-friendly</code></td>
+<td>everything reported, the build stays green</td>
+</tr>
+<tr>
+<td>Week 2–3</td>
+<td><code>balanced</code> + gate only on changed files</td>
+<td>new findings blocked, old debt left alone</td>
+</tr>
+<tr>
+<td>Once the baseline is clean</td>
+<td><code>strict</code></td>
+<td>everything blocks</td>
+</tr>
+</tbody>
+</table></div>
+<p>Skipping the first stage is the fastest way to make a team hate this tool.</p>
+<h2 id="your-own-preset">Your own preset</h2>
+<p>Create <code>presets/team.yml</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-yaml">name: team
+title: Our internal rules
+rules:
+  DB-01: error
+  DB-02: error
+  DB-03: error
+  DB-04: error
+  DB-05: off        # this project really is full of binary flags
+  DB-06: error
+  DB-07: warn
+  DB-08: error
+exceptions:
+  - migrations/2023_legacy_import.sql
+boolean_allowlist:
+  - is_active
+  - is_deleted
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">python3 scripts/check_schema.py . --config presets/team.yml
+</code></pre></div>
+<blockquote>
+<p><strong><code>off</code> is not a mute button.</strong> Turning a rule off is a reviewed, recorded
+decision, not a shortcut to a green build. If the reason cannot be written in one
+line of a PR, the rule does not need turning off yet.</p>
+</blockquote>
+<h2 id="read-priority">Read priority</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>--config  &gt;  --preset  &gt;  .agent/standards.yml  &gt;  built-in preset
+</code></pre></div>
+<p>The rightmost is the safety net: if every file disappears, the checker still runs
+instead of crashing.</p>
         <nav class="pager" aria-label="Next page">
           <a class="prev" href="/ironclad/en/three-layers/"><span>Previous</span><b>Three layers</b></a>
 <a class="next" href="/ironclad/en/rules/"><span>Next</span><b>Rules DB-01…DB-08</b></a>
@@ -185,12 +257,14 @@ change severities, commit it, and point <code>.agent/standards.yml</code> at it.
 
       <aside class="toc" aria-label="On this page">
         <div class="navlabel"><span>§</span>On this page</div>
-        <ul><li class="lvl2"><a href="#the-three-levels">The three levels</a></li>
+        <ul><li class="lvl2"><a href="#the-four-presets">The four presets</a></li>
+<li class="lvl2"><a href="#which-one-to-pick">Which one to pick</a></li>
 <li class="lvl2"><a href="#the-automatic-default">The automatic default</a></li>
-<li class="lvl2"><a href="#choosing-at-install">Choosing at install</a></li>
-<li class="lvl2"><a href="#changing-it-afterwards">Changing it afterwards</a></li>
-<li class="lvl2"><a href="#what-a-preset-is-not">What a preset is not</a></li>
-<li class="lvl2"><a href="#writing-your-own">Writing your own</a></li></ul>
+<li class="lvl2"><a href="#choosing-at-install-time">Choosing at install time</a></li>
+<li class="lvl2"><a href="#changing-it-after-install">Changing it after install</a></li>
+<li class="lvl2"><a href="#an-adoption-order-that-does-not-hurt">An adoption order that does not hurt</a></li>
+<li class="lvl2"><a href="#your-own-preset">Your own preset</a></li>
+<li class="lvl2"><a href="#read-priority">Read priority</a></li></ul>
       </aside>
     </div>
   </main>

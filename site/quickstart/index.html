@@ -47,8 +47,9 @@
 <li><a href="/ironclad/team/">Untuk tim</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/modes/">Mode — ask atau house</a></li>
 <li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
-<li><a href="/ironclad/presets/">Preset</a></li>
+<li><a href="/ironclad/presets/">Preset — seberapa keras</a></li>
 </ul></div>
 <div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
 <li><a href="/ironclad/rules/">Aturan DB-01…DB-08</a></li>
@@ -140,21 +141,29 @@ ini dicabut dalam seminggu.</p>
 <td>enum &amp; status-teks memblokir, sisanya warning</td>
 </tr>
 <tr>
+<td>repo konsisten pakai enum, tidak mau diubah</td>
+<td><code>coherence</code></td>
+<td>tidak ada gaya yang dihukum; hanya gaya campur yang gagal</td>
+</tr>
+<tr>
 <td>repo tua, ratusan temuan</td>
 <td><code>legacy-friendly</code></td>
 <td>semua warning, build tetap hijau</td>
 </tr>
 </tbody>
 </table></div>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad preset legacy-friendly   # repo tua: pasang dulu, bersihkan pelan-pelan
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad preset coherence         # repo konsisten: hijau, tanpa memaksa gaya
+ironclad preset legacy-friendly   # repo tua: pasang dulu, bersihkan pelan-pelan
 ironclad preset balanced          # setelah baseline bersih
 ironclad preset strict            # setelah tidak ada warning tersisa
 </code></pre></div>
-<p>Naik satu tingkat setelah jumlah temuan turun, bukan setelah tanggal tertentu.</p>
+<p>Naik satu tingkat setelah jumlah temuan turun, bukan setelah tanggal tertentu.
+Perbedaan lengkap keempatnya ada di <a href="/ironclad/presets/">Preset</a>.</p>
 <h2 id="5-buktikan-gate-nya-benar-benar-bekerja">5. Buktikan gate-nya benar-benar bekerja</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad drill --selftest
 </code></pre></div>
-<p>Satu perintah, tujuh pemeriksaan, memakai contoh yang sudah pasti:</p>
+<p>Satu perintah, memakai contoh yang sudah pasti. Keluarannya panjang — puluhan baris
+<code>PASS</code> — dan yang penting hanya satu hal di baris terakhir: apakah ada <code>FAIL</code>.</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>  PASS  enum blocked in the default preset
   PASS  integer + lookup + fk accepted
   PASS  text label blocked in the default preset

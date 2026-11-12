@@ -94,12 +94,18 @@ not found`, artinya folder tempat ia dipasang belum ada di daftar itu.
 
 ## Istilah khusus Ironclad
 
-**Preset** — tingkat seberapa keras aturan ditegakkan. Ada tiga:
+**Preset** — seberapa keras aturan ditegakkan. Ada empat:
 
 - `legacy-friendly` — semua hanya peringatan, tidak pernah menggagalkan build.
   Untuk repo tua yang sudah punya banyak masalah.
+- `coherence` — tidak ada gaya yang dihukum; hanya gaya **campur** yang gagal.
+  Untuk siapa pun yang tidak mau dipaksa satu gaya.
 - `balanced` — yang paling berbahaya memblokir, sisanya memperingatkan. Ini default.
 - `strict` — semuanya memblokir. Untuk repo baru atau yang sudah bersih.
+
+**Mode** — siapa yang memutuskan kalau repo belum punya jawaban. `ask` (default):
+agent bertanya. `house`: agent langsung memakai gaya kantor. Bedanya dengan preset:
+mode bekerja **sebelum** kode ditulis, preset bekerja **sesudah**nya.
 
 **Rule ID** — nomor aturan, misalnya `DB-04`. Dipakai supaya diskusi jadi singkat:
 "ini melanggar DB-04" lebih cepat daripada menjelaskan satu paragraf.

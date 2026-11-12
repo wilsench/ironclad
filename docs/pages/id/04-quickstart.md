@@ -71,15 +71,18 @@ ini dicabut dalam seminggu.
 |---|---|---|
 | repo baru, atau sudah bersih | `strict` | semua memblokir, tidak ada utang |
 | repo jalan, utang wajar | `balanced` (default) | enum & status-teks memblokir, sisanya warning |
+| repo konsisten pakai enum, tidak mau diubah | `coherence` | tidak ada gaya yang dihukum; hanya gaya campur yang gagal |
 | repo tua, ratusan temuan | `legacy-friendly` | semua warning, build tetap hijau |
 
 ```bash
+ironclad preset coherence         # repo konsisten: hijau, tanpa memaksa gaya
 ironclad preset legacy-friendly   # repo tua: pasang dulu, bersihkan pelan-pelan
 ironclad preset balanced          # setelah baseline bersih
 ironclad preset strict            # setelah tidak ada warning tersisa
 ```
 
 Naik satu tingkat setelah jumlah temuan turun, bukan setelah tanggal tertentu.
+Perbedaan lengkap keempatnya ada di [Preset](/presets/).
 
 ## 5. Buktikan gate-nya benar-benar bekerja
 
@@ -87,7 +90,8 @@ Naik satu tingkat setelah jumlah temuan turun, bukan setelah tanggal tertentu.
 ironclad drill --selftest
 ```
 
-Satu perintah, tujuh pemeriksaan, memakai contoh yang sudah pasti:
+Satu perintah, memakai contoh yang sudah pasti. Keluarannya panjang — puluhan baris
+`PASS` — dan yang penting hanya satu hal di baris terakhir: apakah ada `FAIL`.
 
 ```
   PASS  enum blocked in the default preset

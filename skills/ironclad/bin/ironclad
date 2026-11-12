@@ -66,11 +66,13 @@ ask_preset() {
   echo "  1) balanced  (default) — enum and text status block, the rest warn" >&2
   echo "  2) strict    — everything blocks; use for new or clean repos" >&2
   echo "  3) legacy-friendly — everything warns; use for an old repo with debt" >&2
-  printf "Choose 1-3 [1]: " >&2
+  echo "  4) coherence — no style punished; only mixing enum and integer fails" >&2
+  printf "Choose 1-4 [1]: " >&2
   local ans; read -r ans || ans=""
   case "$ans" in
     2) echo "strict" ;;
     3) echo "legacy-friendly" ;;
+    4) echo "coherence" ;;
     *) echo "balanced" ;;
   esac
 }
@@ -82,7 +84,7 @@ cmd_init() {
     preset="$(ask_preset)"
   fi
   case "$preset" in
-    1) preset="balanced" ;; 2) preset="strict" ;; 3) preset="legacy-friendly" ;;
+    1) preset="balanced" ;; 2) preset="strict" ;; 3) preset="legacy-friendly" ;; 4) preset="coherence" ;;
   esac
   [ -f "$PRESETS/$preset.yml" ] || die "unknown preset: $preset (balanced|strict|legacy-friendly)"
 
