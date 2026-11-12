@@ -62,7 +62,10 @@ TARGETS = [
 GLOBAL_TARGETS = [
     (".claude/CLAUDE.md", ".claude", "Claude Code", False),
     (".codex/AGENTS.md", ".codex", "Codex", False),
-    (".gemini/GEMINI.md", ".gemini", "Gemini CLI", False),
+    # Antigravity (agy) reads personal rules from ~/.gemini. Claude Code and Codex
+    # had a file; agy and Gemini CLI had the directory and nothing in it.
+    (".gemini/AGENTS.md", ".gemini", "Gemini CLI + Antigravity (agy)", False),
+    (".gemini/GEMINI.md", ".gemini", "Gemini CLI + Antigravity (agy)", False),
     (".cursor/rules/ironclad.mdc", ".cursor", "Cursor", False),
     (".config/opencode/AGENTS.md", ".config/opencode", "opencode", False),
     (".agents/AGENTS.md", ".agents", "agents reading the AGENTS.md convention", True),
