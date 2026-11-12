@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Three layers — Ironclad</title>
+<meta name="description" content="Why a skill alone is not enough, and a checker alone is not either. Each closes a gap the others cannot.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/three-layers/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/three-layers/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/three-layers/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/three-layers/">ID</a>
+      <a href="/ironclad/en/three-layers/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Overview</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/" class="active" aria-current="page">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Concepts / <b>Three layers</b></span>
+      <a class="langsw-mini" href="/ironclad/three-layers/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="three-layers">Three layers</h1>
+<p>Six months of agent-written schema gives you a museum. Each layer of Ironclad
+closes a different hole — drop one and it breaks in a specific, predictable way.</p>
+<h2 id="layer-1-the-skill-advice-before-the-fact">Layer 1 — the skill (advice, before the fact)</h2>
+<p><code>SKILL.md</code> is read by the agent when it is about to design a table. It contains a
+decision procedure, not just rules:</p>
+<blockquote>
+<p><em>Is this column a status? Then: integer code, lookup table, FK, named constants.</em></p>
+</blockquote>
+<p><strong>What it fixes:</strong> bad decisions never get made. The agent writes the right thing
+the first time, which is cheaper than every later layer.</p>
+<p><strong>What it cannot fix:</strong> the agent can skip the skill. It activates by
+description match, not by force. An agent that never reads it produces the same
+schema it would have produced without you.</p>
+<h2 id="layer-2-the-policy-file-the-shared-memory">Layer 2 — the policy file (the shared memory)</h2>
+<p><code>.agent/standards.md</code> lives in your repo and is committed. It is what the agent
+reads, and it is also what a new human reads on day one.</p>
+<p><strong>What it fixes:</strong> drift between people and between sessions. Two agents, six
+months apart, produce the same schema because they read the same file.</p>
+<p><strong>What it cannot fix:</strong> it is still a document. Nothing stops anyone from
+ignoring it.</p>
+<h2 id="layer-3-the-checker-enforcement-after-the-fact">Layer 3 — the checker (enforcement, after the fact)</h2>
+<p><code>check_schema.py</code> reads the SQL, migrations and Prisma schema and fails on
+violations. This is the only layer that cannot be talked out of its position.</p>
+<p><strong>What it fixes:</strong> everything the first two layers missed, including commits that
+never went through an agent at all.</p>
+<p><strong>What it cannot fix:</strong> it knows what is wrong, not why. A checker with no policy
+file produces a wall of rule IDs nobody knows how to satisfy.</p>
+<h2 id="why-all-three">Why all three</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Failure</th>
+<th>Caught by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>agent picks <code>enum</code> because the prompt was vague</td>
+<td>skill (layer 1)</td>
+</tr>
+<tr>
+<td>new hire writes an integer status with no lookup table</td>
+<td>policy (layer 2)</td>
+</tr>
+<tr>
+<td>hand-written migration slips past review</td>
+<td>checker (layer 3)</td>
+</tr>
+<tr>
+<td>someone downgrades a rule silently</td>
+<td>policy is in git — it shows up in the PR</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="the-order-matters">The order matters</h2>
+<p>The mistake is starting at layer 3. Turning on a checker against an existing repo
+produces hundreds of findings, the team mutes it, and the whole thing is dead by
+Friday.</p>
+<p>Start at layer 1, add layer 2 with <code>legacy-friendly</code>, and only then tighten
+toward layer 3 as the count drops.</p>
+<h2 id="what-is-not-in-the-stack">What is not in the stack</h2>
+<ul>
+<li><strong>Not a formatter.</strong> It has no opinion on spacing.</li>
+<li><strong>Not a security scanner.</strong> Different problem, different tool.</li>
+<li><strong>Not a replacement for review.</strong> It is a floor. A human is still the ceiling.</li>
+</ul>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/quickstart/"><span>Previous</span><b>Quickstart</b></a>
+<a class="next" href="/ironclad/en/presets/"><span>Next</span><b>Presets</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#layer-1-the-skill-advice-before-the-fact">Layer 1 — the skill (advice, before the fact)</a></li>
+<li class="lvl2"><a href="#layer-2-the-policy-file-the-shared-memory">Layer 2 — the policy file (the shared memory)</a></li>
+<li class="lvl2"><a href="#layer-3-the-checker-enforcement-after-the-fact">Layer 3 — the checker (enforcement, after the fact)</a></li>
+<li class="lvl2"><a href="#why-all-three">Why all three</a></li>
+<li class="lvl2"><a href="#the-order-matters">The order matters</a></li>
+<li class="lvl2"><a href="#what-is-not-in-the-stack">What is not in the stack</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

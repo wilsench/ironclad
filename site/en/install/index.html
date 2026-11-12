@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Install — Ironclad</title>
+<meta name="description" content="One command, no questions. Then three words to use it. No Python needed.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/install/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/install/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/install/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/install/">ID</a>
+      <a href="/ironclad/en/install/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Overview</a></li>
+<li><a href="/ironclad/en/install/" class="active" aria-current="page">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Start / <b>Install</b></span>
+      <a class="langsw-mini" href="/ironclad/install/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="install-into-your-agent">Install into your agent</h1>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+</code></pre></div>
+<p>That is the entire install. No questions, no Python, no menu.</p>
+<p>What it does:</p>
+<ol>
+<li>puts the skill in <code>~/.agents/skills/ironclad/</code> — the directory Codex, Cursor,
+   opencode and Antigravity read</li>
+<li>adds an <code>ironclad</code> command to <code>~/.local/bin/</code></li>
+<li>stops. Your repo is untouched.</li>
+</ol>
+<p>If <code>~/.local/bin</code> is not on your <code>PATH</code>, the installer tells you. Add one line to
+<code>~/.bashrc</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">export PATH=&quot;$HOME/.local/bin:$PATH&quot;
+</code></pre></div>
+<h2 id="then-three-commands">Then, three commands</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check          # score this repo's schema, writes nothing
+ironclad init           # make it permanent: .agent/ + scripts/
+ironclad preset strict  # switch strictness whenever, no reinstall
+</code></pre></div>
+<p><code>check</code> works immediately after install, without <code>init</code> — it falls back to the
+preset shipped in the skill (<code>balanced</code>) until your repo has its own
+<code>.agent/standards.yml</code>.</p>
+<h2 id="why-install-does-not-need-python">Why install does not need Python</h2>
+<p>The installer is bash + curl. Python 3.8+ is needed only to <strong>run</strong> the checker,
+and <code>ironclad check</code> calls it for you.</p>
+<p>If the machine has no Python, <code>ironclad init</code> still succeeds — only <code>check</code>/CI
+stay dark until you install it. Do that whenever you are ready to add the gate.</p>
+<h2 id="other-agents">Other agents</h2>
+<p>The default is <code>~/.agents/skills</code>. For agents with their own directory:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash"># Claude Code
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
+
+# Hermes
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target hermes
+
+# opencode (native)
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target opencode
+
+# Antigravity, global
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target gemini
+
+# everything installed on this machine
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
+</code></pre></div>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Directory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Codex</td>
+<td><code>.agents/skills/</code> <strong>inside the repo</strong> — use <code>--dir .agents/skills</code></td>
+</tr>
+<tr>
+<td>Cursor</td>
+<td><code>~/.agents/skills/</code></td>
+</tr>
+<tr>
+<td>Claude Code</td>
+<td><code>~/.claude/skills/</code></td>
+</tr>
+<tr>
+<td>Hermes</td>
+<td><code>~/.hermes/skills/</code></td>
+</tr>
+<tr>
+<td>opencode</td>
+<td><code>~/.config/opencode/skills/</code>, also reads <code>~/.agents/skills/</code></td>
+</tr>
+<tr>
+<td>Antigravity</td>
+<td><code>~/.gemini/config/skills/</code> (global), <code>.agents/skills/</code> (workspace)</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>Codex has no global skill directory.</strong> Per OpenAI's docs, Codex reads
+<code>$CWD/.agents/skills</code> and <code>$CWD/../.agents/skills</code>. If you use Codex, install
+inside the repo so it travels with the code:</p>
+<p><code>bash
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills</code></p>
+</blockquote>
+<h2 id="if-you-want-the-rules-to-travel-with-the-repo">If you want the rules to travel with the repo</h2>
+<p>This is what makes a whole team use the same rulebook — the skill is in git, not
+only on one person's laptop:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills
+git add .agents/skills/ironclad &amp;&amp; git commit -m &quot;chore: add ironclad skill&quot;
+</code></pre></div>
+<h2 id="ci-nothing-to-skip">CI: nothing to skip</h2>
+<p>There are no prompts in the first place, so there is nothing to suppress. For a
+pipeline that wants everything at once:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh \
+  | bash -s -- --target agents --project . --preset legacy-friendly
+</code></pre></div>
+<h2 id="uninstall">Uninstall</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall
+</code></pre></div>
+<p>Removes the skill directory and the <code>ironclad</code> command. <code>.agent/</code> and <code>scripts/</code>
+in your repo are <strong>not</strong> touched — they are yours, not the installer's.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/overview/"><span>Previous</span><b>Overview</b></a>
+<a class="next" href="/ironclad/en/how-agents-use-it/"><span>Next</span><b>How agents use it</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#then-three-commands">Then, three commands</a></li>
+<li class="lvl2"><a href="#why-install-does-not-need-python">Why install does not need Python</a></li>
+<li class="lvl2"><a href="#other-agents">Other agents</a></li>
+<li class="lvl2"><a href="#if-you-want-the-rules-to-travel-with-the-repo">If you want the rules to travel with the repo</a></li>
+<li class="lvl2"><a href="#ci-nothing-to-skip">CI: nothing to skip</a></li>
+<li class="lvl2"><a href="#uninstall">Uninstall</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

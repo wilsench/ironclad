@@ -6,8 +6,10 @@
 <title>Preset — Ironclad</title>
 <meta name="description" content="Tiga tingkat penegakan, satu default otomatis. Pilih sekali saat install, ubah kapan saja lewat satu baris di repo.">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/presets/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/presets/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/presets/">
 <meta name="color-scheme" content="light">
-<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -21,9 +23,14 @@
       <span class="mark" aria-hidden="true">IC</span>
       <span>
         <b>Ironclad</b>
-        <i>v0.4.0-9728b8a7 · MIT</i>
+        <i>v0.5.0-0cff1a72 · MIT</i>
       </span>
     </a>
+
+    <div class="langsw" role="group" aria-label="Bahasa">
+      <a href="/ironclad/presets/" class="on" aria-current="true">ID</a>
+      <a href="/ironclad/en/presets/">EN</a>
+    </div>
 
     <button class="searchbtn" type="button" id="searchbtn">
       <span>Cari dokumentasi</span><kbd>/</kbd>
@@ -66,6 +73,7 @@
         <span></span><span></span>
       </button>
       <span class="crumb">Konsep / <b>Preset</b></span>
+      <a class="langsw-mini" href="/ironclad/en/presets/" aria-label="Bahasa">EN</a>
       <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
     </header>
 
@@ -110,27 +118,26 @@ legacy-friendly    errors=0 warns=7
 strict             errors=7 warns=0
 </code></pre></div>
 <h2 id="default-otomatis">Default otomatis</h2>
-<p>Wizard memilih <code>balanced</code> lebih dulu dan menandainya:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>Choose a preset [1]:
-  1) balanced         Balanced — recommended default  (default)
-  2) legacy-friendly  Legacy-friendly — brownfield
-  3) strict           Strict — regulated
+<p>Tidak ada pertanyaan. <code>ironclad init</code> tanpa argumen memakai <code>balanced</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>$ ironclad init
+wrote   .agent/standards.yml (preset: balanced)
+wrote   .agent/standards.md
+wrote   scripts/check_schema.py + scripts/presets/
 </code></pre></div>
-<p>Kalau stdin bukan TTY — misalnya agent yang menjalankannya — tidak ada pertanyaan sama sekali:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>$ printf '' | init_standards.py .
-non-interactive: using preset 'balanced'
-</code></pre></div>
-<p>Ini penting: agent tidak boleh menggantung menunggu jawaban yang tidak akan datang.</p>
+<p>Ini disengaja. Perintah yang bertanya akan menggantung di CI dan di agent yang
+tidak punya TTY — dan perintah yang menggantung lebih buruk daripada perintah
+yang salah pilihan tapi bisa diubah (lihat bagian berikut).</p>
 <h2 id="memilih-saat-install">Memilih saat install</h2>
+<p>Langsung dari installer:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project . --preset strict
 </code></pre></div>
-<p>Atau lewat bootstrap:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/init_standards.py . --preset strict --with-checker
+<p>Atau belakangan, dari dalam repo:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad init strict
 </code></pre></div>
 <h2 id="mengubah-setelah-install">Mengubah setelah install</h2>
 <p>Pilihanmu hidup di <code>.agent/standards.yml</code> <strong>di dalam repo</strong>, bukan di dalam skill. Tiga cara mengubahnya, semuanya sah:</p>
 <p><strong>1. Tulis ulang dari preset:</strong></p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/init_standards.py . --preset strict --force
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad preset strict
 </code></pre></div>
 <p><strong>2. Edit langsung — tujuh baris, bisa di-review di PR:</strong></p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">name: balanced
@@ -211,7 +218,7 @@ boolean_allowlist:
 <a class="next" href="/ironclad/rules/"><span>Berikutnya</span><b>Aturan DB-01…DB-07</b></a>
         </nav>
         <footer class="docfoot">
-          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>Ironclad v0.5.0-0cff1a72</span>
           <span>MIT</span>
           <span>Chia Wilsen</span>
         </footer>
@@ -240,7 +247,7 @@ boolean_allowlist:
   <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
 </div>
 
-<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
-<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.5.0-0cff1a72" defer></script>
 </body>
 </html>

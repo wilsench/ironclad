@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checker — Ironclad</title>
+<meta name="description" content="Full reference for check_schema.py — arguments, exit codes, JSON output, what it scans and what it skips.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/checker/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/checker/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/checker/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/checker/">ID</a>
+      <a href="/ironclad/en/checker/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Overview</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/" class="active" aria-current="page">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Reference / <b>Checker</b></span>
+      <a class="langsw-mini" href="/ironclad/checker/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="checker">Checker</h1>
+<p><code>scripts/check_schema.py</code> is a single-file Python script with no dependencies
+beyond the standard library. It scans <code>.sql</code>, <code>.php</code> (Laravel migrations), and
+<code>.prisma</code> files.</p>
+<h2 id="usage">Usage</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check                      # current repo, uses .agent/standards.yml
+ironclad check --json               # machine-readable
+ironclad check app/database         # one directory
+ironclad check migrations/001.sql   # one file
+
+# equivalent, without the wrapper
+python3 scripts/check_schema.py . --preset balanced
+</code></pre></div>
+<h2 id="arguments">Arguments</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>paths…</code></td>
+<td>files or directories; default <code>.</code></td>
+</tr>
+<tr>
+<td><code>--preset NAME</code></td>
+<td><code>balanced</code>, <code>strict</code>, <code>legacy-friendly</code></td>
+</tr>
+<tr>
+<td><code>--strict</code></td>
+<td>shorthand for <code>--preset strict</code></td>
+</tr>
+<tr>
+<td><code>--json</code></td>
+<td>JSON on stdout instead of the human report</td>
+</tr>
+<tr>
+<td><code>--list-presets</code></td>
+<td>print the presets it can see, with error/warn counts</td>
+</tr>
+</tbody>
+</table></div>
+<p>Without <code>--preset</code>, the checker looks for <code>.agent/standards.yml</code> and walks up
+from the target directory. The report's last line tells you which one it used —
+<code>preset: balanced (.agent/standards.yml)</code> or <code>preset: strict (preset:strict)</code>.</p>
+<h2 id="exit-codes">Exit codes</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>clean, or only warnings on a preset that does not block them</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>at least one blocking error</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>misuse — unknown preset, config not found, no files</td>
+</tr>
+</tbody>
+</table></div>
+<p>Exit <code>2</code> is distinct on purpose: a typo in your CI configuration must not look
+like a schema violation.</p>
+<h2 id="human-output">Human output</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>bad.sql:4: [DB-01] ERROR SQL/prisma enum column; use integer code + lookup table (see DB-03)
+bad.sql:6: [DB-04] ERROR status stored as text (`stock_state`); use smallint code + lookup table
+
+preset: balanced (.agent/standards.yml)
+1 file(s), 2 error(s), 2 warning(s)
+</code></pre></div>
+<p>The last line says <strong>where</strong> the preset came from — that is what you need when
+two machines disagree and the cause is a config file that was never committed.</p>
+<h2 id="json-output">JSON output</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check --json
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-json">{
+  &quot;preset&quot;: &quot;balanced&quot;,
+  &quot;source&quot;: &quot;preset:balanced&quot;,
+  &quot;files&quot;: 1,
+  &quot;findings&quot;: [
+    {
+      &quot;rule&quot;: &quot;DB-01&quot;,
+      &quot;severity&quot;: &quot;error&quot;,
+      &quot;line&quot;: 4,
+      &quot;msg&quot;: &quot;SQL/prisma enum column; use integer code + lookup table (see DB-03)&quot;,
+      &quot;file&quot;: &quot;examples/bad.sql&quot;
+    }
+  ],
+  &quot;errors&quot;: 1,
+  &quot;warnings&quot;: 0
+}
+</code></pre></div>
+<h2 id="what-it-scans">What it scans</h2>
+<p><code>.sql</code>, <code>.php</code>, <code>.prisma</code> — recursively, skipping <code>node_modules</code>, <code>vendor</code>,
+<code>dist</code>, <code>build</code>, <code>.git</code>, <code>storage</code>, and dot-directories.</p>
+<h2 id="what-it-does-not-do">What it does not do</h2>
+<ul>
+<li><strong>Not a SQL parser.</strong> It is regex-based. It can produce false positives and it
+  will miss constructs a parser would catch. A human reviewer is still the last
+  layer.</li>
+<li><strong>No autofix.</strong> Changing a schema is a design decision.</li>
+<li><strong>No cross-file analysis.</strong> It does not know that your lookup table lives in a
+  different migration.</li>
+<li><strong>No security, performance or API rules</strong> — those are separate domains, see
+  <a href="/ironclad/en/extending/">extending</a>.</li>
+</ul>
+<h2 id="testing-the-fixtures">Testing the fixtures</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>examples/good.sql            balanced 0 error 0 warn   exit 0
+                             strict   0 error 0 warn   exit 0
+examples/bad.sql             balanced 2 error 2 warn   exit 1
+                             legacy   0 error 4 warn   exit 0
+examples/bad_migration.php   2 findings
+examples/bad.prisma          1 finding
+</code></pre></div>
+<p>These numbers are asserted in this repo's own CI
+(<code>.github/workflows/engineering-standards.yml</code>), so a broken checker is caught
+here before it reaches a user.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/rules/"><span>Previous</span><b>Rules DB-01…DB-07</b></a>
+<a class="next" href="/ironclad/en/extending/"><span>Next</span><b>Extending</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#usage">Usage</a></li>
+<li class="lvl2"><a href="#arguments">Arguments</a></li>
+<li class="lvl2"><a href="#exit-codes">Exit codes</a></li>
+<li class="lvl2"><a href="#human-output">Human output</a></li>
+<li class="lvl2"><a href="#json-output">JSON output</a></li>
+<li class="lvl2"><a href="#what-it-scans">What it scans</a></li>
+<li class="lvl2"><a href="#what-it-does-not-do">What it does not do</a></li>
+<li class="lvl2"><a href="#testing-the-fixtures">Testing the fixtures</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

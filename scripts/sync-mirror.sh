@@ -10,12 +10,14 @@ OWNER="wilsench:wilsench"
 
 [ -d "$DEST" ] || { echo "no mirror dir: $DEST" >&2; exit 1; }
 
-mkdir -p "$DEST"/{assets/presets,references,scripts,templates}
+mkdir -p "$DEST"/{assets/presets,bin,references,scripts,templates}
 cp "$SKILL/SKILL.md"                 "$DEST/"
 cp "$SKILL"/references/*.md          "$DEST/references/"
 cp "$SKILL"/scripts/*.py             "$DEST/scripts/"
 cp "$SKILL"/templates/*.md           "$DEST/templates/"
 cp "$SKILL"/assets/presets/*.yml     "$DEST/assets/presets/"
+cp "$SKILL"/bin/ironclad             "$DEST/bin/ironclad"
+chmod +x "$DEST/bin/ironclad"
 chown -R "$OWNER" "$DEST"
 
 # the installer itself lives beside the docs, not inside pkg/

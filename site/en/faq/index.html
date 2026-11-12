@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FAQ — Ironclad</title>
+<meta name="description" content="The questions that keep coming up, answered without circling.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/faq/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/faq/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/faq/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/faq/">ID</a>
+      <a href="/ironclad/en/faq/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Overview</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/" class="active" aria-current="page">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Operations / <b>FAQ</b></span>
+      <a class="langsw-mini" href="/ironclad/faq/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="faq">FAQ</h1>
+<h2 id="do-i-have-to-run-python">Do I have to run Python?</h2>
+<p><strong>To install: no.</strong> The installer is bash + curl. Writing <code>.agent/standards.md</code>
+and <code>.agent/standards.yml</code> needs no Python either — <code>ironclad init</code> does it.</p>
+<p><strong>To run the checker: yes</strong>, Python 3.8+. But the checker is optional — if all you
+want is the agent reading the rules, the skill plus <code>.agent/standards.md</code> is enough.</p>
+<h2 id="does-the-skill-activate-automatically-on-every-agent-run">Does the skill activate automatically on every agent run?</h2>
+<p>Yes, but that does <strong>not</strong> mean it is always used. Every turn the agent sees a list
+of skill names and descriptions. It loads the full <code>SKILL.md</code> only when the task
+matches.</p>
+<p>So: no command to run, and no "do you want to use this skill?" prompt. The agent
+decides, the same way it decides which tool to call.</p>
+<p>If you want certainty, name it: "use the ironclad skill for this migration".</p>
+<h2 id="can-it-be-shorter-than-this">Can it be shorter than this?</h2>
+<p>Install:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+</code></pre></div>
+<p>Then, in a repo:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check      # look
+ironclad init       # make it stick
+</code></pre></div>
+<p>Two commands after install. No Python, no clone, no reading required.</p>
+<h2 id="does-the-installer-work-for-agents-other-than-hermes">Does the installer work for agents other than Hermes?</h2>
+<p>Yes — that is its main target. Six targets: Hermes, Claude Code, Codex, Cursor,
+opencode, Antigravity. The format is the Agent Skills standard (<code>SKILL.md</code>), not
+something Hermes-specific.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">… | bash -s -- --all              # everything detected on this machine
+… | bash -s -- --target claude
+… | bash -s -- --target gemini    # Antigravity, global
+… | bash -s -- --target opencode
+</code></pre></div>
+<h2 id="can-i-use-wilsenchironclad-directly">Can I use <code>wilsench/ironclad</code> directly?</h2>
+<p>For Hermes:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">hermes skills install wilsench/ironclad/skills/ironclad
+</code></pre></div>
+<p>Other agents have no universal <code>install &lt;owner&gt;/&lt;repo&gt;</code> command. The portable path
+is curl to <code>install.sh</code> — and that works now, because the installer has a mirror
+on <code>wilsench.my.id</code> and does not wait for GitHub.</p>
+<h2 id="is-curl-bash-safe">Is <code>curl | bash</code> safe?</h2>
+<p>The installer is about 190 lines of bash and you can read it first:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | less
+</code></pre></div>
+<p>What it does: downloads 11 text files, copies them into one skill directory, and —
+only if you pass <code>--project</code> — writes <code>.agent/</code> in the repo you named. No <code>sudo</code>,
+no shell profile changes, no touching other skills.</p>
+<h2 id="does-it-work-without-git">Does it work without git?</h2>
+<p>Yes. The skill is just a directory of files. The checker just needs a path. You
+lose two things: <code>.agent/standards.md</code> has no history, and nothing runs in CI.</p>
+<h2 id="why-not-just-use-enum">Why not just use <code>enum</code>?</h2>
+<p>Because adding one value means <code>ALTER TABLE</code>. In MySQL, on a large table, that
+locks the table while it rewrites. Business status always grows, and every growth
+should not be a migration event.</p>
+<p>But <code>enum</code> is <strong>not banned outright</strong>. If the values are deliberate and only
+change through code review, write the reason in the migration comment — <code>balanced</code>
+accepts that.</p>
+<h2 id="what-about-codes-like-88-99-instead-of-0-1-2">What about codes like <code>88</code>, <code>99</code> instead of 0, 1, 2?</h2>
+<p>Completely fine. Codes do not have to be sequential or start at zero. What makes
+them safe: the code is registered in a lookup table (so <code>87</code> is rejected by the
+database) and used through named constants in application code.</p>
+<p>Reserving blocks — <code>8x</code> for stock, <code>9x</code>/<code>99x</code> for departures — keeps raw numbers
+readable when they show up in a query result six months later.</p>
+<h2 id="does-this-replace-code-review">Does this replace code review?</h2>
+<p>No. The checker catches syntactic patterns; it does not know whether
+<code>status_code = 7</code> is correct business logic. It removes repetitive review work,
+it does not replace the reviewer.</p>
+<h2 id="what-if-our-company-rules-are-different">What if our company rules are different?</h2>
+<p>That is the point. Edit <code>.agent/standards.md</code> and <code>.agent/standards.yml</code> in your
+repo. The skill does not change, and nothing needs reinstalling. Rules that do not
+fit can be set to <code>warn</code> or <code>off</code> — as long as the reason lands in a PR.</p>
+<h2 id="is-there-auto-update">Is there auto-update?</h2>
+<p>Not yet. <code>hermes skills update</code> reuses the URL from install; other agents need the
+installer re-run. There is no versioned changelog. If you change the rules, what
+you share is <code>.agent/standards.md</code> in your repo — it travels with git and reaches
+everyone automatically.</p>
+<h2 id="what-is-the-context-cost">What is the context cost?</h2>
+<p><code>SKILL.md</code> is roughly 7 KB, but the agent loads it only when the task matches.
+What is always in context is one description line. The references
+(<code>database.md</code>, <code>presets.md</code>) are read only when the agent needs detail.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/troubleshooting/"><span>Previous</span><b>Troubleshooting</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#do-i-have-to-run-python">Do I have to run Python?</a></li>
+<li class="lvl2"><a href="#does-the-skill-activate-automatically-on-every-agent-run">Does the skill activate automatically on every agent run?</a></li>
+<li class="lvl2"><a href="#can-it-be-shorter-than-this">Can it be shorter than this?</a></li>
+<li class="lvl2"><a href="#does-the-installer-work-for-agents-other-than-hermes">Does the installer work for agents other than Hermes?</a></li>
+<li class="lvl2"><a href="#can-i-use-wilsenchironclad-directly">Can I use wilsench/ironclad directly?</a></li>
+<li class="lvl2"><a href="#is-curl-bash-safe">Is curl | bash safe?</a></li>
+<li class="lvl2"><a href="#does-it-work-without-git">Does it work without git?</a></li>
+<li class="lvl2"><a href="#why-not-just-use-enum">Why not just use enum?</a></li>
+<li class="lvl2"><a href="#what-about-codes-like-88-99-instead-of-0-1-2">What about codes like 88, 99 instead of 0, 1, 2?</a></li>
+<li class="lvl2"><a href="#does-this-replace-code-review">Does this replace code review?</a></li>
+<li class="lvl2"><a href="#what-if-our-company-rules-are-different">What if our company rules are different?</a></li>
+<li class="lvl2"><a href="#is-there-auto-update">Is there auto-update?</a></li>
+<li class="lvl2"><a href="#what-is-the-context-cost">What is the context cost?</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

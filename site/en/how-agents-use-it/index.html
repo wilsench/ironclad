@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How agents use it — Ironclad</title>
+<meta name="description" content="Skills activate on their own — but only when the description matches the task. Here is how that works and how to force it.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/how-agents-use-it/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/how-agents-use-it/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/how-agents-use-it/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/how-agents-use-it/">ID</a>
+      <a href="/ironclad/en/how-agents-use-it/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Overview</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/" class="active" aria-current="page">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Start / <b>How agents use it</b></span>
+      <a class="langsw-mini" href="/ironclad/how-agents-use-it/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="how-an-agent-actually-picks-this-up">How an agent actually picks this up</h1>
+<p>Short answer: <strong>automatically, but not unconditionally.</strong> That distinction
+matters more than it sounds.</p>
+<h2 id="every-turn-the-agent-sees-only-a-list">Every turn, the agent sees only a list</h2>
+<p>Agents that implement <a href="https://agentskills.io">Agent Skills</a> follow one
+pattern — Hermes, Claude Code, Codex, opencode and Antigravity all do this:</p>
+<ol>
+<li><strong>Discovery.</strong> On every turn the agent gets a list of available skills:
+   name and description only. Not the body.</li>
+<li><strong>Activation.</strong> If a task looks relevant, it reads the full <code>SKILL.md</code>.</li>
+<li><strong>Execution.</strong> It follows the instructions while doing the work.</li>
+</ol>
+<p>So the body of Ironclad is not in the model's context until there is schema work
+to do. That is deliberate: if every skill loaded fully on every turn, the context
+window would be gone before you asked your first question.</p>
+<h2 id="what-decides-whether-it-activates">What decides whether it activates</h2>
+<p>The <code>description</code> field in <code>SKILL.md</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-yaml">description: &quot;Enforce team engineering standards with presets.&quot;
+</code></pre></div>
+<p>The agent matches your request against that sentence. Which means:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>You say</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"add a <code>status</code> column to orders"</td>
+<td>likely activates — schema work</td>
+</tr>
+<tr>
+<td>"why does the build fail on DB-04?"</td>
+<td>likely activates — names a rule ID</td>
+</tr>
+<tr>
+<td>"rename this variable"</td>
+<td>does not activate — nothing to do with schema</td>
+</tr>
+<tr>
+<td>"write a landing page"</td>
+<td>does not activate</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is a feature. An agent that injects a database rulebook into every unrelated
+task is noise.</p>
+<h2 id="how-to-force-it">How to force it</h2>
+<p>When you want it guaranteed:</p>
+<ul>
+<li><strong>mention the name</strong> — "use ironclad for this migration"</li>
+<li><strong>Hermes</strong> — the skill is loaded on demand; asking by name is enough</li>
+<li><strong>Antigravity</strong> — type <code>/ironclad</code> in the message box</li>
+<li><strong>opencode</strong> — mention <code>@ironclad</code>, or set permissions in <code>opencode.json</code></li>
+<li><strong>Claude Code / Codex</strong> — naming the skill in the prompt is the reliable way</li>
+</ul>
+<h2 id="where-it-stops-being-optional">Where it stops being optional</h2>
+<p>Skill activation is fuzzy. The checker is not:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check     # exit 1 = violations, whether or not the agent read anything
+</code></pre></div>
+<p>If the agent never reads <code>SKILL.md</code>, you still get enforcement from CI. You just
+lose the good decisions made <em>before</em> the DDL was written — which is the part
+that actually saves time.</p>
+<h2 id="what-the-agent-does-when-it-is-active">What the agent does when it is active</h2>
+<ol>
+<li>reads <code>.agent/standards.md</code> (the repo's policy)</li>
+<li>classifies every status-like field using the decision table</li>
+<li>designs the schema: integer code + lookup table + FK + constraint</li>
+<li>writes the migration</li>
+<li>runs the checker</li>
+<li>reports every deviation with a rule ID and a reason</li>
+</ol>
+<p>Step 6 is the one people skip. An undocumented deviation is a defect, because the
+next agent has no way to know the rule was consciously overridden.</p>
+<p>If <code>.agent/standards.md</code> is missing, the agent runs <code>ironclad init</code> (preset
+<code>balanced</code>). That command never prompts, so an agent can never hang waiting for
+an answer that will not come.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/install/"><span>Previous</span><b>Install</b></a>
+<a class="next" href="/ironclad/en/quickstart/"><span>Next</span><b>Quickstart</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#every-turn-the-agent-sees-only-a-list">Every turn, the agent sees only a list</a></li>
+<li class="lvl2"><a href="#what-decides-whether-it-activates">What decides whether it activates</a></li>
+<li class="lvl2"><a href="#how-to-force-it">How to force it</a></li>
+<li class="lvl2"><a href="#where-it-stops-being-optional">Where it stops being optional</a></li>
+<li class="lvl2"><a href="#what-the-agent-does-when-it-is-active">What the agent does when it is active</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

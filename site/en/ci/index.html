@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CI & pre-commit — Ironclad</title>
+<meta name="description" content="Wiring the checker as a gate that does not turn every PR red — gate only the files the PR touches.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/ci/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/ci/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/ci/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/ci/">ID</a>
+      <a href="/ironclad/en/ci/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Overview</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/" class="active" aria-current="page">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Operations / <b>CI & pre-commit</b></span>
+      <a class="langsw-mini" href="/ironclad/ci/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="ci-pre-commit">CI &amp; pre-commit</h1>
+<p>The checker is only useful if it runs where nobody can skip it. But the naive
+version — scan the whole repo, fail on any finding — turns a legacy repo
+instantly red and gets the workflow deleted.</p>
+<h2 id="the-rule-gate-the-diff-not-the-repo">The rule: gate the diff, not the repo</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-yaml"># .github/workflows/ironclad.yml
+name: ironclad
+
+on: [pull_request]
+
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: changed schema files only
+        run: |
+          git diff --name-only --diff-filter=ACMR \
+            &quot;origin/${{ github.base_ref }}...HEAD&quot; \
+            | grep -E '\.(sql|prisma)$|migrations?/.*\.php$' &gt; changed.txt || true
+
+          if [ ! -s changed.txt ]; then
+            echo &quot;no schema files in this PR&quot;
+            exit 0
+          fi
+
+          python3 scripts/check_schema.py $(cat changed.txt | tr '\n' ' ')
+</code></pre></div>
+<p>Three things this does that the naive version does not:</p>
+<ol>
+<li><strong>Only PRs that touch schema files run the check.</strong> A CSS-only PR is not
+   blocked by a schema rule.</li>
+<li><strong>Existing debt is not your problem today.</strong> Old files stay untouched until
+   someone edits them.</li>
+<li><strong>Exit code propagates.</strong> No <code>|| true</code> on the check itself — only on the
+   <code>grep</code>, which legitimately finds nothing.</li>
+</ol>
+<h2 id="pre-commit-for-the-fast-loop">Pre-commit, for the fast loop</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-yaml"># .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: ironclad
+        name: ironclad schema rules
+        entry: python3 scripts/check_schema.py
+        language: system
+        files: '\.(sql|prisma)$|migrations?/.*\.php$'
+        pass_filenames: true
+</code></pre></div>
+<p>This is what actually changes behaviour: the error appears before the commit
+exists, while the agent still has the context to fix it.</p>
+<h2 id="rolling-it-out-without-a-mutiny">Rolling it out without a mutiny</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Preset</th>
+<th>Gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>legacy-friendly</code></td>
+<td>pre-commit only, warnings, build green</td>
+</tr>
+<tr>
+<td>2–3</td>
+<td><code>legacy-friendly</code></td>
+<td>CI on changed files, still green</td>
+</tr>
+<tr>
+<td>4+</td>
+<td><code>balanced</code></td>
+<td>CI blocks on changed files only</td>
+</tr>
+<tr>
+<td>later</td>
+<td><code>strict</code></td>
+<td>when findings are near zero</td>
+</tr>
+</tbody>
+</table></div>
+<p>Do not skip week 1. The point of week 1 is that people see the warnings and
+learn the rule IDs before anything can block them.</p>
+<h2 id="verifying-the-gate">Verifying the gate</h2>
+<p>A green build proves nothing on its own. Prove it fails when it should:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">git checkout -b test-gate
+printf 'CREATE TABLE t (status ENUM(&quot;a&quot;,&quot;b&quot;));\n' &gt; broken.sql
+git add broken.sql &amp;&amp; git commit -m &quot;test: should fail&quot;
+git push -u origin test-gate
+</code></pre></div>
+<p>Open the PR. It must be red, and the red must name <code>DB-01</code>. If it is green, the
+workflow path or the filter is wrong — not the checker.</p>
+<h2 id="what-ci-should-not-do">What CI should not do</h2>
+<ul>
+<li><strong>Do not scan the whole repo on every PR.</strong> Full scans belong in a scheduled
+  job so you can track the count without blocking anyone.</li>
+<li><strong>Do not <code>|| true</code> the checker.</strong> That is a decoration, not a gate.</li>
+<li><strong>Do not gate on <code>strict</code> from day one</strong> in a repo that has debt. That is how
+  this tool gets removed.</li>
+</ul>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/extending/"><span>Previous</span><b>Extending</b></a>
+<a class="next" href="/ironclad/en/troubleshooting/"><span>Next</span><b>Troubleshooting</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#the-rule-gate-the-diff-not-the-repo">The rule: gate the diff, not the repo</a></li>
+<li class="lvl2"><a href="#pre-commit-for-the-fast-loop">Pre-commit, for the fast loop</a></li>
+<li class="lvl2"><a href="#rolling-it-out-without-a-mutiny">Rolling it out without a mutiny</a></li>
+<li class="lvl2"><a href="#verifying-the-gate">Verifying the gate</a></li>
+<li class="lvl2"><a href="#what-ci-should-not-do">What CI should not do</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

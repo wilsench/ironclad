@@ -28,34 +28,31 @@ strict             errors=7 warns=0
 
 ## Default otomatis
 
-Wizard memilih `balanced` lebih dulu dan menandainya:
+Tidak ada pertanyaan. `ironclad init` tanpa argumen memakai `balanced`:
 
 ```
-Choose a preset [1]:
-  1) balanced         Balanced — recommended default  (default)
-  2) legacy-friendly  Legacy-friendly — brownfield
-  3) strict           Strict — regulated
+$ ironclad init
+wrote   .agent/standards.yml (preset: balanced)
+wrote   .agent/standards.md
+wrote   scripts/check_schema.py + scripts/presets/
 ```
 
-Kalau stdin bukan TTY — misalnya agent yang menjalankannya — tidak ada pertanyaan sama sekali:
-
-```
-$ printf '' | init_standards.py .
-non-interactive: using preset 'balanced'
-```
-
-Ini penting: agent tidak boleh menggantung menunggu jawaban yang tidak akan datang.
+Ini disengaja. Perintah yang bertanya akan menggantung di CI dan di agent yang
+tidak punya TTY — dan perintah yang menggantung lebih buruk daripada perintah
+yang salah pilihan tapi bisa diubah (lihat bagian berikut).
 
 ## Memilih saat install
+
+Langsung dari installer:
 
 ```bash
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project . --preset strict
 ```
 
-Atau lewat bootstrap:
+Atau belakangan, dari dalam repo:
 
 ```bash
-python3 scripts/init_standards.py . --preset strict --with-checker
+ironclad init strict
 ```
 
 ## Mengubah setelah install
@@ -65,7 +62,7 @@ Pilihanmu hidup di `.agent/standards.yml` **di dalam repo**, bukan di dalam skil
 **1. Tulis ulang dari preset:**
 
 ```bash
-python3 scripts/init_standards.py . --preset strict --force
+ironclad preset strict
 ```
 
 **2. Edit langsung — tujuh baris, bisa di-review di PR:**

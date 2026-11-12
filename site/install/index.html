@@ -4,10 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pasang di agent — Ironclad</title>
-<meta name="description" content="Satu perintah curl untuk Hermes, Claude Code, Codex, Cursor, opencode, dan Antigravity. Tanpa Python.">
+<meta name="description" content="Satu perintah, tanpa pertanyaan. Lalu tiga kata perintah untuk memakainya. Tanpa Python.">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/install/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/install/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/install/">
 <meta name="color-scheme" content="light">
-<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -21,9 +23,14 @@
       <span class="mark" aria-hidden="true">IC</span>
       <span>
         <b>Ironclad</b>
-        <i>v0.4.0-9728b8a7 · MIT</i>
+        <i>v0.5.0-0cff1a72 · MIT</i>
       </span>
     </a>
+
+    <div class="langsw" role="group" aria-label="Bahasa">
+      <a href="/ironclad/install/" class="on" aria-current="true">ID</a>
+      <a href="/ironclad/en/install/">EN</a>
+    </div>
 
     <button class="searchbtn" type="button" id="searchbtn">
       <span>Cari dokumentasi</span><kbd>/</kbd>
@@ -66,157 +73,110 @@
         <span></span><span></span>
       </button>
       <span class="crumb">Mulai / <b>Pasang di agent</b></span>
+      <a class="langsw-mini" href="/ironclad/en/install/" aria-label="Bahasa">EN</a>
       <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
     </header>
 
     <div class="pagegrid">
       <article class="prose">
         <h1 id="pasang-di-agent-kamu">Pasang di agent kamu</h1>
-<p>Satu installer, enam target. Formatnya <a href="https://agentskills.io">Agent Skills</a> — satu folder berisi <code>SKILL.md</code> — jadi agent apa pun yang mendukung standar itu bisa memakainya.</p>
-<h2 id="perintah-dasar">Perintah dasar</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 </code></pre></div>
-<p>Tanpa argumen, ia memasang ke <code>~/.agents/skills/ironclad/</code>, lokasi yang dibaca <strong>Codex, Cursor, opencode, dan Antigravity</strong>.</p>
-<blockquote>
-<p><strong>Tidak perlu Python untuk memasang.</strong> Installer-nya bash + curl. Python 3.8+ baru dibutuhkan kalau kamu menjalankan checker.</p>
-</blockquote>
-<h2 id="per-agent">Per agent</h2>
+<p>Itu seluruh instalasinya. Tidak ada pertanyaan, tidak ada Python, tidak ada menu.</p>
+<p>Yang dilakukannya:</p>
+<ol>
+<li>menaruh skill di <code>~/.agents/skills/ironclad/</code> — folder yang dibaca Codex, Cursor, opencode, dan Antigravity</li>
+<li>menambahkan perintah <code>ironclad</code> ke <code>~/.local/bin/</code></li>
+<li>berhenti. Repo kamu belum disentuh.</li>
+</ol>
+<p>Kalau <code>~/.local/bin</code> belum ada di <code>PATH</code>, installer memberi tahu. Tambahkan satu baris ke <code>~/.bashrc</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">export PATH=&quot;$HOME/.local/bin:$PATH&quot;
+</code></pre></div>
+<h2 id="setelah-itu-tiga-perintah">Setelah itu, tiga perintah</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad check          # nilai schema repo ini, tidak menulis apa pun
+ironclad init           # jadikan permanen: .agent/ + scripts/
+ironclad preset strict  # ganti tingkat penegakan kapan saja
+</code></pre></div>
+<p><code>check</code> bisa dipakai langsung setelah install, tanpa <code>init</code> — ia memakai preset bawaan (<code>balanced</code>) sampai repo punya <code>.agent/standards.yml</code> sendiri.</p>
+<h2 id="kenapa-tidak-pakai-python-untuk-install">Kenapa tidak pakai Python untuk install</h2>
+<p>Installer-nya bash + curl. Python 3.8+ hanya dibutuhkan untuk <strong>menjalankan</strong> checker, dan <code>ironclad check</code> sudah memanggilnya untuk kamu.</p>
+<p>Kalau mesin kamu belum punya Python, <code>ironclad init</code> tetap berhasil — yang belum jalan hanya <code>check</code>/CI. Pasang Python kapan pun kamu siap memasang gatenya.</p>
+<h2 id="agent-lain">Agent lain</h2>
+<p>Default-nya <code>~/.agents/skills</code>. Untuk agent yang punya folder sendiri:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash"># Claude Code
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
+
+# Hermes
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target hermes
+
+# opencode (native)
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target opencode
+
+# Antigravity global
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target gemini
+
+# semua yang terpasang di mesin ini
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
+</code></pre></div>
 <div class="tablewrap"><table>
 <thead>
 <tr>
 <th>Agent</th>
-<th>Perintah</th>
-<th>Folder tujuan</th>
+<th>Folder</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Semua yang ada di mesin</strong></td>
-<td><code>… \| bash -s -- --all</code></td>
-<td>semua di bawah yang terdeteksi</td>
+<td>Codex</td>
+<td><code>.agents/skills/</code> <strong>di dalam repo</strong> — pakai <code>--dir .agents/skills</code></td>
 </tr>
 <tr>
-<td><strong>Codex / Cursor</strong></td>
-<td><code>… \| bash</code> atau <code>--target agents</code></td>
-<td><code>~/.agents/skills/</code> — <strong>Codex hanya membaca <code>.agents/skills</code> di dalam repo</strong>, jadi untuk Codex pakai <code>--dir .agents/skills</code></td>
+<td>Cursor</td>
+<td><code>~/.agents/skills/</code></td>
 </tr>
 <tr>
-<td><strong>Claude Code</strong></td>
-<td><code>… \| bash -s -- --target claude</code></td>
+<td>Claude Code</td>
 <td><code>~/.claude/skills/</code></td>
 </tr>
 <tr>
-<td><strong>Hermes</strong></td>
-<td><code>… \| bash -s -- --target hermes</code></td>
+<td>Hermes</td>
 <td><code>~/.hermes/skills/</code></td>
 </tr>
 <tr>
-<td><strong>opencode</strong></td>
-<td><code>… \| bash -s -- --target opencode</code></td>
-<td><code>~/.config/opencode/skills/</code></td>
+<td>opencode</td>
+<td><code>~/.config/opencode/skills/</code>, juga membaca <code>~/.agents/skills/</code></td>
 </tr>
 <tr>
-<td><strong>Antigravity (global)</strong></td>
-<td><code>… \| bash -s -- --target gemini</code></td>
-<td><code>~/.gemini/config/skills/</code></td>
-</tr>
-<tr>
-<td><strong>Folder bebas</strong></td>
-<td><code>… \| bash -s -- --dir /path/to/skills</code></td>
-<td>apa pun</td>
+<td>Antigravity</td>
+<td><code>~/.gemini/config/skills/</code> (global), <code>.agents/skills/</code> (workspace)</td>
 </tr>
 </tbody>
 </table></div>
-<p><code>--all</code> hanya menyentuh agent yang direktorinya sudah ada, supaya tidak membuat folder nyasar.</p>
-<h2 id="antigravity-perhatikan-cakupannya">Antigravity: perhatikan cakupannya</h2>
-<p>Antigravity membaca dua lokasi:</p>
-<ul>
-<li><code>&lt;workspace&gt;/.agents/skills/&lt;nama&gt;/</code> — per proyek, ikut git, dibagikan ke tim</li>
-<li><code>~/.gemini/config/skills/&lt;nama&gt;/</code> — global, semua workspace</li>
-</ul>
-<p>Kalau kamu ingin aturannya ikut repo (dan dibaca semua orang), pasang di level workspace:</p>
+<blockquote>
+<p><strong>Codex tidak punya folder skill global.</strong> Menurut dokumentasi OpenAI, Codex membaca <code>$CWD/.agents/skills</code> dan <code>$CWD/../.agents/skills</code>. Kalau kamu pengguna Codex, pasang di dalam repo supaya ikut commit:</p>
+<p><code>bash
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills</code></p>
+</blockquote>
+<h2 id="kalau-ingin-aturannya-ikut-repo">Kalau ingin aturannya ikut repo</h2>
+<p>Ini yang membuat satu tim memakai aturan yang sama — skill ikut git, bukan cuma ada di laptop satu orang:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .agents/skills
 git add .agents/skills/ironclad &amp;&amp; git commit -m &quot;chore: add ironclad skill&quot;
 </code></pre></div>
-<h2 id="opencode">opencode</h2>
-<p>opencode membaca empat lokasi, dan yang paling portabel adalah <code>.agents/skills/</code>:</p>
-<ul>
-<li><code>.opencode/skills/&lt;nama&gt;/SKILL.md</code> (native)</li>
-<li><code>~/.config/opencode/skills/&lt;nama&gt;/SKILL.md</code></li>
-<li><code>.claude/skills/…</code> dan <code>~/.claude/skills/…</code> (kompatibel Claude)</li>
-<li><code>.agents/skills/…</code> dan <code>~/.agents/skills/…</code> (kompatibel agent generik)</li>
-</ul>
-<p>Karena installer default-nya <code>~/.agents/skills</code>, opencode langsung menemukannya. opencode juga punya izin per-skill di <code>opencode.json</code>:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-json">{
-  &quot;permission&quot;: {
-    &quot;skill&quot;: { &quot;ironclad&quot;: &quot;allow&quot;, &quot;internal-*&quot;: &quot;deny&quot; }
-  }
-}
+<h2 id="ci-lewati-semua-pertanyaan">CI: lewati semua pertanyaan</h2>
+<p>Tidak ada pertanyaan sejak awal, jadi tidak ada yang perlu dilewati. Untuk pipeline yang ingin semuanya sekaligus:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh \
+  | bash -s -- --target agents --project . --preset legacy-friendly
 </code></pre></div>
-<h2 id="hermes">Hermes</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">hermes skills install wilsench/ironclad/skills/ironclad
-</code></pre></div>
-<p>Perintah ini memakai hub Hermes (butuh repo GitHub publik). Kalau repo belum ada, pakai installer curl di atas — hasilnya sama, hanya tanpa pencatatan versi di hub.</p>
-<h2 id="claude-code">Claude Code</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
-</code></pre></div>
-<p>Untuk dipakai bersama tim, commit ke repo dan pakai <code>/plugin</code> atau salin ke <code>.claude/skills/</code>:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --dir .claude/skills
-</code></pre></div>
-<h2 id="cek-hasilnya">Cek hasilnya</h2>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ls ~/.agents/skills/ironclad
-# SKILL.md  assets/  references/  scripts/  templates/
-</code></pre></div>
-<p>Kalau agent tidak menemukannya, penyebab paling umum:</p>
-<ol>
-<li>nama file bukan <code>SKILL.md</code> (huruf besar semua)</li>
-<li>frontmatter tidak punya <code>name</code> dan <code>description</code></li>
-<li>agent perlu restart — daftar skill dibaca saat start, bukan setiap pesan</li>
-<li>nama skill bertabrakan dengan skill lain di lokasi berbeda</li>
-</ol>
-<h2 id="mencabut">Mencabut</h2>
+<h2 id="mencopot">Mencopot</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --uninstall
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude --uninstall
 </code></pre></div>
-<p>Hanya menghapus folder <code>ironclad</code>. Skill lain tidak disentuh.</p>
-<h2 id="opsi-lain">Opsi lain</h2>
-<div class="tablewrap"><table>
-<thead>
-<tr>
-<th>Opsi</th>
-<th>Arti</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--project PATH</code></td>
-<td>sekalian menulis <code>.agent/</code> + checker ke repo itu</td>
-</tr>
-<tr>
-<td><code>--preset NAME</code></td>
-<td><code>balanced</code> (default) · <code>strict</code> · <code>legacy-friendly</code></td>
-</tr>
-<tr>
-<td><code>--policy-only</code></td>
-<td>tulis kebijakan saja, tanpa checker</td>
-</tr>
-<tr>
-<td><code>--ref BRANCH</code></td>
-<td>ambil dari branch/tag lain</td>
-</tr>
-<tr>
-<td><code>--uninstall</code></td>
-<td>hapus</td>
-</tr>
-</tbody>
-</table></div>
-<p>Installer mengambil dari GitHub lebih dulu; kalau repo belum terbit atau sedang kena rate-limit, ia jatuh ke mirror <code>wilsench.my.id/ironclad/pkg</code>. Kamu tidak perlu mengatur apa pun.</p>
+<p>Menghapus folder skill dan perintah <code>ironclad</code>. Berkas <code>.agent/</code> dan <code>scripts/</code> di repo <strong>tidak</strong> dihapus — itu milik kamu, bukan milik installer.</p>
         <nav class="pager" aria-label="Halaman berikutnya">
           <a class="prev" href="/ironclad/overview/"><span>Sebelumnya</span><b>Ikhtisar</b></a>
 <a class="next" href="/ironclad/how-agents-use-it/"><span>Berikutnya</span><b>Cara agent memakainya</b></a>
         </nav>
         <footer class="docfoot">
-          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>Ironclad v0.5.0-0cff1a72</span>
           <span>MIT</span>
           <span>Chia Wilsen</span>
         </footer>
@@ -224,15 +184,12 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target clau
 
       <aside class="toc" aria-label="Di halaman ini">
         <div class="navlabel"><span>§</span>Di halaman ini</div>
-        <ul><li class="lvl2"><a href="#perintah-dasar">Perintah dasar</a></li>
-<li class="lvl2"><a href="#per-agent">Per agent</a></li>
-<li class="lvl2"><a href="#antigravity-perhatikan-cakupannya">Antigravity: perhatikan cakupannya</a></li>
-<li class="lvl2"><a href="#opencode">opencode</a></li>
-<li class="lvl2"><a href="#hermes">Hermes</a></li>
-<li class="lvl2"><a href="#claude-code">Claude Code</a></li>
-<li class="lvl2"><a href="#cek-hasilnya">Cek hasilnya</a></li>
-<li class="lvl2"><a href="#mencabut">Mencabut</a></li>
-<li class="lvl2"><a href="#opsi-lain">Opsi lain</a></li></ul>
+        <ul><li class="lvl2"><a href="#setelah-itu-tiga-perintah">Setelah itu, tiga perintah</a></li>
+<li class="lvl2"><a href="#kenapa-tidak-pakai-python-untuk-install">Kenapa tidak pakai Python untuk install</a></li>
+<li class="lvl2"><a href="#agent-lain">Agent lain</a></li>
+<li class="lvl2"><a href="#kalau-ingin-aturannya-ikut-repo">Kalau ingin aturannya ikut repo</a></li>
+<li class="lvl2"><a href="#ci-lewati-semua-pertanyaan">CI: lewati semua pertanyaan</a></li>
+<li class="lvl2"><a href="#mencopot">Mencopot</a></li></ul>
       </aside>
     </div>
   </main>
@@ -247,7 +204,7 @@ curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target clau
   <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
 </div>
 
-<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
-<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.5.0-0cff1a72" defer></script>
 </body>
 </html>

@@ -80,4 +80,4 @@ Urutan diagnosis, dari yang paling sering:
 
 Agent membaca `.agent/standards.md` sebelum menulis DDL, mengklasifikasikan tiap kolom status, menulis migrasi sesuai aturan, menjalankan checker, lalu melaporkan penyimpangan dengan ID aturan.
 
-Kalau `.agent/standards.md` tidak ada, ia menjalankan `init_standards.py` — dan kalau tidak ada TTY, otomatis memakai preset `balanced` tanpa menggantung menunggu jawaban.
+Kalau `.agent/standards.md` tidak ada, ia menjalankan `ironclad init` (preset `balanced`). Perintah itu tidak pernah bertanya, jadi agent tidak akan menggantung menunggu jawaban yang tidak akan datang.

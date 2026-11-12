@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Extending — Ironclad</title>
+<meta name="description" content="Adding a new rule domain — API, security, performance — without touching the database rules that already work.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/extending/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/extending/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/extending/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/extending/">ID</a>
+      <a href="/ironclad/en/extending/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Overview</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/" class="active" aria-current="page">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Reference / <b>Extending</b></span>
+      <a class="langsw-mini" href="/ironclad/extending/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="extending">Extending</h1>
+<p>The seven database rules are one domain. Nothing in the design assumes it is the
+only one, or that it is permanent.</p>
+<h2 id="adding-a-rule-to-an-existing-domain">Adding a rule to an existing domain</h2>
+<ol>
+<li><strong>Pick the next free ID.</strong> Database rules are <code>DB-01</code>…<code>DB-07</code>, so the next one
+   is <code>DB-08</code>. Never reuse a retired number.</li>
+<li><strong>Add the check</strong> in <code>scripts/check_schema.py</code>. One function, one rule ID.</li>
+<li><strong>Add a fixture</strong> that violates it — <code>examples/bad_&lt;topic&gt;.sql</code> — and a
+   passing counterpart.</li>
+<li><strong>Set the severity per preset</strong> in all three files in <code>assets/presets/</code>. A new
+   rule with no entry in <code>strict.yml</code> is a rule that silently does not apply.</li>
+<li><strong>Document it</strong> in <code>references/database.md</code> and in the docs <code>rules</code> page.</li>
+<li><strong>Run every fixture against every preset</strong> before committing:</li>
+</ol>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">for p in balanced strict legacy-friendly; do
+  for f in examples/*.sql; do
+    python3 scripts/check_schema.py &quot;$f&quot; --preset &quot;$p&quot; &gt;/dev/null
+    echo &quot;$f $p → $?&quot;
+  done
+done
+</code></pre></div>
+<h2 id="adding-a-whole-new-domain">Adding a whole new domain</h2>
+<p>Use a different prefix and keep the same shape: <code>API-01</code>, <code>SEC-01</code>, <code>PERF-01</code>.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code>skills/ironclad/
+├── SKILL.md
+├── references/
+│   ├── database.md
+│   ├── api.md          ← new domain rationale
+│   └── security.md
+├── scripts/
+│   ├── check_schema.py
+│   └── check_api.py    ← new domain checker
+├── assets/presets/
+│   ├── balanced.yml    ← add API-01: warn, SEC-01: error
+│   └── ...
+└── templates/standards.md
+</code></pre></div>
+<p>Two rules for new domains:</p>
+<ul>
+<li><strong>Separate checkers, shared config.</strong> One script per domain. A team that cares
+  about API rules and not security should be able to run one without the other.</li>
+<li><strong>One ID namespace per domain.</strong> <code>SEC-01</code> must never collide with <code>DB-01</code>, and
+  the prefix must tell you which file to open.</li>
+</ul>
+<h2 id="what-makes-a-rule-worth-adding">What makes a rule worth adding</h2>
+<p>A rule earns its place when it is:</p>
+<ol>
+<li><strong>deterministic</strong> — same input, same verdict, no model in the loop</li>
+<li><strong>cheap to check</strong> — a regex or an AST walk, not a build</li>
+<li><strong>expensive to reverse</strong> — a schema decision, not a formatting preference</li>
+</ol>
+<p>Formatting belongs in a formatter. Style belongs in a linter with autofix. Ironclad
+is for decisions that reach production and stay there.</p>
+<h2 id="what-not-to-add">What not to add</h2>
+<ul>
+<li>rules that need a running database</li>
+<li>rules that depend on another repository's state</li>
+<li>rules that require reading application intent ("is this status meaningful?")</li>
+<li>anything with "sometimes" in the description</li>
+</ul>
+<h2 id="changing-the-skill-itself">Changing the skill itself</h2>
+<p><code>SKILL.md</code> is the contract an agent follows. If you add a rule that the agent
+should apply <em>before</em> writing DDL, it must appear in both:</p>
+<ol>
+<li><code>references/&lt;domain&gt;.md</code> — the reasoning</li>
+<li>the <strong>Procedure</strong> section of <code>SKILL.md</code> — the step the agent executes</li>
+</ol>
+<p>A rule documented only in <code>references/</code> will be read only if the agent feels like
+it. The procedure section is what gets followed.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/checker/"><span>Previous</span><b>Checker</b></a>
+<a class="next" href="/ironclad/en/ci/"><span>Next</span><b>CI & pre-commit</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#adding-a-rule-to-an-existing-domain">Adding a rule to an existing domain</a></li>
+<li class="lvl2"><a href="#adding-a-whole-new-domain">Adding a whole new domain</a></li>
+<li class="lvl2"><a href="#what-makes-a-rule-worth-adding">What makes a rule worth adding</a></li>
+<li class="lvl2"><a href="#what-not-to-add">What not to add</a></li>
+<li class="lvl2"><a href="#changing-the-skill-itself">Changing the skill itself</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

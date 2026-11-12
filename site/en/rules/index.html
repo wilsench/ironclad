@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rules DB-01…DB-07 — Ironclad</title>
+<meta name="description" content="Seven database rules, each with a wrong and a right example that the checker actually tests.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/rules/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/rules/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/rules/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/rules/">ID</a>
+      <a href="/ironclad/en/rules/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/">Overview</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/" class="active" aria-current="page">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Reference / <b>Rules DB-01…DB-07</b></span>
+      <a class="langsw-mini" href="/ironclad/rules/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="rules">Rules</h1>
+<p>Each rule has an ID. Use the ID in reviews, in commit messages, in CI output.
+"Use DB-03 here" is a shorter conversation than a paragraph about foreign keys.</p>
+<h2 id="summary">Summary</h2>
+<p>The <strong>Status</strong> column below is behaviour under the <code>balanced</code> preset (the
+default). Under <code>strict</code> everything becomes <code>error</code>; under <code>legacy-friendly</code>
+everything is <code>warn</code>.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Rule</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DB-01</td>
+<td>No <code>enum</code> columns for status</td>
+<td><span class="sev sev-error">error</span></td>
+</tr>
+<tr>
+<td>DB-02</td>
+<td>No magic numbers compared against status</td>
+<td><span class="sev sev-error">error</span></td>
+</tr>
+<tr>
+<td>DB-03</td>
+<td>Status needs a lookup table + FK</td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+<tr>
+<td>DB-04</td>
+<td>No human labels stored as status text</td>
+<td><span class="sev sev-error">error</span></td>
+</tr>
+<tr>
+<td>DB-05</td>
+<td>No boolean for a non-binary concept</td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+<tr>
+<td>DB-06</td>
+<td>No money as <code>float</code>/<code>double</code></td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+<tr>
+<td>DB-07</td>
+<td>No <code>timestamp</code> without a timezone</td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="db-01-no-enum-columns">DB-01 — no enum columns</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- wrong
+status ENUM('pending', 'paid', 'shipped')
+
+-- right
+status_code smallint NOT NULL REFERENCES order_status(code)
+</code></pre></div>
+<p><code>enum</code> forces every new value through a schema migration. In MySQL that means
+<code>ALTER TABLE</code>, which locks the table while it rewrites. Business status always
+grows: "scheduled", "awaiting confirmation", "delayed by weather", "partially
+refunded".</p>
+<h2 id="db-02-no-magic-numbers">DB-02 — no magic numbers</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-php">// wrong: what is 2 and what is 7?
+if ($order-&gt;status_code === 2 || $order-&gt;status_code === 7) { ... }
+
+// right
+if (in_array($order-&gt;status_code, [OrderStatus::PAID, OrderStatus::PARTIAL_REFUND], true)) { ... }
+</code></pre></div>
+<p>The checker flags comparisons against bare integer literals on status-like
+columns. <code>INSERT</code> values and <code>CHECK</code> constraints are exempt — those are where
+codes are legitimately declared.</p>
+<blockquote>
+<p>This is not an argument against arbitrary codes. <code>88</code>, <code>99</code>, <code>990</code> are all
+fine. What is not fine is a bare <code>88</code> appearing in application logic in five
+places with no name attached.</p>
+</blockquote>
+<h2 id="db-03-status-needs-a-lookup-table-and-a-foreign-key">DB-03 — status needs a lookup table and a foreign key</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- wrong: any integer is acceptable, including 87, which means nothing
+status_code smallint NOT NULL
+
+-- right: the database rejects anything not registered
+status_code smallint NOT NULL REFERENCES order_status(code)
+</code></pre></div>
+<p>This is the rule that makes arbitrary codes safe. Without it, <code>88</code> and <code>8</code> are
+equally valid to the database and equally wrong.</p>
+<h2 id="db-04-no-human-labels-as-status">DB-04 — no human labels as status</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- wrong
+stock_state varchar(32)   -- 'In Stock', 'Sold Out', 'in stock '
+
+-- right
+stock_state_code smallint NOT NULL REFERENCES stock_state(code)
+</code></pre></div>
+<p>Text status invites whitespace variants, casing variants, translated labels, and
+a <code>WHERE</code> clause that misses half the rows.</p>
+<h2 id="db-05-no-boolean-for-a-non-binary-concept">DB-05 — no boolean for a non-binary concept</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- wrong: what does true mean here?
+is_status boolean
+
+-- right
+status_code smallint NOT NULL REFERENCES ...
+</code></pre></div>
+<p>A boolean is correct only when the domain is genuinely two-valued and expected to
+stay that way: <code>is_active</code>, <code>is_deleted</code>, <code>email_verified</code>.</p>
+<h2 id="db-06-no-money-as-float">DB-06 — no money as float</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- wrong
+total float
+total double precision
+
+-- right
+total_cents bigint NOT NULL          -- or NUMERIC(14,2)
+</code></pre></div>
+<p>Binary floating point cannot represent <code>0.10</code>. Sum a thousand rows of <code>float</code> and
+the total is off by real money.</p>
+<h2 id="db-07-no-timestamp-without-a-timezone">DB-07 — no timestamp without a timezone</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- wrong
+created_at timestamp
+
+-- right
+created_at timestamptz NOT NULL DEFAULT now()
+created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+</code></pre></div>
+<p>A naive timestamp is ambiguous across servers, timezones and DST. The checker
+does not flag camelCase columns like <code>createdAt</code> in Prisma schemas — Prisma
+handles the mapping, and flagging them was a false positive.</p>
+<h2 id="rule-ids-are-permanent">Rule IDs are permanent</h2>
+<p>Numbers are never reused. If <code>DB-03</code> is retired, that number is retired with it —
+not reassigned, because old review comments would then point at the wrong rule.</p>
+        <nav class="pager" aria-label="Next page">
+          <a class="prev" href="/ironclad/en/presets/"><span>Previous</span><b>Presets</b></a>
+<a class="next" href="/ironclad/en/checker/"><span>Next</span><b>Checker</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#summary">Summary</a></li>
+<li class="lvl2"><a href="#db-01-no-enum-columns">DB-01 — no enum columns</a></li>
+<li class="lvl2"><a href="#db-02-no-magic-numbers">DB-02 — no magic numbers</a></li>
+<li class="lvl2"><a href="#db-03-status-needs-a-lookup-table-and-a-foreign-key">DB-03 — status needs a lookup table and a foreign key</a></li>
+<li class="lvl2"><a href="#db-04-no-human-labels-as-status">DB-04 — no human labels as status</a></li>
+<li class="lvl2"><a href="#db-05-no-boolean-for-a-non-binary-concept">DB-05 — no boolean for a non-binary concept</a></li>
+<li class="lvl2"><a href="#db-06-no-money-as-float">DB-06 — no money as float</a></li>
+<li class="lvl2"><a href="#db-07-no-timestamp-without-a-timezone">DB-07 — no timestamp without a timezone</a></li>
+<li class="lvl2"><a href="#rule-ids-are-permanent">Rule IDs are permanent</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>

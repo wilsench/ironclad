@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# ironclad — the command. Three verbs, no menus.
+#
+#   ironclad check     score this repo's schema against the rules (read-only)
+#   ironclad init      write .agent/ + scripts/ so agent and CI share the rules
+#   ironclad preset N  switch strictness: balanced | strict | legacy-friendly
+#
+# `check` and `init` work without a repo config: they fall back to the preset
+# shipped in the skill, so the first run needs no setup.
+
+set -euo pipefail
+
+IRONCLAD_HOME="${IRONCLAD_HOME:-$HOME/.agents/skills/ironclad}"
+CHECKER="$IRONCLAD_HOME/scripts/check_schema.py"
+TEMPLATE="$IRONCLAD_HOME/templates/standards.md"
+PRESETS="$IRONCLAD_HOME/assets/presets"
+
+die() { echo "ironclad: $*" >&2; exit 1; }
+
+[ -f "$CHECKER" ] || die "skill not found at $IRONCLAD_HOME (re-run the installer)"
+command -v python3 >/dev/null 2>&1 || die "python3 is required to run the checker"
+
+find_root() {
+  local d="$PWD"
+  while [ "$d" != "/" ]; do
+    [ -d "$d/.git" ] && { echo "$d"; return; }
+    d="$(dirname "$d")"
+  done
+  echo "$PWD"
+}
+
+# current preset: repo config wins, skill default otherwise
+current_preset() {
+  local root; root="$(find_root)"
+  if [ -f "$root/.agent/standards.yml" ]; then
+    sed -n 's/^name:[[:space:]]*//p' "$root/.agent/standards.yml" | head -1
+  else
+    echo "balanced"
+  fi
+}
+
+cmd_check() {
+  local root; root="$(find_root)"
+  local preset; preset="$(current_preset)"
+  cd "$root"
+  # pass everything through: --json, --preset, specific paths
+  python3 "$CHECKER" "${@:-.}" --preset "$preset"
+}
+
+cmd_init() {
+  local root; root="$(find_root)"
+  local preset="${1:-balanced}"
+  [ -f "$PRESETS/$preset.yml" ] || die "unknown preset: $preset (balanced|strict|legacy-friendly)"
+
+  mkdir -p "$root/.agent" "$root/scripts/presets"
+  if [ -f "$root/.agent/standards.yml" ]; then
+    echo "kept    .agent/standards.yml (preset: $(current_preset))"
+  else
+    cp "$PRESETS/$preset.yml" "$root/.agent/standards.yml"
+    echo "wrote   .agent/standards.yml (preset: $preset)"
+  fi
+  if [ -f "$root/.agent/standards.md" ]; then
+    echo "kept    .agent/standards.md"
+  else
+    cp "$TEMPLATE" "$root/.agent/standards.md"
+    echo "wrote   .agent/standards.md"
+  fi
+  cp "$CHECKER" "$root/scripts/check_schema.py"
+  cp "$PRESETS/"*.yml "$root/scripts/presets/"
+  chmod +x "$root/scripts/check_schema.py"
+  echo "wrote   scripts/check_schema.py + scripts/presets/"
+
+  echo
+  echo "Commit these, or the next teammate gets a different rulebook:"
+  echo "  git add .agent scripts && git commit -m 'chore: adopt ironclad standards'"
+  echo
+  echo "Then, in CI, gate only the files a PR touches — see"
+  echo "https://wilsench.my.id/ironclad/ci/"
+}
+
+cmd_preset() {
+  local root; root="$(find_root)"
+  local want="${1:-}"
+  if [ -z "$want" ]; then
+    echo "current: $(current_preset)"
+    echo
+    echo "change it:"
+    for p in balanced strict legacy-friendly; do
+      echo "  ironclad preset $p"
+    done
+    return 0
+  fi
+  [ -f "$PRESETS/$want.yml" ] || die "unknown preset: $want (balanced|strict|legacy-friendly)"
+  [ -f "$root/.agent/standards.yml" ] || die "no .agent/standards.yml here — run 'ironclad init' first"
+  cp "$PRESETS/$want.yml" "$root/.agent/standards.yml"
+  echo "preset → $want  (.agent/standards.yml)"
+  echo "commit it: git add .agent && git commit -m 'chore: preset $want'"
+}
+
+cmd_status() {
+  local root; root="$(find_root)"
+  echo "skill    : $IRONCLAD_HOME"
+  echo "repo     : $root"
+  if [ -f "$root/.agent/standards.yml" ]; then
+    echo "policy   : present (preset: $(current_preset))"
+  else
+    echo "policy   : absent — run 'ironclad init'"
+  fi
+  [ -f "$root/scripts/check_schema.py" ] && echo "checker  : present" || echo "checker  : absent"
+}
+
+case "${1:-}" in
+  check)   shift; cmd_check "$@" ;;
+  init)    shift; cmd_init "$@" ;;
+  preset)  shift; cmd_preset "$@" ;;
+  status)  cmd_status ;;
+  ""|-h|--help|help)
+    sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//' ;;
+  *)
+    die "unknown command: $1 (try: check | init | preset | status)" ;;
+esac

@@ -82,6 +82,23 @@
   var results = document.getElementById('results');
   // Read lazily: search-index.js is a separate deferred script and may not have
   // run yet when this file executes. Capturing it here gave an empty index.
+  var idxReady = null;
+  // An English page must not offer Indonesian results. English pages get their
+  // own index file; Indonesian keeps the historical file name.
+  function loadIndex() {
+    if (idxReady) return idxReady;
+    idxReady = new Promise(function (resolve) {
+      if (window.IRONCLAD_INDEX) return resolve(window.IRONCLAD_INDEX);
+      var isEn = document.documentElement.lang === 'en';
+      if (!isEn) return resolve([]);
+      var s = document.createElement('script');
+      s.src = '/ironclad/assets/search-index.en.js';
+      s.onload = function () { resolve(window.IRONCLAD_INDEX || []); };
+      s.onerror = function () { resolve([]); };
+      document.head.appendChild(s);
+    });
+    return idxReady;
+  }
   function index() { return window.IRONCLAD_INDEX || []; }
   var sel = -1;
 
@@ -121,6 +138,11 @@
   function render(q) {
     q = (q || '').trim().toLowerCase();
     if (!results) return;
+    if (document.documentElement.lang === 'en' && !window.IRONCLAD_INDEX) {
+      loadIndex().then(function () { render(q); });
+      results.innerHTML = '';
+      return;
+    }
     var data = index();
     if (!q) {
       results.innerHTML = data.slice(0, 7).map(function (d) {

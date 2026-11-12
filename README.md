@@ -6,49 +6,43 @@ A skill for AI coding agents. Ten people vibe-code the same app, nobody reads th
 
 Ships a worked database policy as the headline example — **integer codes + lookup table + FK, not `enum`** — because that is the drift that hurts most and shows up latest.
 
-## Two commands, no Python
+## Install
 
 ```bash
-# 1. install the skill — auto-detects the agent on your machine
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
-
-# 2. adopt the policy in your repo
-cd your-project
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project .
 ```
 
-That is the whole setup. Python is **not** required to install or to write the policy — the installer is bash + curl. Python 3.8+ is needed only to *run* the checker:
+No questions, no Python. It puts the skill where your agent looks and adds an
+`ironclad` command to `~/.local/bin`.
+
+Then, in any repo:
 
 ```bash
-python3 scripts/check_schema.py .        # exit 0 clean, 1 violations
+ironclad check          # verdict in a second, writes nothing
+ironclad init           # make it permanent — writes .agent/ + scripts/
+ironclad preset strict  # switch strictness later, no reinstall
 ```
 
-Step 2 writes `.agent/standards.md`, `.agent/standards.yml`, `scripts/check_schema.py`, and `scripts/presets/`. Commit all four. From then on the agent reads the policy before writing DDL, and CI reads the same file to decide what blocks.
+`init` writes `.agent/standards.md`, `.agent/standards.yml`,
+`scripts/check_schema.py`, and `scripts/presets/`. Commit all four — otherwise
+the next teammate gets a different rulebook. From then on the agent reads the
+policy before writing DDL, and CI reads the same file to decide what blocks.
+
+Python 3.8+ is needed only to *run* the checker; `check` calls it for you.
 
 **Targets:** `agents` (Codex, Cursor, opencode, Antigravity — default), `claude`, `hermes`, `gemini`, `opencode`, or `--all`. Docs: <https://wilsench.my.id/ironclad/>
 
-## One command
+Format is [agentskills.io](https://agentskills.io/specification), so the same
+folder works in Hermes, Claude Code, Codex, Cursor, opencode, and Antigravity.
+Hermes users can also install through the hub:
 
 ```bash
-# Hermes hub (once the GitHub repo is public)
 hermes skills install wilsench/ironclad/skills/ironclad
-
-# any agent that reads SKILL.md
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
-```
-
-Format is [agentskills.io](https://agentskills.io/specification), so the same folder works in Hermes, Claude Code, Codex, Cursor, opencode, and Antigravity.
-
-## Then, in your repo
-
-```bash
-python3 scripts/init_standards.py . --with-checker   # asks which strictness, default pre-picked
-python3 scripts/check_schema.py . --json             # exit 0 or it fails CI
 ```
 
 ## Strictness is a setting, not a hardcoded opinion
 
-Pick a level **once**, at install. The choice lands in `.agent/standards.yml` inside your repo — committed, reviewable, changeable later with no reinstall.
+`ironclad init` defaults to `balanced`. The choice lands in `.agent/standards.yml` inside your repo — committed, reviewable, changeable later with `ironclad preset`, no reinstall.
 
 | Preset | Blocks the build | Only warns | For |
 |---|---|---|---|

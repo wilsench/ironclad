@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Overview — Ironclad</title>
+<meta name="description" content="Ironclad gives every AI coding agent the same rulebook, plus a linter that enforces it in CI.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/en/overview/">
+<link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/overview/">
+<link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/overview/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.5.0-0cff1a72">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/en/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.5.0-0cff1a72 · MIT</i>
+      </span>
+    </a>
+
+    <div class="langsw" role="group" aria-label="Language">
+      <a href="/ironclad/overview/">ID</a>
+      <a href="/ironclad/en/overview/" class="on" aria-current="true">EN</a>
+    </div>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Search the docs</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Documentation">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Start</div><ul>
+<li><a href="/ironclad/en/overview/" class="active" aria-current="page">Overview</a></li>
+<li><a href="/ironclad/en/install/">Install</a></li>
+<li><a href="/ironclad/en/how-agents-use-it/">How agents use it</a></li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Concepts</div><ul>
+<li><a href="/ironclad/en/three-layers/">Three layers</a></li>
+<li><a href="/ironclad/en/presets/">Presets</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Reference</div><ul>
+<li><a href="/ironclad/en/rules/">Rules DB-01…DB-07</a></li>
+<li><a href="/ironclad/en/checker/">Checker</a></li>
+<li><a href="/ironclad/en/extending/">Extending</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operations</div><ul>
+<li><a href="/ironclad/en/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/en/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/en/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Start / <b>Overview</b></span>
+      <a class="langsw-mini" href="/ironclad/overview/" aria-label="Language">ID</a>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Search">/<span>Search</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="ironclad">Ironclad</h1>
+<p>Engineering rules decay the moment they live in a wiki. Ten people vibe-code the
+same app, nobody reads the same page, and six months later the schema is a museum
+of individual taste: three different ways to store "status", money as a float,
+timestamps without a timezone.</p>
+<p>Ironclad is the answer to that, in three layers:</p>
+<ol>
+<li><strong>A skill</strong> every AI coding agent reads before it writes DDL.</li>
+<li><strong>A policy file</strong> in your repo — <code>.agent/standards.md</code> — so the rules are
+   reviewable, diffable, and the same for the agent and the human.</li>
+<li><strong>A checker</strong> — <code>check_schema.py</code> — that fails CI when someone drifts.</li>
+</ol>
+<p>The skill is advice. The checker is enforcement. You need both, because an agent
+that only has advice will eventually ignore it, and a checker with no advice
+produces violations nobody knows how to fix.</p>
+<h2 id="who-this-is-for">Who this is for</h2>
+<p>Teams where an AI agent writes a meaningful share of the schema, and where
+"we'll clean it up later" has already been said three times.</p>
+<p>It is not a style guide for formatting. It is a small set of decisions that are
+expensive to reverse — <code>enum</code> columns, status stored as prose, money as <code>float</code>,
+naive timestamps — each with a preferred alternative.</p>
+<h2 id="the-one-opinion-that-matters">The one opinion that matters</h2>
+<p>Status is data, and data belongs in a table with a foreign key, not in a column
+type that needs <code>ALTER TABLE</code> to change.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-sql">-- what an agent writes when nobody stops it
+status ENUM('pending', 'paid', 'shipped')
+
+-- what you want instead
+status_code smallint NOT NULL REFERENCES order_status(code)
+</code></pre></div>
+<p>The knife cuts both ways: you are free to pick any code you like — <code>88</code>, <code>99</code>,
+<code>990</code> — as long as the number is registered in the lookup table and guarded by a
+foreign key. The database rejects unknown codes; the app uses named constants
+instead of bare <code>if (status === 88)</code>.</p>
+<p>See <a href="/ironclad/en/rules/">Rules</a> for all seven.</p>
+<h2 id="what-it-deliberately-does-not-do">What it deliberately does not do</h2>
+<ul>
+<li><strong>No GUI.</strong> Rules live in YAML and Markdown, in your repo.</li>
+<li><strong>No cloud service.</strong> The checker is a Python script. It runs offline.</li>
+<li><strong>No formatting opinions.</strong> Use Prettier, Biome, Pint — whatever you already use.</li>
+<li><strong>No autofix.</strong> Fixing a schema is a design decision, not a regex.</li>
+</ul>
+<h2 id="the-honest-limits">The honest limits</h2>
+<ul>
+<li>The checker is regex-based, not a SQL parser. It can produce false positives
+  and it will miss things a human reviewer would catch. It is a floor, not a
+  ceiling — a human is still the last layer.</li>
+<li>There is no automatic update mechanism yet. Re-run the installer to upgrade.</li>
+<li>It knows seven rules about databases. It is not a security scanner.</li>
+</ul>
+<h2 id="where-to-go">Where to go</h2>
+<ul>
+<li><a href="/ironclad/en/install/">Install</a> — one command, no Python, no questions</li>
+<li><a href="/ironclad/en/quickstart/">Quickstart</a> — from zero to a green checker in two minutes</li>
+<li><a href="/ironclad/en/presets/">Presets</a> — pick how hard the rules should bite</li>
+<li><a href="/ironclad/en/rules/">Rules</a> — what it actually checks</li>
+</ul>
+        <nav class="pager" aria-label="Next page">
+          <a class="next" href="/ironclad/en/install/"><span>Next</span><b>Install</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.5.0-0cff1a72</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="On this page">
+        <div class="navlabel"><span>§</span>On this page</div>
+        <ul><li class="lvl2"><a href="#who-this-is-for">Who this is for</a></li>
+<li class="lvl2"><a href="#the-one-opinion-that-matters">The one opinion that matters</a></li>
+<li class="lvl2"><a href="#what-it-deliberately-does-not-do">What it deliberately does not do</a></li>
+<li class="lvl2"><a href="#the-honest-limits">The honest limits</a></li>
+<li class="lvl2"><a href="#where-to-go">Where to go</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Search: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ select · ↵ open · ESC close</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.5.0-0cff1a72" defer></script>
+<script src="/ironclad/assets/search-index.en.js?v=0.5.0-0cff1a72" defer></script>
+</body>
+</html>
