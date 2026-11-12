@@ -42,7 +42,7 @@ if (argv[0] === "check" || argv[0] === "scan") {
   }
   const target = argv.slice(1).filter((a) => !a.startsWith("-"));
   const flags = argv.slice(1).filter((a) => a.startsWith("-"));
-  const py = spawnSync("python3", ["-c", "true"], { stdio: "ignore" });
+  const py = spawnSync("python3", ["--version"], { stdio: "ignore" });
   if (py.error || py.status !== 0) {
     console.error("ironclad: `check` needs python3. Install it, or skip this step and");
     console.error("use the installer instead — the agent instruction does not need Python.");
