@@ -4,7 +4,7 @@
 #   ./scripts/set-repo-owner.sh yourname
 #   ./scripts/set-repo-owner.sh yourname --dry-run
 #
-# Menyentuh: README.md, index.html, PUBLISH.md
+# Menyentuh: README.md, index.html, PUBLISH.md, install.sh
 
 set -euo pipefail
 
@@ -24,7 +24,7 @@ fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-FILES="README.md index.html PUBLISH.md"
+FILES="README.md index.html PUBLISH.md install.sh"
 COUNT=0
 
 for f in $FILES; do
