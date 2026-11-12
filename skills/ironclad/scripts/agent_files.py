@@ -31,14 +31,19 @@ Two people on one database can each add a "status" and store it differently:
 `status ENUM('paid')` in one table, `status_code = 2` in another. Both pass review;
 together the project becomes unmaintainable.
 
-**Before writing anything that stores status, read the repo first** (`grep -rn
-status`, migrations, models). Then:
+Before writing anything that stores status, read the repo first (`grep -rn status`,
+migrations, models). Then:
 
-- **one consistent style already used** → follow it. Say one line which style you
-  followed and carry on; do not stop to ask.
-- **no status anywhere yet** → ask which style the project wants.
-- **two styles already present** → stop and name both, with their files, and ask
-  which becomes the standard. Never add a third while that is open.
+- **one consistent style already used** → follow it. Say which style in one line and
+  carry on; do not stop to ask.
+- **two styles already present** → stop, name both with their files, and ask which
+  becomes the standard. Never add a third while that is open.
+- **no status anywhere yet** → use the house default. Do not ask.
+  `status_code SMALLINT NOT NULL` + lookup table (`code` PK, `label`) + FK from the
+  column, codes step by 10 (10, 20, 30), never reused, plus named constants in code.
+  Say "house default: status_code + lookup" in one line, then write it.
+
+Money: integer minor units, never float. Timestamps: `timestamptz`, never naive.
 """
 
 # Per-repo: only files this repo owns. Written by `ironclad init`.

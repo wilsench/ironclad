@@ -1,46 +1,49 @@
 # How we store status
 
-> This is a decision record, not a rulebook. It answers one question:
-> **how does this project store status, and why.**
->
-> Agents read this before writing schema so they follow the project instead of
-> introducing a second style. Reviewers read it to see whether a change agrees
-> with what we already decided.
+> Decision record, not a rulebook. One question: **how does this project store
+> status, and why.** Agents read this before writing schema so they follow the
+> project instead of inventing a second style.
 
 ## The decision
 
-<!-- Fill in. One line. Delete the options that do not apply. -->
+Status is stored as an **integer code + lookup table + foreign key**:
 
-We store status as: **(one of)**
+```sql
+status_code SMALLINT NOT NULL REFERENCES order_status(code)
+```
 
-- `integer code + lookup table + foreign key` — e.g. `status_code smallint NOT NULL REFERENCES order_status(code)`
-- `native enum` — e.g. `status ENUM('new','paid','cancelled')`
-- `text code + CHECK` — e.g. `status text NOT NULL CHECK (status IN ('new','paid'))`
+Codes step by 10 (10, 20, 30) and are never reused. Names live in application
+constants, not as bare numbers in queries.
 
-Decided on: <!-- date --> · Decided by: <!-- names -->
+Adopted: 2026-11-12 · Default for new tables in this team's projects.
 
 ## Why
 
-<!-- Two or three sentences. What made this the right choice here. -->
+Two developers storing the same concept two ways is the failure this prevents. An
+integer code with a foreign key makes an invalid status impossible to insert — the
+database rejects it. A native enum cannot drop or rename a value without a table
+rewrite, and a text column with a CHECK lets typos reach production until someone
+adds the constraint.
 
 ## Where it lives
 
-<!-- Name the tables and the files, so an agent can check the claim. -->
-
 | Table | Column | Type |
 |---|---|---|
-| `orders` | `status` | `smallint → order_status(code)` |
+| any table with a status | `status_code` | `smallint NOT NULL` |
+| `<entity>_status` | `code` | `smallint PRIMARY KEY` |
+| `<entity>_status` | `label` | `text NOT NULL` |
 
-## How we add a new value
+Label the lookup rows in the migration that creates them, or in a seeder if the
+rows are expected to change without a deploy.
 
-<!-- This is the part agents get wrong. Be concrete. -->
+## When an existing repo disagrees
 
-- **current answer:** one row in the lookup table, in a data migration
-  (`INSERT INTO order_status (code, label) VALUES (...)`), no code deploy
-- if the choice above is `enum`, say instead: a schema migration plus a code change,
-  reviewed together
+A repo that already stores status another way keeps doing so. Consistency inside a
+project beats consistency with this document — rewriting a working schema to match
+a default is how you lose a weekend and gain a bug. If a repo has two styles at
+once, that is a decision to make deliberately, not drift into.
 
-## If you disagree
+## What this does not cover
 
-Do not quietly write the other style. Ask, and put the change in this file in the
-same pull request — so the next person reads one answer, not two.
+Money (integer minor units), timestamps (`timestamptz`), and naming conventions are
+separate decisions. This file answers only the status question.
