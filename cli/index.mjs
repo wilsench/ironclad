@@ -13,7 +13,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const installer = join(here, "install.sh");
+// index.mjs lives in cli/, install.sh in the package root.
+const installer = join(here, "..", "install.sh");
 
 if (!existsSync(installer)) {
   console.error("ironclad: install.sh is missing from this package.");
