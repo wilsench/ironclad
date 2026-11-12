@@ -17,14 +17,41 @@ lalu selesai.
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
-## 2. Aktifkan di repo kamu
+## 2. Selesai — benar-benar selesai
+
+Setelah langkah 1, **tidak ada langkah kedua**. Installer sudah menulis aturan ke
+konfigurasi global tiap agent yang ada di mesinmu:
+
+```
+created  .claude/CLAUDE.md     (Claude Code)
+created  .codex/AGENTS.md      (Codex)
+created  .gemini/GEMINI.md     (Gemini CLI)
+```
+
+Itu yang dibaca agent **di awal setiap sesi, di repo mana pun** — tanpa kamu
+menjalankan apa pun.
+
+## 3. Opsional: kunci aturan per repo
+
+Kalau kamu ingin aturan itu ikut git (supaya seluruh tim dan CI memakai jawaban
+yang sama), jalankan sekali di repo:
 
 ```bash
 cd repo-kamu
 ironclad init
 ```
 
-Perintah kedua ini **yang terakhir** yang perlu kamu hafal. Ia menulis:
+Ia menanyakan satu hal:
+
+```
+How strict should this repo be?
+  1) balanced  (default) — enum and text status block, the rest warn
+  2) strict    — everything blocks; use for new or clean repos
+  3) legacy-friendly — everything warns; use for an old repo with debt
+Choose 1-3 [1]:
+```
+
+Lalu menulis:
 
 ```
 wrote   .agent/standards.yml      ← aturan repo ini (bisa di-review di PR)
@@ -49,7 +76,11 @@ Yang terakhir itu kuncinya. Agent **membaca berkas-berkas itu sendiri** setiap
 kali kamu buka repo — tanpa kamu menyuruh, tanpa slash command, tanpa skill yang
 harus diaktifkan.
 
-## 3. Kerjakan seperti biasa
+Tanpa `ironclad init`, agent tetap bertanya dan tetap memakai default `balanced`
+dari skill. Yang hilang cuma dua: aturannya tidak ikut git, dan CI tidak punya
+berkas untuk dijalankan.
+
+## 4. Kerjakan seperti biasa
 
 Buka agent, minta fitur apa pun yang menyentuh database. Yang terjadi:
 

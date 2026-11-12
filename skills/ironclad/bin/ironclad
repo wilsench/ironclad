@@ -54,9 +54,34 @@ cmd_check() {
   python3 "$CHECKER" "${@:-.}" --preset "$preset"
 }
 
+# Ask only when a human is actually there. `curl | bash` and CI have no tty, and a
+# prompt there would hang the pipeline — so the default applies silently instead.
+ask_preset() {
+  [ -t 0 ] || { echo "balanced"; return; }
+  [ -n "${IRONCLAD_PRESET:-}" ] && { echo "$IRONCLAD_PRESET"; return; }
+  echo >&2
+  echo "How strict should this repo be?" >&2
+  echo "  1) balanced  (default) — enum and text status block, the rest warn" >&2
+  echo "  2) strict    — everything blocks; use for new or clean repos" >&2
+  echo "  3) legacy-friendly — everything warns; use for an old repo with debt" >&2
+  printf "Choose 1-3 [1]: " >&2
+  local ans; read -r ans || ans=""
+  case "$ans" in
+    2) echo "strict" ;;
+    3) echo "legacy-friendly" ;;
+    *) echo "balanced" ;;
+  esac
+}
+
 cmd_init() {
   local root; root="$(find_root)"
-  local preset="${1:-balanced}"
+  local preset="${1:-}"
+  if [ -z "$preset" ]; then
+    preset="$(ask_preset)"
+  fi
+  case "$preset" in
+    1) preset="balanced" ;; 2) preset="strict" ;; 3) preset="legacy-friendly" ;;
+  esac
   [ -f "$PRESETS/$preset.yml" ] || die "unknown preset: $preset (balanced|strict|legacy-friendly)"
 
   mkdir -p "$root/.agent" "$root/scripts/presets"

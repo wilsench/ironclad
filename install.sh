@@ -118,6 +118,30 @@ find_project_root() {
 # the skill keeps loading there with no command to manage it. So: sweep every
 # known location, plus --dir if given, and say what was actually there.
 if [ -n "$UNINSTALL" ]; then
+  # Locate the helper before the skill directory is deleted — after that there is
+  # nothing left to parse the AGENTS.md block out with.
+  SELF_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd || echo .)"
+  AF=""
+  for cand in "$SELF_DIR/skills/ironclad/scripts/agent_files.py" \
+              "$SELF_DIR/scripts/agent_files.py" \
+              "$HOME/.agents/skills/ironclad/scripts/agent_files.py" \
+              "$HOME/.claude/skills/ironclad/scripts/agent_files.py" \
+              "$HOME/.hermes/skills/ironclad/scripts/agent_files.py"; do
+    if [ -f "$cand" ]; then
+      # Copy it out first: the removal loop below deletes the directory it lives in,
+      # and the helper is needed AFTER that to strip the AGENTS.md block.
+      AF="$(mktemp)"; cp "$cand" "$AF"; break
+    fi
+  done
+
+  if [ -n "$AF" ] && [ -z "$NO_AGENT_FILES" ]; then
+    python3 "$AF" --global --remove
+    if [ -d "$PWD/.agent" ] || [ -f "$PWD/AGENTS.md" ] || [ -f "$PWD/CLAUDE.md" ]; then
+      python3 "$AF" --project "$PWD" --remove
+    fi
+    echo
+  fi
+
   SCAN="$DESTS"
   for t in agents claude hermes gemini opencode; do
     SCAN="$SCAN $(dest_for "$t")"
@@ -141,18 +165,6 @@ if [ -n "$UNINSTALL" ]; then
 
   # The instruction block is ours, not the user's, so it always comes out. The
   # project policy is a repo decision and survives unless --purge is given.
-  SELF_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd || echo .)"
-  AF=""
-  for cand in "$SELF_DIR/skills/ironclad/scripts/agent_files.py" \
-              "$SELF_DIR/scripts/agent_files.py" \
-              "$HOME/.agents/skills/ironclad/scripts/agent_files.py"; do
-    [ -f "$cand" ] && { AF="$cand"; break; }
-  done
-  if [ -n "$AF" ] && [ -d "$PWD/.agent" -o -f "$PWD/AGENTS.md" -o -f "$PWD/CLAUDE.md" ]; then
-    echo
-    python3 "$AF" --project "$PWD" --remove
-  fi
-
   # The policy in a project is a repo decision, not an installer artefact, so it
   # survives by default. --purge is for "I am dropping this entirely".
   if [ -n "$PURGE" ]; then
@@ -287,12 +299,23 @@ if [ -n "$PROJECT" ]; then
   exit 0
 fi
 
+# ---- standing instruction, global -------------------------------------------
+# This is what removes the need to run anything in a repo: the rule block goes into
+# each agent's own config dir, which the agent reads at startup wherever you open it.
+# Only agents whose config dir already exists are touched.
+if [ -z "$NO_AGENT_FILES" ]; then
+  echo
+  python3 "$TMP/scripts/agent_files.py" --global || true
+fi
+
 # ---- done -------------------------------------------------------------------
 echo
 echo "Installed ($SOURCE). Nothing else to configure."
 echo
-echo "Try it in any repo — reads only, writes nothing:"
-echo "  ironclad check"
+echo "Your agent now asks before writing schema, in every repo, with no command"
+echo "from you. If it does not, the agent is not reading its config file — see"
+echo "https://wilsench.my.id/ironclad/no-commands/"
 echo
-echo "Make it permanent:"
+echo "Optional: run this once per repo to pin the rules in git, so every teammate"
+echo "and CI share the same answer (the agent works either way):"
 echo "  ironclad init"

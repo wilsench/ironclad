@@ -88,11 +88,29 @@ lalu selesai.</p>
 <h2 id="1-pasang">1. Pasang</h2>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 </code></pre></div>
-<h2 id="2-aktifkan-di-repo-kamu">2. Aktifkan di repo kamu</h2>
+<h2 id="2-selesai-benar-benar-selesai">2. Selesai — benar-benar selesai</h2>
+<p>Setelah langkah 1, <strong>tidak ada langkah kedua</strong>. Installer sudah menulis aturan ke
+konfigurasi global tiap agent yang ada di mesinmu:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>created  .claude/CLAUDE.md     (Claude Code)
+created  .codex/AGENTS.md      (Codex)
+created  .gemini/GEMINI.md     (Gemini CLI)
+</code></pre></div>
+<p>Itu yang dibaca agent <strong>di awal setiap sesi, di repo mana pun</strong> — tanpa kamu
+menjalankan apa pun.</p>
+<h2 id="3-opsional-kunci-aturan-per-repo">3. Opsional: kunci aturan per repo</h2>
+<p>Kalau kamu ingin aturan itu ikut git (supaya seluruh tim dan CI memakai jawaban
+yang sama), jalankan sekali di repo:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">cd repo-kamu
 ironclad init
 </code></pre></div>
-<p>Perintah kedua ini <strong>yang terakhir</strong> yang perlu kamu hafal. Ia menulis:</p>
+<p>Ia menanyakan satu hal:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>How strict should this repo be?
+  1) balanced  (default) — enum and text status block, the rest warn
+  2) strict    — everything blocks; use for new or clean repos
+  3) legacy-friendly — everything warns; use for an old repo with debt
+Choose 1-3 [1]:
+</code></pre></div>
+<p>Lalu menulis:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>wrote   .agent/standards.yml      ← aturan repo ini (bisa di-review di PR)
 wrote   .agent/standards.md       ← penjelasan untuk manusia dan agent
 wrote   scripts/check_schema.py   ← pemeriksa, bisa dipakai CI
@@ -110,7 +128,10 @@ git commit -m &quot;chore: adopt ironclad standards&quot;
 <p>Yang terakhir itu kuncinya. Agent <strong>membaca berkas-berkas itu sendiri</strong> setiap
 kali kamu buka repo — tanpa kamu menyuruh, tanpa slash command, tanpa skill yang
 harus diaktifkan.</p>
-<h2 id="3-kerjakan-seperti-biasa">3. Kerjakan seperti biasa</h2>
+<p>Tanpa <code>ironclad init</code>, agent tetap bertanya dan tetap memakai default <code>balanced</code>
+dari skill. Yang hilang cuma dua: aturannya tidak ikut git, dan CI tidak punya
+berkas untuk dijalankan.</p>
+<h2 id="4-kerjakan-seperti-biasa">4. Kerjakan seperti biasa</h2>
 <p>Buka agent, minta fitur apa pun yang menyentuh database. Yang terjadi:</p>
 <blockquote>
 <p><strong>Kamu:</strong> tolong tambahkan fitur pesanan: tabel orders dengan status, total, waktu dibuat</p>
@@ -170,8 +191,9 @@ kantor tetap utuh setelah blok Ironclad dicabut.</p>
       <aside class="toc" aria-label="Di halaman ini">
         <div class="navlabel"><span>§</span>Di halaman ini</div>
         <ul><li class="lvl2"><a href="#1-pasang">1. Pasang</a></li>
-<li class="lvl2"><a href="#2-aktifkan-di-repo-kamu">2. Aktifkan di repo kamu</a></li>
-<li class="lvl2"><a href="#3-kerjakan-seperti-biasa">3. Kerjakan seperti biasa</a></li>
+<li class="lvl2"><a href="#2-selesai-benar-benar-selesai">2. Selesai — benar-benar selesai</a></li>
+<li class="lvl2"><a href="#3-opsional-kunci-aturan-per-repo">3. Opsional: kunci aturan per repo</a></li>
+<li class="lvl2"><a href="#4-kerjakan-seperti-biasa">4. Kerjakan seperti biasa</a></li>
 <li class="lvl2"><a href="#kenapa-ini-bekerja">Kenapa ini bekerja</a></li>
 <li class="lvl2"><a href="#kalau-kamu-ingin-memilih-preset-tanpa-ditanya">Kalau kamu ingin memilih preset tanpa ditanya</a></li>
 <li class="lvl2"><a href="#kalau-tidak-ingin-menyentuh-agentsmd">Kalau tidak ingin menyentuh AGENTS.md</a></li>

@@ -17,14 +17,41 @@ you are done.
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
-## 2. Enable it in your repo
+## 2. Done — actually done
+
+After step 1 there is **no second step**. The installer already wrote the rules into
+each agent's global config on this machine:
+
+```
+created  .claude/CLAUDE.md     (Claude Code)
+created  .codex/AGENTS.md      (Codex)
+created  .gemini/GEMINI.md     (Gemini CLI)
+```
+
+That is what the agent reads **at the start of every session, in any repo** — with
+nothing for you to run.
+
+## 3. Optional: pin the rules per repo
+
+If you want the rules committed so every teammate and CI share the same answer, run
+this once per repo:
 
 ```bash
 cd your-repo
 ironclad init
 ```
 
-That second command is **the last one you need to remember**. It writes:
+It asks one question:
+
+```
+How strict should this repo be?
+  1) balanced  (default) — enum and text status block, the rest warn
+  2) strict    — everything blocks; use for new or clean repos
+  3) legacy-friendly — everything warns; use for an old repo with debt
+Choose 1-3 [1]:
+```
+
+Then writes:
 
 ```
 wrote   .agent/standards.yml      ← this repo's rules (reviewable in a PR)
@@ -49,7 +76,11 @@ That last part is the trick. The agent **reads those files by itself** every tim
 you open the repo — no instruction from you, no slash command, no skill to
 activate.
 
-## 3. Work as usual
+Without `ironclad init` the agent still asks and still uses the `balanced` default
+from the skill. You only lose two things: the rules are not in git, and CI has no
+file to run.
+
+## 4. Work as usual
 
 Open your agent, ask for any feature that touches the database. What happens:
 

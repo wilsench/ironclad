@@ -68,13 +68,26 @@ disagreement once instead of quietly adding a second style.
 Run it yourself: `ironclad check`. The user should not have to.
 """
 
-# Agents read these without being asked. Order matters only for the report.
+# Per-repo: only files this repo owns. Written by `ironclad init`.
 TARGETS = [
     ("AGENTS.md", "Codex, opencode, and anything reading the AGENTS.md convention"),
     ("CLAUDE.md", "Claude Code"),
     ("GEMINI.md", "Gemini CLI"),
     (".cursor/rules/ironclad.mdc", "Cursor"),
     (".github/copilot-instructions.md", "GitHub Copilot"),
+]
+
+# Global: what each agent reads when it starts anywhere on this machine. Written by
+# the installer, so a fresh repo needs no `ironclad init` before the agent behaves.
+# Only installed when the agent's own config dir already exists — we do not create
+# ~/.claude for someone who does not use Claude Code.
+GLOBAL_TARGETS = [
+    (".claude/CLAUDE.md", ".claude", "Claude Code"),
+    (".codex/AGENTS.md", ".codex", "Codex"),
+    (".gemini/GEMINI.md", ".gemini", "Gemini CLI"),
+    (".cursor/rules/ironclad.mdc", ".cursor", "Cursor"),
+    (".config/opencode/AGENTS.md", ".config/opencode", "opencode"),
+    (".agents/AGENTS.md", ".agents", "agents reading the AGENTS.md convention"),
 ]
 
 CURSOR_HEADER = """---
@@ -130,24 +143,43 @@ def remove(path: Path) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--project", default=".")
+    ap.add_argument("--project", help="repo to write into (default) ")
+    ap.add_argument("--global", dest="glob", action="store_true",
+                    help="write into each agent's own config dir under $HOME")
     ap.add_argument("--remove", action="store_true")
     ap.add_argument("--print", dest="show", action="store_true")
     ap.add_argument("--only", help="comma-separated filenames to touch")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args()
 
-    root = Path(a.project).resolve()
+    if a.show:
+        print(BODY)
+        return 0
+
+    if a.glob:
+        home = Path.home()
+        only = {s.strip() for s in a.only.split(",")} if a.only else None
+        for rel, marker, who in GLOBAL_TARGETS:
+            if only is not None and rel not in only:
+                continue
+            # Do not create a config dir for an agent this machine does not use.
+            marker_dir = home / marker
+            if not marker_dir.exists():
+                continue
+            path = home / rel
+            header = CURSOR_HEADER if rel.endswith(".mdc") else ""
+            state = remove(path) if a.remove else upsert(path, BODY, header)
+            if not a.quiet and state != "absent":
+                print(f"  {state:14} {rel}  ({who})")
+        return 0
+
+    root = Path(a.project or ".").resolve()
     if not root.is_dir():
         print(f"not a directory: {root}", file=sys.stderr)
         return 2
 
     only = {s.strip() for s in a.only.split(",")} if a.only else None
     targets = [(p, d) for p, d in TARGETS if only is None or p in only]
-
-    if a.show:
-        print(BODY)
-        return 0
 
     for rel, who in targets:
         path = root / rel
