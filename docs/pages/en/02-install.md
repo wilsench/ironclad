@@ -3,7 +3,7 @@ title: Install
 slug: install
 group: Start
 order: 3
-summary: One command, no questions. Then three words to use it. No Python needed.
+summary: One command, no questions. The agent starts asking on its own — no second step.
 ---
 
 # Install into your agent
@@ -12,14 +12,18 @@ summary: One command, no questions. Then three words to use it. No Python needed
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
-That is the entire install. No questions, no Python, no menu.
+That is the entire install. No questions, no menu, no second step.
 
 What it does:
 
 1. puts the skill in `~/.agents/skills/ironclad/` — the directory Codex, Cursor,
    opencode and Antigravity read
 2. adds an `ironclad` command to `~/.local/bin/`
-3. stops. Your repo is untouched.
+3. writes the rule block into each agent's **global** config on this machine
+   (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, and so on)
+
+Step 3 is what makes the agent ask in any repo without anything from you. Agents
+whose config directory does not exist are left alone.
 
 If `~/.local/bin` is not on your `PATH`, the installer tells you. Add one line to
 `~/.bashrc`:
@@ -28,11 +32,13 @@ If `~/.local/bin` is not on your `PATH`, the installer tells you. Add one line t
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-## Then, three commands
+## After that, nothing is required
+
+The agent already asks. These exist for when you **want** to check or pin something:
 
 ```bash
 ironclad check          # score this repo's schema, writes nothing
-ironclad init           # make it permanent: .agent/ + scripts/
+ironclad init           # optional: pin the rules in git for teammates and CI
 ironclad preset strict  # switch strictness whenever, no reinstall
 ```
 
@@ -40,13 +46,18 @@ ironclad preset strict  # switch strictness whenever, no reinstall
 preset shipped in the skill (`balanced`) until your repo has its own
 `.agent/standards.yml`.
 
-## Why install does not need Python
+## Python
 
-The installer is bash + curl. Python 3.8+ is needed only to **run** the checker,
-and `ironclad check` calls it for you.
+The installer needs **Python 3.8+**, not to download anything but to write the rule
+block into `AGENTS.md` / `CLAUDE.md` / `GEMINI.md`. Without `python3` it stops with
+exit 3 and prints the install command for your platform, rather than reporting
+success over an empty config.
 
-If the machine has no Python, `ironclad init` still succeeds — only `check`/CI
-stay dark until you install it. Do that whenever you are ready to add the gate.
+It ships with macOS, nearly every Linux distribution, and Termux. If yours does not
+have it: `sudo apt install python3` or `brew install python3`.
+
+If you deliberately want the skill without touching any agent config, pass
+`--no-agent-files`.
 
 ## Other agents
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Install — Ironclad</title>
-<meta name="description" content="One command, no questions. Then three words to use it. No Python needed.">
+<meta name="description" content="One command, no questions. The agent starts asking on its own — no second step.">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/en/install/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/install/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/install/">
@@ -85,31 +85,39 @@
         <h1 id="install-into-your-agent">Install into your agent</h1>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 </code></pre></div>
-<p>That is the entire install. No questions, no Python, no menu.</p>
+<p>That is the entire install. No questions, no menu, no second step.</p>
 <p>What it does:</p>
 <ol>
 <li>puts the skill in <code>~/.agents/skills/ironclad/</code> — the directory Codex, Cursor,
    opencode and Antigravity read</li>
 <li>adds an <code>ironclad</code> command to <code>~/.local/bin/</code></li>
-<li>stops. Your repo is untouched.</li>
+<li>writes the rule block into each agent's <strong>global</strong> config on this machine
+   (<code>~/.claude/CLAUDE.md</code>, <code>~/.codex/AGENTS.md</code>, <code>~/.gemini/GEMINI.md</code>, and so on)</li>
 </ol>
+<p>Step 3 is what makes the agent ask in any repo without anything from you. Agents
+whose config directory does not exist are left alone.</p>
 <p>If <code>~/.local/bin</code> is not on your <code>PATH</code>, the installer tells you. Add one line to
 <code>~/.bashrc</code>:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">export PATH=&quot;$HOME/.local/bin:$PATH&quot;
 </code></pre></div>
-<h2 id="then-three-commands">Then, three commands</h2>
+<h2 id="after-that-nothing-is-required">After that, nothing is required</h2>
+<p>The agent already asks. These exist for when you <strong>want</strong> to check or pin something:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check          # score this repo's schema, writes nothing
-ironclad init           # make it permanent: .agent/ + scripts/
+ironclad init           # optional: pin the rules in git for teammates and CI
 ironclad preset strict  # switch strictness whenever, no reinstall
 </code></pre></div>
 <p><code>check</code> works immediately after install, without <code>init</code> — it falls back to the
 preset shipped in the skill (<code>balanced</code>) until your repo has its own
 <code>.agent/standards.yml</code>.</p>
-<h2 id="why-install-does-not-need-python">Why install does not need Python</h2>
-<p>The installer is bash + curl. Python 3.8+ is needed only to <strong>run</strong> the checker,
-and <code>ironclad check</code> calls it for you.</p>
-<p>If the machine has no Python, <code>ironclad init</code> still succeeds — only <code>check</code>/CI
-stay dark until you install it. Do that whenever you are ready to add the gate.</p>
+<h2 id="python">Python</h2>
+<p>The installer needs <strong>Python 3.8+</strong>, not to download anything but to write the rule
+block into <code>AGENTS.md</code> / <code>CLAUDE.md</code> / <code>GEMINI.md</code>. Without <code>python3</code> it stops with
+exit 3 and prints the install command for your platform, rather than reporting
+success over an empty config.</p>
+<p>It ships with macOS, nearly every Linux distribution, and Termux. If yours does not
+have it: <code>sudo apt install python3</code> or <code>brew install python3</code>.</p>
+<p>If you deliberately want the skill without touching any agent config, pass
+<code>--no-agent-files</code>.</p>
 <h2 id="other-agents">Other agents</h2>
 <p>The default is <code>~/.agents/skills</code>. For agents with their own directory:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash"># Claude Code
@@ -229,8 +237,8 @@ command -v ironclad
 
       <aside class="toc" aria-label="On this page">
         <div class="navlabel"><span>§</span>On this page</div>
-        <ul><li class="lvl2"><a href="#then-three-commands">Then, three commands</a></li>
-<li class="lvl2"><a href="#why-install-does-not-need-python">Why install does not need Python</a></li>
+        <ul><li class="lvl2"><a href="#after-that-nothing-is-required">After that, nothing is required</a></li>
+<li class="lvl2"><a href="#python">Python</a></li>
 <li class="lvl2"><a href="#other-agents">Other agents</a></li>
 <li class="lvl2"><a href="#if-you-want-the-rules-to-travel-with-the-repo">If you want the rules to travel with the repo</a></li>
 <li class="lvl2"><a href="#ci-nothing-to-skip">CI: nothing to skip</a></li>

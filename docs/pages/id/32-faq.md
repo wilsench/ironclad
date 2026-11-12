@@ -10,9 +10,11 @@ summary: Pertanyaan yang paling sering muncul, dijawab langsung tanpa berputar.
 
 ## Apakah saya harus menjalankan Python?
 
-**Untuk memasang: tidak.** Installer-nya bash + curl. Menulis `.agent/standards.md` dan `.agent/standards.yml` juga tidak butuh Python kalau kamu memakai `--project` pada installer.
+**Untuk memasang: ya, Python 3.8+.** Bukan untuk mengunduh — installer-nya bash + curl — tapi untuk menulis blok aturan ke `AGENTS.md` / `CLAUDE.md` / `GEMINI.md`. Kalau `python3` tidak ada, installer sekarang berhenti dengan exit 3 dan mengatakannya, bukan mencetak "installed" di atas folder kosong.
 
-**Untuk checker: ya**, Python 3.8+. Tapi checker itu opsional — kalau kamu hanya ingin agent membaca aturannya, cukup skill + `.agent/standards.md`.
+`python3` sudah terpasang di macOS, hampir semua distro Linux, dan Termux. Kalau di mesinmu belum ada: `sudo apt install python3` (Debian/Ubuntu), `brew install python3` (macOS).
+
+**Untuk checker: ya**, syarat yang sama. Checker-nya sendiri opsional — kalau kamu hanya ingin agent membaca aturannya, cukup skill + `.agent/standards.md`.
 
 ## Apakah skill aktif otomatis setiap kali agent jalan?
 
@@ -30,13 +32,15 @@ Ya:
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
-Itu saja untuk memasang. Untuk memakainya di satu repo:
+Itu saja. Tidak ada langkah kedua — agent sudah bertanya sendiri di repo mana pun.
+
+Kalau kamu ingin aturannya ikut git supaya seluruh tim dan CI memakai jawaban yang sama:
 
 ```bash
-curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project .
+cd repo-kamu && ironclad init
 ```
 
-Dua perintah, tanpa Python, tanpa clone, tanpa baca dokumen.
+Satu perintah, tanpa clone, tanpa baca dokumen — dan tanpa `ironclad init` kecuali kamu ingin aturannya ikut git.
 
 ## Installer ini bisa untuk selain Hermes?
 

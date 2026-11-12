@@ -12,23 +12,32 @@ Ships a worked database policy as the headline example — **integer codes + loo
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
-No questions, no Python. It puts the skill where your agent looks and adds an
-`ironclad` command to `~/.local/bin`.
+No questions, no second step. It puts the skill where your agent looks, adds an
+`ironclad` command to `~/.local/bin`, and writes the rule block into each agent's
+**global** config (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`,
+`~/.cursor/rules/`, `~/.config/opencode/AGENTS.md`, `~/.agents/AGENTS.md`) — only for
+agents whose config directory already exists.
 
-Then, in any repo:
+That last part is why there is nothing else to do: the agent reads it at the start of
+every session, in any repo, and asks **"enforce the rules while we write, or check at
+the end?"** before touching schema.
+
+Optional, once per repo, to pin the rules in git so teammates and CI share one answer:
 
 ```bash
+ironclad init           # writes .agent/ + scripts/
 ironclad check          # verdict in a second, writes nothing
-ironclad init           # make it permanent — writes .agent/ + scripts/
 ironclad preset strict  # switch strictness later, no reinstall
 ```
 
 `init` writes `.agent/standards.md`, `.agent/standards.yml`,
 `scripts/check_schema.py`, and `scripts/presets/`. Commit all four — otherwise
-the next teammate gets a different rulebook. From then on the agent reads the
-policy before writing DDL, and CI reads the same file to decide what blocks.
+the next teammate gets a different rulebook.
 
-Python 3.8+ is needed only to *run* the checker; `check` calls it for you.
+**Needs Python 3.8+** (preinstalled on macOS, most Linux, Termux) to write the block
+and to run the checker. Without `python3` the installer exits 3 and tells you how to
+install it, instead of claiming success with nothing written. `--no-agent-files`
+installs the skill alone.
 
 **Targets:** `agents` (Codex, Cursor, opencode, Antigravity — default), `claude`, `hermes`, `gemini`, `opencode`, or `--all`. Docs: <https://wilsench.my.id/ironclad/>
 

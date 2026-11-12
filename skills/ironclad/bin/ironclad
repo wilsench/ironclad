@@ -152,7 +152,14 @@ case "${1:-}" in
   preset)  shift; cmd_preset "$@" ;;
   status)  cmd_status ;;
   drill)   shift; python3 "$DRILL" "$@" ;;
-  attach)  shift; python3 "$AGENT_FILES" --project "${1:-.}" "${@:2}" ;;
+  attach)
+    shift
+    # `ironclad attach --global` repairs a machine where the block never got written
+    if [ "${1:-}" = "--global" ]; then
+      python3 "$AGENT_FILES" --global "${@:2}"
+    else
+      python3 "$AGENT_FILES" --project "${1:-.}" "${@:2}"
+    fi ;;
   ""|-h|--help|help)
     sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//' ;;
   *)

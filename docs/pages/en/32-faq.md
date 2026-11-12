@@ -10,11 +10,18 @@ summary: The questions that keep coming up, answered without circling.
 
 ## Do I have to run Python?
 
-**To install: no.** The installer is bash + curl. Writing `.agent/standards.md`
-and `.agent/standards.yml` needs no Python either — `ironclad init` does it.
+**To install: yes, Python 3.8+.** Not to download — the installer is bash + curl —
+but to write the rule block into `AGENTS.md` / `CLAUDE.md` / `GEMINI.md`. If
+`python3` is missing the installer now stops with exit 3 and says so, instead of
+printing "installed" over an empty config.
 
-**To run the checker: yes**, Python 3.8+. But the checker is optional — if all you
-want is the agent reading the rules, the skill plus `.agent/standards.md` is enough.
+`python3` is preinstalled on macOS, most Linux distributions, and Termux. If yours
+does not have it: `sudo apt install python3` (Debian/Ubuntu), `brew install python3`
+(macOS).
+
+**To run the checker: yes**, same requirement. The checklist itself is optional —
+if all you want is the agent reading the rules, the skill plus `.agent/standards.md`
+is enough.
 
 ## Does the skill activate automatically on every agent run?
 
@@ -42,7 +49,8 @@ ironclad check      # look
 ironclad init       # make it stick
 ```
 
-Two commands after install. No Python, no clone, no reading required.
+One command. No clone, no reading required — and no `ironclad init` unless you want
+the rules pinned in git for your team.
 
 ## Does the installer work for agents other than Hermes?
 

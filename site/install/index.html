@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pasang di agent — Ironclad</title>
-<meta name="description" content="Satu perintah, tanpa pertanyaan. Lalu tiga kata perintah untuk memakainya. Tanpa Python.">
+<meta name="description" content="Satu perintah, tanpa pertanyaan. Agent langsung bertanya sendiri — tidak ada langkah kedua.">
 <link rel="canonical" href="https://wilsench.my.id/ironclad/install/">
 <link rel="alternate" hreflang="id" href="https://wilsench.my.id/ironclad/install/">
 <link rel="alternate" hreflang="en" href="https://wilsench.my.id/ironclad/en/install/">
@@ -85,25 +85,36 @@
         <h1 id="pasang-di-agent-kamu">Pasang di agent kamu</h1>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 </code></pre></div>
-<p>Itu seluruh instalasinya. Tidak ada pertanyaan, tidak ada Python, tidak ada menu.</p>
+<p>Itu seluruh instalasinya. Tidak ada pertanyaan, tidak ada menu, tidak ada langkah kedua.</p>
 <p>Yang dilakukannya:</p>
 <ol>
 <li>menaruh skill di <code>~/.agents/skills/ironclad/</code> — folder yang dibaca Codex, Cursor, opencode, dan Antigravity</li>
 <li>menambahkan perintah <code>ironclad</code> ke <code>~/.local/bin/</code></li>
-<li>berhenti. Repo kamu belum disentuh.</li>
+<li>menulis blok aturan ke konfigurasi global tiap agent yang ada di mesinmu
+   (<code>~/.claude/CLAUDE.md</code>, <code>~/.codex/AGENTS.md</code>, <code>~/.gemini/GEMINI.md</code>, dan seterusnya)</li>
 </ol>
+<p>Langkah 3 itulah yang membuat agent bertanya sendiri di repo mana pun, tanpa kamu
+menjalankan apa-apa. Agent yang folder konfigurasinya tidak ada tidak disentuh.</p>
 <p>Kalau <code>~/.local/bin</code> belum ada di <code>PATH</code>, installer memberi tahu. Tambahkan satu baris ke <code>~/.bashrc</code>:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">export PATH=&quot;$HOME/.local/bin:$PATH&quot;
 </code></pre></div>
-<h2 id="setelah-itu-tiga-perintah">Setelah itu, tiga perintah</h2>
+<h2 id="setelah-itu-tidak-ada-yang-wajib-dijalankan">Setelah itu tidak ada yang wajib dijalankan</h2>
+<p>Agent sudah bertanya sendiri. Perintah-perintah ini ada kalau kamu <strong>ingin</strong> memeriksa
+atau mengunci sesuatu:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ironclad check          # nilai schema repo ini, tidak menulis apa pun
-ironclad init           # jadikan permanen: .agent/ + scripts/
+ironclad init           # opsional: kunci aturan ke git untuk tim + CI
 ironclad preset strict  # ganti tingkat penegakan kapan saja
 </code></pre></div>
 <p><code>check</code> bisa dipakai langsung setelah install, tanpa <code>init</code> — ia memakai preset bawaan (<code>balanced</code>) sampai repo punya <code>.agent/standards.yml</code> sendiri.</p>
-<h2 id="kenapa-tidak-pakai-python-untuk-install">Kenapa tidak pakai Python untuk install</h2>
-<p>Installer-nya bash + curl. Python 3.8+ hanya dibutuhkan untuk <strong>menjalankan</strong> checker, dan <code>ironclad check</code> sudah memanggilnya untuk kamu.</p>
-<p>Kalau mesin kamu belum punya Python, <code>ironclad init</code> tetap berhasil — yang belum jalan hanya <code>check</code>/CI. Pasang Python kapan pun kamu siap memasang gatenya.</p>
+<h2 id="python">Python</h2>
+<p>Installer butuh <strong>Python 3.8+</strong>, bukan untuk mengunduh tapi untuk menulis blok aturan
+ke <code>AGENTS.md</code> / <code>CLAUDE.md</code> / <code>GEMINI.md</code>. Kalau <code>python3</code> tidak ada, installer
+berhenti dengan exit 3 dan memberi perintah pemasangannya — bukan mencetak
+"installed" padahal tidak menulis apa pun.</p>
+<p>Sudah terpasang di macOS, hampir semua distro Linux, dan Termux. Kalau belum:
+<code>sudo apt install python3</code> atau <code>brew install python3</code>.</p>
+<p>Kalau kamu memang ingin skill-nya saja tanpa menyentuh konfigurasi agent:
+<code>--no-agent-files</code>.</p>
 <h2 id="agent-lain">Agent lain</h2>
 <p>Default-nya <code>~/.agents/skills</code>. Untuk agent yang punya folder sendiri:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash"># Claude Code
@@ -210,8 +221,8 @@ command -v ironclad
 
       <aside class="toc" aria-label="Di halaman ini">
         <div class="navlabel"><span>§</span>Di halaman ini</div>
-        <ul><li class="lvl2"><a href="#setelah-itu-tiga-perintah">Setelah itu, tiga perintah</a></li>
-<li class="lvl2"><a href="#kenapa-tidak-pakai-python-untuk-install">Kenapa tidak pakai Python untuk install</a></li>
+        <ul><li class="lvl2"><a href="#setelah-itu-tidak-ada-yang-wajib-dijalankan">Setelah itu tidak ada yang wajib dijalankan</a></li>
+<li class="lvl2"><a href="#python">Python</a></li>
 <li class="lvl2"><a href="#agent-lain">Agent lain</a></li>
 <li class="lvl2"><a href="#kalau-ingin-aturannya-ikut-repo">Kalau ingin aturannya ikut repo</a></li>
 <li class="lvl2"><a href="#ci-lewati-semua-pertanyaan">CI: lewati semua pertanyaan</a></li>

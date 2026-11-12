@@ -84,10 +84,16 @@
       <article class="prose">
         <h1 id="faq">FAQ</h1>
 <h2 id="do-i-have-to-run-python">Do I have to run Python?</h2>
-<p><strong>To install: no.</strong> The installer is bash + curl. Writing <code>.agent/standards.md</code>
-and <code>.agent/standards.yml</code> needs no Python either — <code>ironclad init</code> does it.</p>
-<p><strong>To run the checker: yes</strong>, Python 3.8+. But the checker is optional — if all you
-want is the agent reading the rules, the skill plus <code>.agent/standards.md</code> is enough.</p>
+<p><strong>To install: yes, Python 3.8+.</strong> Not to download — the installer is bash + curl —
+but to write the rule block into <code>AGENTS.md</code> / <code>CLAUDE.md</code> / <code>GEMINI.md</code>. If
+<code>python3</code> is missing the installer now stops with exit 3 and says so, instead of
+printing "installed" over an empty config.</p>
+<p><code>python3</code> is preinstalled on macOS, most Linux distributions, and Termux. If yours
+does not have it: <code>sudo apt install python3</code> (Debian/Ubuntu), <code>brew install python3</code>
+(macOS).</p>
+<p><strong>To run the checker: yes</strong>, same requirement. The checklist itself is optional —
+if all you want is the agent reading the rules, the skill plus <code>.agent/standards.md</code>
+is enough.</p>
 <h2 id="does-the-skill-activate-automatically-on-every-agent-run">Does the skill activate automatically on every agent run?</h2>
 <p>Yes, but that does <strong>not</strong> mean it is always used. Every turn the agent sees a list
 of skill names and descriptions. It loads the full <code>SKILL.md</code> only when the task
@@ -103,7 +109,8 @@ decides, the same way it decides which tool to call.</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Copy command">COPY</button><pre><code class="language-bash">ironclad check      # look
 ironclad init       # make it stick
 </code></pre></div>
-<p>Two commands after install. No Python, no clone, no reading required.</p>
+<p>One command. No clone, no reading required — and no <code>ironclad init</code> unless you want
+the rules pinned in git for your team.</p>
 <h2 id="does-the-installer-work-for-agents-other-than-hermes">Does the installer work for agents other than Hermes?</h2>
 <p>Yes — that is its main target. Six targets: Hermes, Claude Code, Codex, Cursor,
 opencode, Antigravity. The format is the Agent Skills standard (<code>SKILL.md</code>), not

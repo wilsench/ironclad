@@ -81,6 +81,28 @@ case "$PRESET" in
   *) echo "unknown preset: $PRESET (balanced|strict|legacy-friendly)" >&2; exit 2 ;;
 esac
 
+# ---- preflight ---------------------------------------------------------------
+# The standing instruction and the checker are Python. Without it the installer
+# used to print "your agent now asks" after writing nothing — a green light over an
+# empty directory. Refuse up front instead, while the fix is still one command.
+if [ -z "$NO_AGENT_FILES" ] && [ -z "$UNINSTALL" ]; then
+  if ! command -v python3 >/dev/null 2>&1; then
+    cat >&2 <<'PY'
+ironclad: python3 is required, and it is not on PATH.
+
+  Debian/Ubuntu   sudo apt install python3
+  Fedora          sudo dnf install python3
+  macOS           brew install python3
+  Termux          pkg install python
+
+Without it the installer cannot write the rule block your agent reads at startup,
+so it would finish "successfully" while doing nothing. Re-run after installing it,
+or pass --no-agent-files to install the skill alone.
+PY
+    exit 3
+  fi
+fi
+
 dest_for() {
   case "$1" in
     agents)   echo "$HOME/.agents/skills" ;;
@@ -217,8 +239,25 @@ fetch_from() {
   return 0
 }
 
+# When the script is run from a checkout (`git clone ... && bash ironclad/install.sh`),
+# the payload is sitting next to it. Using the mirror in that case would install a
+# different version than the script the user just read — so local wins.
+copy_from_local() {
+  local here="$1"
+  [ -f "$here/skills/ironclad/SKILL.md" ] || return 1
+  for f in $FILES; do
+    [ -f "$here/skills/ironclad/$f" ] || { echo "  checkout is missing skills/ironclad/$f" >&2; return 1; }
+  done
+  cp -R "$here/skills/ironclad/." "$TMP/"
+  SOURCE="local checkout"
+  return 0
+}
+
 SOURCE=""
-if [ -n "${IRONCLAD_BASE:-}" ]; then
+SELF_DIR_TMP="$(cd "$(dirname "$0")" 2>/dev/null && pwd || echo .)"
+if copy_from_local "$SELF_DIR_TMP"; then
+  :
+elif [ -n "${IRONCLAD_BASE:-}" ]; then
   fetch_from "$IRONCLAD_BASE" "IRONCLAD_BASE" || { echo "failed: $IRONCLAD_BASE" >&2; exit 1; }
 elif fetch_from "$MIRROR" "wilsench.my.id"; then
   :
@@ -305,16 +344,27 @@ fi
 # Only agents whose config dir already exists are touched.
 if [ -z "$NO_AGENT_FILES" ]; then
   echo
-  python3 "$TMP/scripts/agent_files.py" --global || true
+  if ! python3 "$TMP/scripts/agent_files.py" --global; then
+    echo "  could not write the standing instruction — the agent will not ask on its own" >&2
+    ATTACH_FAILED=1
+  fi
 fi
 
 # ---- done -------------------------------------------------------------------
 echo
 echo "Installed ($SOURCE). Nothing else to configure."
 echo
-echo "Your agent now asks before writing schema, in every repo, with no command"
-echo "from you. If it does not, the agent is not reading its config file — see"
-echo "https://wilsench.my.id/ironclad/no-commands/"
+if [ -n "${ATTACH_FAILED:-}" ]; then
+  echo "WARNING: the skill is installed, but no agent config was written. Until you"
+  echo "fix that, the agent will NOT ask on its own. Run: ironclad attach --global"
+elif [ -z "$NO_AGENT_FILES" ]; then
+  echo "Your agent now asks before writing schema, in every repo, with no command"
+  echo "from you. If it does not, the agent is not reading its config file — see"
+  echo "https://wilsench.my.id/ironclad/no-commands/"
+else
+  echo "Skill only — you passed --no-agent-files, so no agent config was touched."
+  echo "The agent will not ask on its own until you run: ironclad attach --global"
+fi
 echo
 echo "Optional: run this once per repo to pin the rules in git, so every teammate"
 echo "and CI share the same answer (the agent works either way):"

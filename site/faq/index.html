@@ -84,8 +84,9 @@
       <article class="prose">
         <h1 id="faq">FAQ</h1>
 <h2 id="apakah-saya-harus-menjalankan-python">Apakah saya harus menjalankan Python?</h2>
-<p><strong>Untuk memasang: tidak.</strong> Installer-nya bash + curl. Menulis <code>.agent/standards.md</code> dan <code>.agent/standards.yml</code> juga tidak butuh Python kalau kamu memakai <code>--project</code> pada installer.</p>
-<p><strong>Untuk checker: ya</strong>, Python 3.8+. Tapi checker itu opsional — kalau kamu hanya ingin agent membaca aturannya, cukup skill + <code>.agent/standards.md</code>.</p>
+<p><strong>Untuk memasang: ya, Python 3.8+.</strong> Bukan untuk mengunduh — installer-nya bash + curl — tapi untuk menulis blok aturan ke <code>AGENTS.md</code> / <code>CLAUDE.md</code> / <code>GEMINI.md</code>. Kalau <code>python3</code> tidak ada, installer sekarang berhenti dengan exit 3 dan mengatakannya, bukan mencetak "installed" di atas folder kosong.</p>
+<p><code>python3</code> sudah terpasang di macOS, hampir semua distro Linux, dan Termux. Kalau di mesinmu belum ada: <code>sudo apt install python3</code> (Debian/Ubuntu), <code>brew install python3</code> (macOS).</p>
+<p><strong>Untuk checker: ya</strong>, syarat yang sama. Checker-nya sendiri opsional — kalau kamu hanya ingin agent membaca aturannya, cukup skill + <code>.agent/standards.md</code>.</p>
 <h2 id="apakah-skill-aktif-otomatis-setiap-kali-agent-jalan">Apakah skill aktif otomatis setiap kali agent jalan?</h2>
 <p>Ya, tapi <strong>bukan berarti selalu dipakai</strong>. Setiap turn agent melihat daftar nama + deskripsi skill. Ia memuat <code>SKILL.md</code> penuh hanya kalau tugasnya cocok.</p>
 <p>Jadi: tidak ada perintah yang perlu dijalankan, dan tidak ada pertanyaan "mau pakai skill ini?". Agent memutuskan sendiri, seperti memilih alat.</p>
@@ -94,10 +95,11 @@
 <p>Ya:</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 </code></pre></div>
-<p>Itu saja untuk memasang. Untuk memakainya di satu repo:</p>
-<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project .
+<p>Itu saja. Tidak ada langkah kedua — agent sudah bertanya sendiri di repo mana pun.</p>
+<p>Kalau kamu ingin aturannya ikut git supaya seluruh tim dan CI memakai jawaban yang sama:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">cd repo-kamu &amp;&amp; ironclad init
 </code></pre></div>
-<p>Dua perintah, tanpa Python, tanpa clone, tanpa baca dokumen.</p>
+<p>Satu perintah, tanpa clone, tanpa baca dokumen — dan tanpa <code>ironclad init</code> kecuali kamu ingin aturannya ikut git.</p>
 <h2 id="installer-ini-bisa-untuk-selain-hermes">Installer ini bisa untuk selain Hermes?</h2>
 <p>Ya, dan itu target utamanya. Enam target: Hermes, Claude Code, Codex, Cursor, opencode, Antigravity. Formatnya standar Agent Skills (<code>SKILL.md</code>), bukan format khusus Hermes.</p>
 <div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">… | bash -s -- --all              # semua agent yang terdeteksi

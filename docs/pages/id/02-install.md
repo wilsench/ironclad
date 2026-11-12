@@ -3,7 +3,7 @@ title: Pasang di agent
 slug: install
 group: Mulai
 order: 3
-summary: Satu perintah, tanpa pertanyaan. Lalu tiga kata perintah untuk memakainya. Tanpa Python.
+summary: Satu perintah, tanpa pertanyaan. Agent langsung bertanya sendiri — tidak ada langkah kedua.
 ---
 
 # Pasang di agent kamu
@@ -12,13 +12,17 @@ summary: Satu perintah, tanpa pertanyaan. Lalu tiga kata perintah untuk memakain
 curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
-Itu seluruh instalasinya. Tidak ada pertanyaan, tidak ada Python, tidak ada menu.
+Itu seluruh instalasinya. Tidak ada pertanyaan, tidak ada menu, tidak ada langkah kedua.
 
 Yang dilakukannya:
 
 1. menaruh skill di `~/.agents/skills/ironclad/` — folder yang dibaca Codex, Cursor, opencode, dan Antigravity
 2. menambahkan perintah `ironclad` ke `~/.local/bin/`
-3. berhenti. Repo kamu belum disentuh.
+3. menulis blok aturan ke konfigurasi global tiap agent yang ada di mesinmu
+   (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, dan seterusnya)
+
+Langkah 3 itulah yang membuat agent bertanya sendiri di repo mana pun, tanpa kamu
+menjalankan apa-apa. Agent yang folder konfigurasinya tidak ada tidak disentuh.
 
 Kalau `~/.local/bin` belum ada di `PATH`, installer memberi tahu. Tambahkan satu baris ke `~/.bashrc`:
 
@@ -26,21 +30,31 @@ Kalau `~/.local/bin` belum ada di `PATH`, installer memberi tahu. Tambahkan satu
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-## Setelah itu, tiga perintah
+## Setelah itu tidak ada yang wajib dijalankan
+
+Agent sudah bertanya sendiri. Perintah-perintah ini ada kalau kamu **ingin** memeriksa
+atau mengunci sesuatu:
 
 ```bash
 ironclad check          # nilai schema repo ini, tidak menulis apa pun
-ironclad init           # jadikan permanen: .agent/ + scripts/
+ironclad init           # opsional: kunci aturan ke git untuk tim + CI
 ironclad preset strict  # ganti tingkat penegakan kapan saja
 ```
 
 `check` bisa dipakai langsung setelah install, tanpa `init` — ia memakai preset bawaan (`balanced`) sampai repo punya `.agent/standards.yml` sendiri.
 
-## Kenapa tidak pakai Python untuk install
+## Python
 
-Installer-nya bash + curl. Python 3.8+ hanya dibutuhkan untuk **menjalankan** checker, dan `ironclad check` sudah memanggilnya untuk kamu.
+Installer butuh **Python 3.8+**, bukan untuk mengunduh tapi untuk menulis blok aturan
+ke `AGENTS.md` / `CLAUDE.md` / `GEMINI.md`. Kalau `python3` tidak ada, installer
+berhenti dengan exit 3 dan memberi perintah pemasangannya — bukan mencetak
+"installed" padahal tidak menulis apa pun.
 
-Kalau mesin kamu belum punya Python, `ironclad init` tetap berhasil — yang belum jalan hanya `check`/CI. Pasang Python kapan pun kamu siap memasang gatenya.
+Sudah terpasang di macOS, hampir semua distro Linux, dan Termux. Kalau belum:
+`sudo apt install python3` atau `brew install python3`.
+
+Kalau kamu memang ingin skill-nya saja tanpa menyentuh konfigurasi agent:
+`--no-agent-files`.
 
 ## Agent lain
 
