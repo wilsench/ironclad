@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Troubleshooting — Ironclad</title>
+<meta name="description" content="Gejala yang paling sering muncul, penyebabnya, dan perbaikannya. Diurutkan dari yang paling sering.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/troubleshooting/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/" class="active" aria-current="page">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Operasional / <b>Troubleshooting</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="troubleshooting">Troubleshooting</h1>
+<h2 id="skill-tidak-terdeteksi">Skill tidak terdeteksi</h2>
+<p><strong>Gejala:</strong> agent tidak pernah menyebut Ironclad, walau sudah dipasang.</p>
+<p>Cek satu per satu:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ls ~/.agents/skills/ironclad/SKILL.md
+head -4 ~/.agents/skills/ironclad/SKILL.md
+</code></pre></div>
+<p>Yang benar:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>---
+name: ironclad
+description: Enforce team engineering standards with presets.
+</code></pre></div>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Penyebab</th>
+<th>Perbaikan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nama file bukan <code>SKILL.md</code></td>
+<td>huruf besar semua</td>
+</tr>
+<tr>
+<td>Frontmatter tanpa <code>name</code>/<code>description</code></td>
+<td>agent tidak bisa memilihnya</td>
+</tr>
+<tr>
+<td>Agent belum restart</td>
+<td>daftar skill dibaca saat start</td>
+</tr>
+<tr>
+<td>Dipasang di folder yang tidak dibaca agent itu</td>
+<td>pakai <code>--target</code> yang benar</td>
+</tr>
+<tr>
+<td>Dua skill bernama sama</td>
+<td>hapus duplikatnya</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="unknown-preset-strict"><code>unknown preset strict</code></h2>
+<p><strong>Gejala:</strong> checker jalan, tapi <code>--preset</code> apa pun ditolak.</p>
+<p><strong>Penyebab:</strong> <code>scripts/presets/</code> tidak ikut tersalin ke repo. Checker mencari preset di dua tempat — <code>scripts/presets/</code> (saat disalin ke repo) dan <code>assets/presets/</code> (saat jalan dari skill).</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py --list-presets   # kalau kosong, ini penyebabnya
+</code></pre></div>
+<p><strong>Perbaikan:</strong></p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project . --preset balanced
+</code></pre></div>
+<h2 id="no-sqlphpprisma-files-found"><code>no .sql/.php/.prisma files found</code></h2>
+<p><strong>Gejala:</strong> checker bilang tidak ada berkas, padahal repo penuh migration.</p>
+<p><strong>Penyebab:</strong> path yang diberikan menunjuk folder yang salah, atau folder dilewati otomatis (<code>node_modules</code>, <code>vendor</code>, <code>dist</code>, <code>build</code>, <code>.git</code>).</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --json | head -5     # cek &quot;files&quot;
+find . -name &quot;*.sql&quot; -not -path &quot;*/node_modules/*&quot; | head
+</code></pre></div>
+<h2 id="ci-merah-di-semua-pr">CI merah di semua PR</h2>
+<p><strong>Penyebab:</strong> seluruh repo digate, bukan hanya file yang berubah.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml"># ✗ gate seluruh repo
+run: python scripts/check_schema.py .
+
+# ✓ gate hanya yang berubah
+CHANGED=$(git diff --name-only --diff-filter=d origin/${{ github.base_ref }}...HEAD \
+  | grep -E '\.(sql|php|prisma)$' || true)
+[ -z &quot;$CHANGED&quot; ] &amp;&amp; exit 0
+python scripts/check_schema.py $CHANGED
+</code></pre></div>
+<h2 id="false-positive-pada-kolom-yang-bukan-status">False positive pada kolom yang bukan status</h2>
+<p><strong>Gejala:</strong> <code>mimeType</code>, <code>prototype</code>, <code>fileType</code> dilaporkan sebagai kolom status.</p>
+<p>Checker mencocokkan kata utuh per segmen, jadi kasus umum sudah ditangani. Kalau kamu menemukan yang lolos, dua pilihan:</p>
+<ol>
+<li><strong>Tambahkan pengecualian</strong> di <code>.agent/standards.yml</code>:</li>
+</ol>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">exceptions:
+  - migrations/2024_add_mime_columns.sql
+</code></pre></div>
+<ol start="2">
+<li><strong>Laporkan polanya</strong> — kalau itu benar false positive, perbaikan regex lebih baik daripada pengecualian per berkas.</li>
+</ol>
+<h2 id="angka-berbeda-antar-mesin">Angka berbeda antar mesin</h2>
+<p><strong>Gejala:</strong> di laptopmu 4 error, di CI 9.</p>
+<p><strong>Penyebab paling sering:</strong> berkas config berbeda. Checker menyebutkan sumbernya di baris terakhir:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>preset: balanced (.agent/standards.yml)
+</code></pre></div>
+<p>Kalau salah satu mesin menulis <code>preset: builtin:balanced</code>, berarti <code>.agent/standards.yml</code> tidak ada di sana — belum di-commit, atau dijalankan dari folder yang salah.</p>
+<h2 id="git-push-ditolak-fetch-first"><code>git push</code> ditolak <code>fetch first</code></h2>
+<p>Repo dibuat dengan README atau <code>.gitignore</code> sehingga tidak kosong.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">git pull --rebase origin main
+git push -u origin main
+</code></pre></div>
+<h2 id="permission-denied-publickey-saat-push"><code>Permission denied (publickey)</code> saat push</h2>
+<p>GitHub tidak menerima password akun untuk git. Pakai PAT sebagai password, atau pasang SSH key:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">ssh-keygen -t ed25519 -C &quot;you@example.com&quot;
+cat ~/.ssh/id_ed25519.pub     # tempel di GitHub → Settings → SSH keys
+</code></pre></div>
+<h2 id="installer-gagal-mengambil-berkas">Installer gagal mengambil berkas</h2>
+<p><strong>Gejala:</strong> <code>failed to fetch from GitHub and from the mirror</code>.</p>
+<p>Installer mencoba GitHub lebih dulu, lalu mirror. Kalau keduanya gagal, biasanya jaringan:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -sI https://wilsench.my.id/ironclad/pkg/SKILL.md | head -1
+curl -sI https://raw.githubusercontent.com/wilsench/ironclad/main/skills/ironclad/SKILL.md | head -1
+</code></pre></div>
+<p>Salah satu harus <code>200</code>. Kalau mirror 200 tapi installer tetap gagal, paksa lewat mirror:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">IRONCLAD_BASE=https://wilsench.my.id/ironclad/pkg \
+  bash -c &quot;$(curl -fsSL https://wilsench.my.id/ironclad/install.sh)&quot;
+</code></pre></div>
+<h2 id="agent-memuat-skill-tapi-tidak-mengikutinya">Agent memuat skill tapi tidak mengikutinya</h2>
+<p>Itu berbeda dari "tidak terdeteksi". Agent membaca instruksi lalu memilih jalan lain.</p>
+<p>Yang membantu:
+- sebut aturan spesifik: "ikuti DB-04 untuk kolom status"
+- minta laporannya mengutip ID aturan
+- jalankan checker sebelum commit — model boleh lupa, CI tidak</p>
+<p>Yang tidak membantu: menambah teks peringatan di skill. Instruksi bukan penegakan.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/ci/"><span>Sebelumnya</span><b>CI & pre-commit</b></a>
+<a class="next" href="/ironclad/faq/"><span>Berikutnya</span><b>FAQ</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#skill-tidak-terdeteksi">Skill tidak terdeteksi</a></li>
+<li class="lvl2"><a href="#unknown-preset-strict">unknown preset strict</a></li>
+<li class="lvl2"><a href="#no-sqlphpprisma-files-found">no .sql/.php/.prisma files found</a></li>
+<li class="lvl2"><a href="#ci-merah-di-semua-pr">CI merah di semua PR</a></li>
+<li class="lvl2"><a href="#false-positive-pada-kolom-yang-bukan-status">False positive pada kolom yang bukan status</a></li>
+<li class="lvl2"><a href="#angka-berbeda-antar-mesin">Angka berbeda antar mesin</a></li>
+<li class="lvl2"><a href="#git-push-ditolak-fetch-first">git push ditolak fetch first</a></li>
+<li class="lvl2"><a href="#permission-denied-publickey-saat-push">Permission denied (publickey) saat push</a></li>
+<li class="lvl2"><a href="#installer-gagal-mengambil-berkas">Installer gagal mengambil berkas</a></li>
+<li class="lvl2"><a href="#agent-memuat-skill-tapi-tidak-mengikutinya">Agent memuat skill tapi tidak mengikutinya</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

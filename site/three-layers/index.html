@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tiga lapis — Ironclad</title>
+<meta name="description" content="Kenapa skill saja tidak cukup, dan kenapa checker saja juga tidak. Masing-masing menutup celah yang lain.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/three-layers/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/" class="active" aria-current="page">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Konsep / <b>Tiga lapis</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="tiga-lapis">Tiga lapis</h1>
+<p>Setiap lapis menutup celah yang tidak bisa ditutup lapis lain. Membuang salah satunya membuat sistemnya rapuh dengan cara yang berbeda.</p>
+<h2 id="lapis-1-kebijakan">Lapis 1 — Kebijakan</h2>
+<p><code>.agent/standards.md</code>, di repo kamu, ikut git.</p>
+<p>Isinya aturan ber-ID:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-markdown">### DB-04 — Never store a human label as the status
+
+Status columns hold a code, never the label users read.
+
+    ✗  status varchar(20)         -- 'shipped', 'pending'
+    ✓  status_code smallint       -- FK to ref_order_status
+</code></pre></div>
+<p><strong>Kenapa harus di repo, bukan di skill:</strong> aturan yang hanya ada di skill tidak ada bagi anggota baru, tidak ada bagi agent yang tidak memasang skill itu, dan tidak muncul di diff PR. Aturan yang tidak bisa dikutip dalam review akan hilang dalam dua sprint.</p>
+<h2 id="lapis-2-prosedur">Lapis 2 — Prosedur</h2>
+<p><code>SKILL.md</code> + <code>references/</code>. Ini yang dijalankan agent: urutan langkah, tabel keputusan, dan jebakan yang sudah diketahui.</p>
+<p>Contoh tabel keputusan dari <code>references/database.md</code>:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Situasi</th>
+<th>Pilihan</th>
+<th>Alasan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Status bisa bertambah kapan saja</td>
+<td><code>smallint</code> + lookup + FK</td>
+<td>Menambah nilai = satu baris data, bukan <code>ALTER TABLE</code></td>
+</tr>
+<tr>
+<td>Persis dua keadaan, tidak akan tumbuh</td>
+<td><code>boolean</code></td>
+<td><code>is_active</code>, <code>is_deleted</code></td>
+</tr>
+<tr>
+<td>Nilai harus melalui review kode untuk berubah</td>
+<td><code>enum</code> <strong>boleh</strong></td>
+<td>Enum yang disengaja adalah dokumentasi, bukan kecelakaan</td>
+</tr>
+<tr>
+<td>Label tampilan</td>
+<td>kolom terpisah di lookup table</td>
+<td>Jangan pernah jadi nilai yang disimpan</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Kenapa di skill, bukan di README:</strong> README dibaca sekali. Skill dibaca setiap kali agent mengerjakan tugas yang cocok — dan isinya masuk ke konteks model, bukan ke mata manusia yang sudah lupa.</p>
+<h2 id="lapis-3-mekanisme">Lapis 3 — Mekanisme</h2>
+<p><code>scripts/check_schema.py</code>, dijalankan di CI.</p>
+<p>Ini satu-satunya lapis yang <strong>tidak bisa dilobi model</strong>. Kalau ada yang menulis <code>enum</code>, build merah, apa pun yang dikatakan agent.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --json
+</code></pre></div>
+<p><strong>Kenapa tetap butuh lapis 1 dan 2:</strong> checker hanya tahu pola sintaksis. Ia tidak tahu bahwa <code>status_code = 7</code> di kode aplikasi sebenarnya merujuk "dibatalkan karena cuaca". Ia juga tidak bisa memilih desain yang benar — hanya menolak yang salah.</p>
+<h2 id="ketiganya-dan-akibat-kalau-hilang">Ketiganya, dan akibat kalau hilang</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Yang ada</th>
+<th>Akibat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Skill saja</td>
+<td>Dokumentasi bagus, nol jaminan. Drift dalam sebulan.</td>
+</tr>
+<tr>
+<td>Checker saja</td>
+<td>Semua orang tahu apa yang dilarang, tidak ada yang tahu apa yang <strong>seharusnya</strong>. Orang menambal sampai hijau.</td>
+</tr>
+<tr>
+<td>Kebijakan saja</td>
+<td>Dokumen mati. Tidak dibaca agent, tidak diperiksa mesin.</td>
+</tr>
+<tr>
+<td><strong>Ketiganya</strong></td>
+<td>Agent memilih desain yang benar <strong>dan</strong> mesin menolak yang menyimpang.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="alur-lengkapnya">Alur lengkapnya</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>kamu minta fitur
+      │
+      ▼
+agent melihat daftar skill  ──►  deskripsi cocok?  ──►  baca SKILL.md
+                                                            │
+                                                            ▼
+                                              baca .agent/standards.md
+                                                            │
+                                              klasifikasi tiap kolom
+                                                            │
+                                                            ▼
+                                                   tulis migrasi
+                                                            │
+                                                            ▼
+                                             jalankan check_schema.py
+                                                            │
+                                          exit 0 ───────────┴─────── exit 1
+                                            │                        │
+                                        selesai              perbaiki schema
+                                                                     │
+                                                          (jangan matikan rule)
+</code></pre></div>
+<h2 id="kesalahan-paling-umum">Kesalahan paling umum</h2>
+<p><strong>Menganggap skill sebagai penegakan.</strong> Ini yang paling sering. Skill adalah instruksi; instruksi bisa dilewati. Kalau kamu hanya punya skill dan suatu hari schema-nya melenceng, sistemnya bekerja persis seperti yang dirancang — longgar.</p>
+<p><strong>Menaruh aturan di skill, bukan di repo.</strong> Agent lalu punya aturan yang tidak dilihat reviewer, dan setiap orang memakai versi skill yang berbeda.</p>
+<p><strong>Menjalankan checker tapi tidak pernah memperbaiki temuannya.</strong> Itu <code>warn</code> selamanya, dan repo dengan seluruh warning adalah repo tanpa standar.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/quickstart/"><span>Sebelumnya</span><b>Quickstart</b></a>
+<a class="next" href="/ironclad/presets/"><span>Berikutnya</span><b>Preset</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#lapis-1-kebijakan">Lapis 1 — Kebijakan</a></li>
+<li class="lvl2"><a href="#lapis-2-prosedur">Lapis 2 — Prosedur</a></li>
+<li class="lvl2"><a href="#lapis-3-mekanisme">Lapis 3 — Mekanisme</a></li>
+<li class="lvl2"><a href="#ketiganya-dan-akibat-kalau-hilang">Ketiganya, dan akibat kalau hilang</a></li>
+<li class="lvl2"><a href="#alur-lengkapnya">Alur lengkapnya</a></li>
+<li class="lvl2"><a href="#kesalahan-paling-umum">Kesalahan paling umum</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aturan DB-01…DB-07 — Ironclad</title>
+<meta name="description" content="Tujuh aturan database, masing-masing dengan contoh salah dan benar yang benar-benar diuji checker.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/rules/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/" class="active" aria-current="page">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Referensi / <b>Aturan DB-01…DB-07</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="aturan">Aturan</h1>
+<p>Setiap aturan punya ID, supaya laporan agent dan komentar review bisa mengutipnya. Formatnya <code>DB-nn</code> untuk database; domain lain memakai awalan sendiri (<code>API-</code>, <code>SEC-</code>) lewat <code>references/extending.md</code>.</p>
+<h2 id="ringkasan">Ringkasan</h2>
+<p>Kolom <strong>Status</strong> di bawah adalah perilaku pada preset <code>balanced</code> (default). Pada <code>strict</code> semuanya jadi <code>error</code>; pada <code>legacy-friendly</code> semuanya <code>warn</code>.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Aturan</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DB-01</td>
+<td>Tidak ada <code>enum</code> native di schema</td>
+<td><span class="sev sev-error">error</span></td>
+</tr>
+<tr>
+<td>DB-02</td>
+<td>Tidak ada magic number dibandingkan ke kolom status</td>
+<td><span class="sev sev-error">error</span></td>
+</tr>
+<tr>
+<td>DB-03</td>
+<td>Integer status wajib punya FK atau <code>CHECK</code></td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+<tr>
+<td>DB-04</td>
+<td>Label manusia tidak pernah disimpan sebagai status</td>
+<td><span class="sev sev-error">error</span></td>
+</tr>
+<tr>
+<td>DB-05</td>
+<td><code>boolean</code> hanya untuk biner sejati</td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+<tr>
+<td>DB-06</td>
+<td>Uang pakai <code>bigint</code> satuan terkecil + kode mata uang</td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+<tr>
+<td>DB-07</td>
+<td>Timestamp wajib membawa zona waktu</td>
+<td><span class="sev sev-warn">warn</span></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="db-01-tidak-ada-enum-native">DB-01 — Tidak ada <code>enum</code> native</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✗ ditolak
+status enum('pending','shipped','cancelled')
+
+-- ✓ diterima
+status_code smallint NOT NULL REFERENCES ref_order_status(code)
+</code></pre></div>
+<p><strong>Alasan:</strong> menambah nilai enum butuh <code>ALTER TABLE</code>; pada tabel besar itu mengunci dan bisa berarti downtime. Status bisnis selalu tumbuh — "ditunda karena cuaca", "dibatalkan sebagian" — dan tiap pertumbuhan tidak seharusnya jadi acara migrasi.</p>
+<p><strong>Pengecualian:</strong> enum yang memang <strong>disengaja</strong> dan nilainya hanya berubah lewat review kode. Tulis alasannya di komentar migrasi; pada <code>balanced</code> itu diterima saat review.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-php">// Enum disengaja: nilainya mengikat kontrak API publik, tidak akan tumbuh.
+$table-&gt;enum('visibility', ['public','unlisted','private']);
+</code></pre></div>
+<hr />
+<h2 id="db-02-tidak-ada-magic-number-pada-kolom-status">DB-02 — Tidak ada magic number pada kolom status</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-php">// ✗ ditolak
+if ($order-&gt;status_code === 3) { ... }
+Order::where('status_code', 3)-&gt;get();
+
+// ✓ diterima
+if ($order-&gt;status_code === OrderStatus::SHIPPED) { ... }
+Order::where('status_code', OrderStatus::SHIPPED)-&gt;get();
+</code></pre></div>
+<p><strong>Alasan:</strong> <code>3</code> tidak berarti apa pun saat muncul di log atau stack trace. Enam bulan kemudian tidak ada yang berani mengubahnya, karena tidak ada yang tahu apa itu <code>3</code>.</p>
+<p><strong>Yang tidak dilanggar:</strong> literal di dalam <code>CHECK (...)</code> dan <code>INSERT</code> — itu DDL yang benar, dan checker mengabaikannya secara sadar.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">CONSTRAINT stock_qty_consistent
+  CHECK ((status_code = 88 AND qty = 0) OR (status_code &lt;&gt; 88 AND qty &gt;= 0))
+</code></pre></div>
+<hr />
+<h2 id="db-03-integer-status-wajib-punya-fk-atau-check">DB-03 — Integer status wajib punya FK atau <code>CHECK</code></h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✗ ditolak: 7 bisa masuk, tidak ada yang menolak
+status_code smallint NOT NULL
+
+-- ✓ diterima
+status_code smallint NOT NULL REFERENCES ref_stock_status(code)
+</code></pre></div>
+<p><strong>Alasan:</strong> tanpa FK, kolom integer adalah <code>varchar</code> yang kebetulan berupa angka. Tidak ada yang mencegah <code>status_code = 7</code> saat kode sahnya hanya <code>88..91</code>.</p>
+<p><strong>Peringatan desain:</strong> <code>CHECK</code> yang menghardcode semua kode sah berarti kamu membangun ulang enum. Pakai FK ke lookup table — menambah nilai jadi satu baris data, bukan perubahan schema.</p>
+<hr />
+<h2 id="db-04-label-manusia-tidak-pernah-jadi-nilai-status">DB-04 — Label manusia tidak pernah jadi nilai status</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✗ ditolak
+stock_state varchar(20)    -- 'available', 'empty'
+
+-- ✓ diterima
+status_code smallint NOT NULL REFERENCES ref_stock_status(code)
+</code></pre></div>
+<p><strong>Alasan:</strong> label berubah karena alasan pemasaran ("Kosong" → "Stok Habis"), dan setiap perubahan itu menjadi migrasi data yang menyentuh seluruh baris. Lebih buruk: label tidak pernah diterjemahkan, jadi aplikasi berbahasa Indonesia menyimpan kata Inggris selamanya.</p>
+<p>Label tinggal di lookup table, satu tempat, dan bisa diterjemahkan lewat tabel terpisah kalau perlu.</p>
+<hr />
+<h2 id="db-05-boolean-hanya-untuk-biner-sejati">DB-05 — <code>boolean</code> hanya untuk biner sejati</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✗ ditolak: status punya lebih dari dua keadaan
+is_status boolean
+
+-- ✓ diterima
+is_active    boolean NOT NULL DEFAULT true
+is_deleted   boolean NOT NULL DEFAULT false
+status_code  smallint NOT NULL REFERENCES ref_stock_status(code)
+</code></pre></div>
+<p><strong>Alasan:</strong> <code>is_status</code> menjebak. Hari ini true/false; bulan depan butuh "tertunda", dan kamu menambah <code>is_pending</code>, lalu <code>is_partial</code> — tiga boolean yang saling bertentangan dan tidak ada yang tahu kombinasi mana yang sah.</p>
+<p><strong>Tes cepat:</strong> bisakah kolom ini punya keadaan ketiga dalam dua tahun? Kalau ya, ia bukan boolean.</p>
+<hr />
+<h2 id="db-06-uang-tidak-pernah-float">DB-06 — Uang tidak pernah <code>float</code></h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✗ ditolak
+total_amount  float
+harga_satuan  double precision
+price         decimal(10,2)   -- juga ditolak: lihat catatan
+
+-- ✓ diterima
+total_minor   bigint NOT NULL          -- 1250000 = Rp 12.500,00
+currency      char(3) NOT NULL         -- 'IDR'
+</code></pre></div>
+<p><strong>Alasan:</strong> <code>0.1 + 0.2</code> pada float bukan <code>0.3</code>. Untuk satu transaksi selisihnya nol koma nol sekian; untuk laporan bulanan dengan 200.000 baris, itu selisih yang harus dijelaskan ke auditor.</p>
+<p>Menyimpan satuan terkecil sebagai integer membuat semua aritmetika eksak. <code>decimal</code> sebenarnya eksak juga, tapi tiap basis data memperlakukannya berbeda dan ORM sering mengubahnya jadi string atau float di perjalanan — integer tidak punya ambiguitas itu.</p>
+<hr />
+<h2 id="db-07-timestamp-membawa-zona-waktu">DB-07 — Timestamp membawa zona waktu</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">-- ✗ ditolak
+issued_at  timestamp
+
+-- ✓ diterima
+issued_at  timestamptz
+created_at timestamptz NOT NULL DEFAULT now()
+</code></pre></div>
+<p><strong>Alasan:</strong> <code>timestamp</code> tanpa zona menyimpan "14:30" tanpa menjawab "di mana". Aplikasi dengan pengguna di Jakarta dan server di Singapura akan salah satu jam, dan tidak ada cara memperbaikinya setelah data bertahun-tahun terkumpul.</p>
+<p>Laravel dan Prisma memakai <code>createdAt</code>/<code>updatedAt</code> sebagai konvensi; checker mengenali itu dan tidak melaporkannya.</p>
+<hr />
+<h2 id="uji-sendiri">Uji sendiri</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash"># harus lolos semua preset
+python3 scripts/check_schema.py examples/good.sql --preset strict
+# preset: strict
+# 1 file(s), 0 error(s), 0 warning(s)
+
+# harus gagal di strict
+python3 scripts/check_schema.py examples/bad.sql --preset strict
+</code></pre></div>
+<p><code>examples/good.sql</code> memakai kode <code>88/89/90</code> dan <code>990…993</code> dengan sengaja — untuk membuktikan bahwa kode tak berurutan itu sah, selama terdaftar di lookup table dan dipakai lewat FK.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/presets/"><span>Sebelumnya</span><b>Preset</b></a>
+<a class="next" href="/ironclad/checker/"><span>Berikutnya</span><b>Checker</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#ringkasan">Ringkasan</a></li>
+<li class="lvl2"><a href="#db-01-tidak-ada-enum-native">DB-01 — Tidak ada enum native</a></li>
+<li class="lvl2"><a href="#db-02-tidak-ada-magic-number-pada-kolom-status">DB-02 — Tidak ada magic number pada kolom status</a></li>
+<li class="lvl2"><a href="#db-03-integer-status-wajib-punya-fk-atau-check">DB-03 — Integer status wajib punya FK atau CHECK</a></li>
+<li class="lvl2"><a href="#db-04-label-manusia-tidak-pernah-jadi-nilai-status">DB-04 — Label manusia tidak pernah jadi nilai status</a></li>
+<li class="lvl2"><a href="#db-05-boolean-hanya-untuk-biner-sejati">DB-05 — boolean hanya untuk biner sejati</a></li>
+<li class="lvl2"><a href="#db-06-uang-tidak-pernah-float">DB-06 — Uang tidak pernah float</a></li>
+<li class="lvl2"><a href="#db-07-timestamp-membawa-zona-waktu">DB-07 — Timestamp membawa zona waktu</a></li>
+<li class="lvl2"><a href="#uji-sendiri">Uji sendiri</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

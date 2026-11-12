@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quickstart — Ironclad</title>
+<meta name="description" content="Lima menit dari nol sampai checker hijau di satu repo, tanpa mengganggu pekerjaan lain.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/quickstart/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/" class="active" aria-current="page">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Mulai / <b>Quickstart</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="quickstart">Quickstart</h1>
+<p>Lima menit. Tidak ada langkah yang bisa dilewati tanpa akibat.</p>
+<h2 id="1-pasang-skill-30-detik">1. Pasang skill (30 detik)</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+</code></pre></div>
+<h2 id="2-bootstrap-repo-10-detik">2. Bootstrap repo (10 detik)</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">cd ~/proyek-kamu
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project . --preset balanced
+</code></pre></div>
+<p>Atau, kalau skill sudah terpasang dan kamu mau lebih memilih lewat menu:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 ~/.agents/skills/ironclad/scripts/init_standards.py . --with-checker
+</code></pre></div>
+<p>Keduanya menulis berkas yang sama:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>.agent/standards.md          aturan ber-ID, dibaca manusia dan agent
+.agent/standards.yml         tingkat penegakan, dibaca checker dan CI
+scripts/check_schema.py      linter
+scripts/presets/*.yml        tiga preset
+</code></pre></div>
+<h2 id="3-commit-10-detik">3. Commit (10 detik)</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">git add .agent scripts
+git commit -m &quot;chore: adopt ironclad standards&quot;
+</code></pre></div>
+<blockquote>
+<p>Langkah ini tidak opsional. Kalau <code>.agent/</code> tidak ikut commit, setiap anggota tim punya aturan sendiri lagi — tepat masalah yang mau kamu selesaikan.</p>
+</blockquote>
+<h2 id="4-jalankan-checker-10-detik">4. Jalankan checker (10 detik)</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py .
+</code></pre></div>
+<p>Yang kamu lihat, tergantung isi repo:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>bad.sql:4: [DB-01] ERROR SQL/prisma enum column; use integer code + lookup table (see DB-03)
+bad.sql:6: [DB-04] ERROR status stored as text (`stock_state`); use smallint code + lookup table
+
+preset: balanced (.agent/standards.yml)
+1 file(s), 2 error(s), 2 warning(s)
+</code></pre></div>
+<p>Exit code: <code>0</code> bersih, <code>1</code> ada error, <code>2</code> salah pakai.</p>
+<h2 id="5-jangan-langsung-blokir-ci">5. Jangan langsung blokir CI</h2>
+<p>Repo lama akan punya ratusan temuan. Kalau kamu pasang sebagai gate sekarang, dalam sehari ada yang menghapusnya dari CI.</p>
+<p>Mulai dari yang paling longgar:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --preset legacy-friendly   # semua warning, exit 0
+</code></pre></div>
+<p>Kalau hasilnya sudah bisa dicerna, naikkan:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/init_standards.py . --preset balanced --force
+</code></pre></div>
+<h2 id="6-pasang-di-ci">6. Pasang di CI</h2>
+<p>Gate <strong>hanya file yang berubah</strong>, bukan seluruh repo:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">- name: Gate changed schema files
+  if: github.event_name == 'pull_request'
+  run: |
+    CHANGED=$(git diff --name-only --diff-filter=d origin/${{ github.base_ref }}...HEAD \
+      | grep -E '\.(sql|php|prisma)$' || true)
+    [ -z &quot;$CHANGED&quot; ] &amp;&amp; exit 0
+    python scripts/check_schema.py $CHANGED
+</code></pre></div>
+<h2 id="7-buktikan-benar-benar-bekerja">7. Buktikan benar-benar bekerja</h2>
+<p>Jangan percaya "sudah dipasang". Tiga percobaan ini yang menentukan:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py examples/good.sql --preset strict; echo $?   # harus 0
+python3 scripts/check_schema.py examples/bad.sql  --preset strict; echo $?   # harus 1
+</code></pre></div>
+<p>Lalu buat PR yang menambah kolom <code>enum</code> — CI harus merah. Kalau tidak merah, CI-nya yang salah, bukan checker-nya.</p>
+<h2 id="hasil-akhir">Hasil akhir</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>repo/
+├── .agent/
+│   ├── standards.md      ← agent membaca ini sebelum menulis DDL
+│   └── standards.yml     ← CI membaca ini untuk tahu apa yang memblokir
+├── scripts/
+│   ├── check_schema.py
+│   └── presets/
+└── schema/migrations/…   ← pekerjaan biasa
+</code></pre></div>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/how-agents-use-it/"><span>Sebelumnya</span><b>Cara agent memakainya</b></a>
+<a class="next" href="/ironclad/three-layers/"><span>Berikutnya</span><b>Tiga lapis</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#1-pasang-skill-30-detik">1. Pasang skill (30 detik)</a></li>
+<li class="lvl2"><a href="#2-bootstrap-repo-10-detik">2. Bootstrap repo (10 detik)</a></li>
+<li class="lvl2"><a href="#3-commit-10-detik">3. Commit (10 detik)</a></li>
+<li class="lvl2"><a href="#4-jalankan-checker-10-detik">4. Jalankan checker (10 detik)</a></li>
+<li class="lvl2"><a href="#5-jangan-langsung-blokir-ci">5. Jangan langsung blokir CI</a></li>
+<li class="lvl2"><a href="#6-pasang-di-ci">6. Pasang di CI</a></li>
+<li class="lvl2"><a href="#7-buktikan-benar-benar-bekerja">7. Buktikan benar-benar bekerja</a></li>
+<li class="lvl2"><a href="#hasil-akhir">Hasil akhir</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

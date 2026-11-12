@@ -1,7 +1,7 @@
 ---
 name: ironclad
 description: "Enforce team engineering standards with presets."
-version: 0.3.1
+version: 0.4.0
 author: Chia Wilsen, Hermes Agent
 license: MIT
 platforms: [linux, macos, windows]
@@ -16,6 +16,16 @@ metadata:
 Makes an agent build software the way *this company* builds it, not the way the model personally prefers. Ships a policy file the repo owns, a decision procedure the agent follows, and a checker that CI can enforce. The rules live in the repo (`.agent/standards.md`) — this skill is the executor, not the rulebook.
 
 Ships with a worked database policy (integer codes over enums) because that is where teams drift fastest; the same shape extends to any domain via `references/extending.md`.
+
+## Install (one line, any agent)
+
+```bash
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash          # ~/.agents/skills
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project .
+```
+
+Docs: <https://wilsench.my.id/ironclad/>. Python is not needed to install; only the checker needs it.
 
 ## When to Use
 

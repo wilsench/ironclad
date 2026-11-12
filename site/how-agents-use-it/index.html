@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cara agent memakainya — Ironclad</title>
+<meta name="description" content="Skill aktif otomatis tanpa perintah, tapi hanya kalau deskripsinya cocok dengan tugas. Ini cara kerjanya dan cara memaksanya.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/how-agents-use-it/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/" class="active" aria-current="page">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Mulai / <b>Cara agent memakainya</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="cara-agent-memakainya">Cara agent memakainya</h1>
+<p>Jawaban singkat: <strong>otomatis, tanpa kamu memerintah.</strong> Tapi ada satu syarat — dan kalau syarat itu tidak terpenuhi, skill-nya diam saja.</p>
+<h2 id="yang-terjadi-setiap-percakapan">Yang terjadi setiap percakapan</h2>
+<p>Semua agent yang mendukung Agent Skills memakai pola <strong>progressive disclosure</strong>:</p>
+<ol>
+<li><strong>Discovery</strong> — setiap turn, agent melihat daftar skill yang terpasang: nama + deskripsi. Bukan isi lengkapnya.</li>
+<li><strong>Activation</strong> — kalau deskripsinya cocok dengan tugasmu, agent membaca <code>SKILL.md</code> penuh.</li>
+<li><strong>Execution</strong> — agent mengikuti prosedurnya.</li>
+</ol>
+<p>Artinya: skill ini <strong>tidak</strong> "menjalankan segalanya". Ia menunggu ada pekerjaan yang cocok. Ini disengaja — kalau setiap skill dimuat penuh setiap turn, konteks habis sebelum kamu bertanya apa pun.</p>
+<p>Deskripsi Ironclad sengaja dibuat pendek dan tajam, karena itulah satu-satunya yang dilihat agent saat memilih:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>Enforce team engineering standards with presets.
+</code></pre></div>
+<h2 id="kapan-ia-aktif-sendiri">Kapan ia aktif sendiri</h2>
+<p>Agent akan memuatnya ketika tugasmu menyentuh:</p>
+<ul>
+<li>membuat tabel, migration, atau schema baru</li>
+<li>mengubah kolom status</li>
+<li>review PR yang berisi DDL</li>
+<li>pertanyaan "boleh pakai enum?" / "bagaimana menambah status baru?"</li>
+</ul>
+<h2 id="kapan-ia-diam">Kapan ia diam</h2>
+<ul>
+<li>kamu bertanya soal CSS, deploy, atau bug runtime yang tidak menyentuh schema</li>
+<li>repo belum punya <code>.agent/standards.md</code>, dan tugasnya bukan membuat schema</li>
+</ul>
+<p>Kalau kamu ingin ia selalu ikut, sebut namanya:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>pakai skill ironclad untuk migration ini
+</code></pre></div>
+<h2 id="cara-memaksa-per-agent">Cara memaksa per agent</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Panggil eksplisit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claude Code</strong></td>
+<td><code>&gt; gunakan skill ironclad</code> atau <code>/ironclad</code> bila didaftarkan sebagai slash command</td>
+</tr>
+<tr>
+<td><strong>Codex CLI</strong></td>
+<td><code>$ironclad</code> untuk menyebut skill, atau <code>/skills</code> untuk melihat daftarnya</td>
+</tr>
+<tr>
+<td><strong>opencode</strong></td>
+<td><code>skill({ name: "ironclad" })</code> lewat tool <code>skill</code>; daftar muncul di deskripsi tool</td>
+</tr>
+<tr>
+<td><strong>Antigravity</strong></td>
+<td><code>/&lt;nama-skill&gt;</code> di kotak pesan</td>
+</tr>
+<tr>
+<td><strong>Cursor</strong></td>
+<td>sebut namanya di prompt; Cursor membaca <code>.agents/skills</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="yang-tidak-boleh-diandalkan">Yang tidak boleh diandalkan</h2>
+<p><strong>Skill bukan penegak.</strong> Model bisa melewati instruksi — itu sifat model, bukan bug skill. Yang benar-benar menahan dua puluh programmer adalah checker di CI:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --json   # exit 1 = build gagal
+</code></pre></div>
+<p>Karena itu ada tiga lapis, bukan satu. Kalau kamu hanya memasang skill tanpa checker, kamu punya dokumentasi yang bagus dan tidak ada jaminan.</p>
+<h2 id="kalau-agent-mengabaikan-skill">Kalau agent mengabaikan skill</h2>
+<p>Urutan diagnosis, dari yang paling sering:</p>
+<ol>
+<li><strong>Deskripsi tidak cocok.</strong> Agent memilih berdasarkan <code>description</code>. Kalau tugasmu "menambah kolom", dan deskripsinya tidak menyebut schema, ia tidak akan memuatnya.</li>
+<li><strong>Skill tidak terdeteksi.</strong> Cek lokasi: <code>ls ~/.agents/skills/ironclad/SKILL.md</code>. Nama file harus <code>SKILL.md</code>, huruf besar.</li>
+<li><strong>Belum restart.</strong> Codex, Antigravity, dan opencode membaca daftar skill saat start.</li>
+<li><strong>Kalah oleh skill lain.</strong> Kalau ada dua skill dengan <code>name: ironclad</code>, agent bisa memilih yang salah. Hapus duplikatnya.</li>
+<li><strong>Konteks penuh.</strong> Codex membatasi daftar skill jadi ~2% context window; kalau kamu punya 50 skill, sebagian disembunyikan. Kurangi skill yang tidak dipakai.</li>
+</ol>
+<h2 id="apa-yang-terjadi-setelah-aktif">Apa yang terjadi setelah aktif</h2>
+<p>Agent membaca <code>.agent/standards.md</code> sebelum menulis DDL, mengklasifikasikan tiap kolom status, menulis migrasi sesuai aturan, menjalankan checker, lalu melaporkan penyimpangan dengan ID aturan.</p>
+<p>Kalau <code>.agent/standards.md</code> tidak ada, ia menjalankan <code>init_standards.py</code> — dan kalau tidak ada TTY, otomatis memakai preset <code>balanced</code> tanpa menggantung menunggu jawaban.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/install/"><span>Sebelumnya</span><b>Pasang di agent</b></a>
+<a class="next" href="/ironclad/quickstart/"><span>Berikutnya</span><b>Quickstart</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#yang-terjadi-setiap-percakapan">Yang terjadi setiap percakapan</a></li>
+<li class="lvl2"><a href="#kapan-ia-aktif-sendiri">Kapan ia aktif sendiri</a></li>
+<li class="lvl2"><a href="#kapan-ia-diam">Kapan ia diam</a></li>
+<li class="lvl2"><a href="#cara-memaksa-per-agent">Cara memaksa per agent</a></li>
+<li class="lvl2"><a href="#yang-tidak-boleh-diandalkan">Yang tidak boleh diandalkan</a></li>
+<li class="lvl2"><a href="#kalau-agent-mengabaikan-skill">Kalau agent mengabaikan skill</a></li>
+<li class="lvl2"><a href="#apa-yang-terjadi-setelah-aktif">Apa yang terjadi setelah aktif</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checker — Ironclad</title>
+<meta name="description" content="Referensi lengkap check_schema.py — argumen, exit code, format JSON, apa yang dipindai dan apa yang tidak.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/checker/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/" class="active" aria-current="page">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Referensi / <b>Checker</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="checker">Checker</h1>
+<p><code>scripts/check_schema.py</code> — linter schema tanpa dependensi (stdlib Python saja, tidak butuh PyYAML).</p>
+<h2 id="penggunaan">Penggunaan</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py [paths…] [opsi]
+</code></pre></div>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Opsi</th>
+<th>Arti</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>paths…</code></td>
+<td>file atau direktori; default <code>.</code></td>
+</tr>
+<tr>
+<td><code>--preset NAME</code></td>
+<td><code>balanced</code> · <code>strict</code> · <code>legacy-friendly</code></td>
+</tr>
+<tr>
+<td><code>--config FILE</code></td>
+<td>config eksplisit, menimpa <code>--preset</code></td>
+</tr>
+<tr>
+<td><code>--json</code></td>
+<td>keluaran mesin</td>
+</tr>
+<tr>
+<td><code>--strict</code></td>
+<td>eskalasi semua warn jadi error (flag lama)</td>
+</tr>
+<tr>
+<td><code>--list-presets</code></td>
+<td>tampilkan preset beserta hitungannya</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="exit-code">Exit code</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Kode</th>
+<th>Arti</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>bersih, atau hanya warning pada preset yang tidak memblokir</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>ada error yang memblokir</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>salah pakai — preset tidak dikenal, config tidak ditemukan, tidak ada file</td>
+</tr>
+</tbody>
+</table></div>
+<p>Bisa dipakai langsung sebagai gate CI tanpa membungkusnya dengan <code>grep</code>.</p>
+<h2 id="keluaran-manusia">Keluaran manusia</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>bad.sql:4: [DB-01] ERROR SQL/prisma enum column; use integer code + lookup table (see DB-03)
+bad.sql:6: [DB-04] ERROR status stored as text (`stock_state`); use smallint code + lookup table
+
+preset: balanced (.agent/standards.yml)
+1 file(s), 2 error(s), 2 warning(s)
+</code></pre></div>
+<p>Baris terakhir menyebut <strong>dari mana</strong> presetnya dibaca — penting saat dua orang mendapat hasil berbeda dan penyebabnya berkas config yang tertinggal.</p>
+<h2 id="keluaran-json">Keluaran JSON</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --json
+</code></pre></div>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-json">{
+  &quot;preset&quot;: &quot;balanced&quot;,
+  &quot;source&quot;: &quot;preset:balanced&quot;,
+  &quot;files&quot;: 1,
+  &quot;findings&quot;: [
+    {
+      &quot;rule&quot;: &quot;DB-01&quot;,
+      &quot;severity&quot;: &quot;error&quot;,
+      &quot;line&quot;: 4,
+      &quot;msg&quot;: &quot;SQL/prisma enum column; use integer code + lookup table (see DB-03)&quot;,
+      &quot;file&quot;: &quot;examples/bad.sql&quot;
+    }
+  ],
+  &quot;errors&quot;: 2,
+  &quot;warnings&quot;: 2
+}
+</code></pre></div>
+<p>Field <code>source</code> bisa berupa path berkas (<code>.agent/standards.yml</code>), nama preset (<code>preset:strict</code>), atau <code>builtin:balanced</code> kalau tidak ada config sama sekali.</p>
+<h2 id="apa-yang-dipindai">Apa yang dipindai</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Ekstensi</th>
+<th>Yang dibaca</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.sql</code></td>
+<td><code>CREATE TABLE</code>, <code>ALTER TABLE … ADD COLUMN</code>, <code>INSERT</code> (untuk melewati literal)</td>
+</tr>
+<tr>
+<td><code>.php</code></td>
+<td>migration Laravel: <code>$table-&gt;enum()</code>, <code>$table-&gt;string('status')</code>, <code>$table-&gt;tinyInteger()</code></td>
+</tr>
+<tr>
+<td><code>.prisma</code></td>
+<td><code>enum</code> block, tipe kolom, <code>@relation</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>File yang dilewati otomatis: <code>node_modules</code>, <code>.git</code>, <code>vendor</code>, <code>dist</code>, <code>build</code>, dan file berukuran tidak wajar.</p>
+<h2 id="apa-yang-tidak-terdeteksi">Apa yang <strong>tidak</strong> terdeteksi</h2>
+<p>Ini penting, karena checker yang dipercaya berlebihan lebih berbahaya daripada tidak ada checker.</p>
+<ul>
+<li><strong>Query builder ORM</strong> — <code>Order::where('status_code', 3)</code> di <code>app/</code> tidak dibaca; hanya berkas dengan ekstensi di atas.</li>
+<li><strong>SQL yang dirangkai runtime</strong> — string yang dibangun dari variabel tidak bisa dinilai tanpa mengeksekusi kode.</li>
+<li><strong>Tipe di TypeScript</strong> — <code>type Status = 1 | 2 | 3</code> tidak terlihat sama sekali.</li>
+<li><strong>Kesalahan semantik</strong> — kolom bernama <code>status_code</code> yang berisi kode salah tetap lolos secara sintaksis.</li>
+<li><strong>Konvensi lintas-berkas</strong> — lookup table di berkas A dan FK di berkas B dinilai per berkas untuk DB-03.</li>
+</ul>
+<p>Untuk semua itu, reviewer manusia tetap lapis terakhir. Checker menangkap pola yang mahal dan berulang, bukan menggantikan penilaian.</p>
+<h2 id="menulis-aturan-sendiri">Menulis aturan sendiri</h2>
+<p>Lihat <a href="/ironclad/extending/">Memperluas</a> — cara menambah domain aturan (API, security) beserta pemeriksanya.</p>
+<h2 id="hasil-uji-pada-fixture">Hasil uji pada fixture</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>examples/good.sql            balanced 0 error 0 warn   exit 0
+                             strict   0 error 0 warn   exit 0
+examples/bad.sql             balanced 2 error 2 warn   exit 1
+                             legacy   0 error 4 warn   exit 0
+examples/bad_migration.php   2 temuan
+examples/bad.prisma          1 temuan
+</code></pre></div>
+<p>Angka-angka ini ikut diuji di CI repo ini lewat <code>.github/workflows/engineering-standards.yml</code>, jadi kalau checker-nya rusak, CI yang memberi tahu lebih dulu — bukan penggunanya.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/rules/"><span>Sebelumnya</span><b>Aturan DB-01…DB-07</b></a>
+<a class="next" href="/ironclad/extending/"><span>Berikutnya</span><b>Memperluas</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#penggunaan">Penggunaan</a></li>
+<li class="lvl2"><a href="#exit-code">Exit code</a></li>
+<li class="lvl2"><a href="#keluaran-manusia">Keluaran manusia</a></li>
+<li class="lvl2"><a href="#keluaran-json">Keluaran JSON</a></li>
+<li class="lvl2"><a href="#apa-yang-dipindai">Apa yang dipindai</a></li>
+<li class="lvl2"><a href="#apa-yang-tidak-terdeteksi">Apa yang tidak terdeteksi</a></li>
+<li class="lvl2"><a href="#menulis-aturan-sendiri">Menulis aturan sendiri</a></li>
+<li class="lvl2"><a href="#hasil-uji-pada-fixture">Hasil uji pada fixture</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

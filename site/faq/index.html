@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FAQ — Ironclad</title>
+<meta name="description" content="Pertanyaan yang paling sering muncul, dijawab langsung tanpa berputar.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/faq/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/" class="active" aria-current="page">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Operasional / <b>FAQ</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="faq">FAQ</h1>
+<h2 id="apakah-saya-harus-menjalankan-python">Apakah saya harus menjalankan Python?</h2>
+<p><strong>Untuk memasang: tidak.</strong> Installer-nya bash + curl. Menulis <code>.agent/standards.md</code> dan <code>.agent/standards.yml</code> juga tidak butuh Python kalau kamu memakai <code>--project</code> pada installer.</p>
+<p><strong>Untuk checker: ya</strong>, Python 3.8+. Tapi checker itu opsional — kalau kamu hanya ingin agent membaca aturannya, cukup skill + <code>.agent/standards.md</code>.</p>
+<h2 id="apakah-skill-aktif-otomatis-setiap-kali-agent-jalan">Apakah skill aktif otomatis setiap kali agent jalan?</h2>
+<p>Ya, tapi <strong>bukan berarti selalu dipakai</strong>. Setiap turn agent melihat daftar nama + deskripsi skill. Ia memuat <code>SKILL.md</code> penuh hanya kalau tugasnya cocok.</p>
+<p>Jadi: tidak ada perintah yang perlu dijalankan, dan tidak ada pertanyaan "mau pakai skill ini?". Agent memutuskan sendiri, seperti memilih alat.</p>
+<p>Kalau kamu ingin memastikan, sebut namanya: <code>pakai skill ironclad</code>.</p>
+<h2 id="kalau-tidak-mau-sepanjang-ini-cukup-satu-perintah">Kalau tidak mau sepanjang ini, cukup satu perintah?</h2>
+<p>Ya:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+</code></pre></div>
+<p>Itu saja untuk memasang. Untuk memakainya di satu repo:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project .
+</code></pre></div>
+<p>Dua perintah, tanpa Python, tanpa clone, tanpa baca dokumen.</p>
+<h2 id="installer-ini-bisa-untuk-selain-hermes">Installer ini bisa untuk selain Hermes?</h2>
+<p>Ya, dan itu target utamanya. Enam target: Hermes, Claude Code, Codex, Cursor, opencode, Antigravity. Formatnya standar Agent Skills (<code>SKILL.md</code>), bukan format khusus Hermes.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">… | bash -s -- --all              # semua agent yang terdeteksi
+… | bash -s -- --target claude
+… | bash -s -- --target gemini    # Antigravity global
+… | bash -s -- --target opencode
+</code></pre></div>
+<h2 id="bisa-langsung-pakai-wilsenchironclad">Bisa langsung pakai <code>wilsench/ironclad</code>?</h2>
+<p>Untuk Hermes, ya — begitu repo GitHub-nya terbit:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">hermes skills install wilsench/ironclad/skills/ironclad
+</code></pre></div>
+<p>Untuk agent lain, tidak ada perintah <code>install &lt;owner&gt;/&lt;repo&gt;</code> universal. Yang portable adalah curl ke <code>install.sh</code> — dan itu <strong>sudah berfungsi sekarang</strong>, karena installer punya mirror di <code>wilsench.my.id</code>, tidak menunggu GitHub.</p>
+<h2 id="apakah-curl-bash-aman">Apakah <code>curl | bash</code> aman?</h2>
+<p>Installer-nya 180 baris bash dan bisa kamu baca dulu:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | less
+</code></pre></div>
+<p>Yang dilakukannya: mengunduh 10 berkas teks, menyalinnya ke satu folder skill, dan — hanya kalau kamu memberi <code>--project</code> — menulis <code>.agent/</code> di repo yang kamu sebut. Tidak ada <code>sudo</code>, tidak mengubah shell profile, tidak menyentuh skill lain.</p>
+<h2 id="apakah-bisa-dipakai-tanpa-git">Apakah bisa dipakai tanpa Git?</h2>
+<p>Bisa. Skill hanya folder berisi berkas. Checker hanya butuh path. Yang hilang hanya dua hal: <code>.agent/standards.md</code> tidak punya riwayat perubahan, dan tidak ada CI yang menjalankannya.</p>
+<h2 id="kenapa-tidak-pakai-enum-saja">Kenapa tidak pakai <code>enum</code> saja?</h2>
+<p>Karena menambah satu nilai enum berarti <code>ALTER TABLE</code>. Di MySQL, pada tabel besar, itu mengunci tabel. Status bisnis selalu tumbuh, dan tiap pertumbuhan tidak seharusnya jadi acara migrasi.</p>
+<p>Tapi <code>enum</code> <strong>tidak dilarang total</strong>. Kalau nilainya memang disengaja dan hanya berubah lewat review kode, tulis alasannya di komentar migrasi — pada <code>balanced</code> itu diterima.</p>
+<h2 id="kalau-kodenya-88-99-bukan-0-1-2">Kalau kodenya <code>88</code>, <code>99</code>, bukan 0, 1, 2?</h2>
+<p>Sah sepenuhnya. Kode tidak harus berurutan dan tidak harus mulai dari nol. Yang membuatnya aman: kodenya terdaftar di lookup table (sehingga <code>87</code> ditolak database) dan dipakai lewat konstanta bernama di kode aplikasi.</p>
+<p>Menyisakan blok — <code>8x</code> untuk stok, <code>9x</code>/<code>99x</code> untuk keberangkatan — membuat angka mentah masih bisa dibaca saat muncul di hasil query enam bulan kemudian.</p>
+<h2 id="apakah-ini-menggantikan-review-code">Apakah ini menggantikan review code?</h2>
+<p>Tidak. Checker menangkap pola sintaksis; ia tidak tahu apakah <code>status_code = 7</code> secara bisnis benar. Ia mengurangi pekerjaan review yang berulang, bukan menggantikannya.</p>
+<h2 id="kalau-aturan-perusahaan-kami-berbeda">Kalau aturan perusahaan kami berbeda?</h2>
+<p>Itu intinya. Ubah <code>.agent/standards.md</code> dan <code>.agent/standards.yml</code> di repo kamu. Skill-nya tidak perlu diubah, dan tidak perlu install ulang. Aturan yang tidak cocok bisa di-set <code>warn</code> atau <code>off</code> — asal alasannya masuk PR.</p>
+<h2 id="apakah-ada-auto-update">Apakah ada auto-update?</h2>
+<p>Belum. <code>hermes skills update</code> memakai URL saat install; agent lain perlu menjalankan ulang installer. Belum ada changelog bertanda versi. Kalau kamu mengubah aturan, yang perlu dibagikan adalah <code>.agent/standards.md</code> di repo — itu ikut git dan otomatis sampai ke semua orang.</p>
+<h2 id="berapa-biaya-konteksnya">Berapa biaya konteksnya?</h2>
+<p><code>SKILL.md</code> sekitar 7 KB, tapi agent hanya memuatnya saat tugasnya cocok. Yang selalu ada di konteks hanyalah satu baris deskripsi. Referensi (<code>database.md</code>, <code>presets.md</code>) hanya dibaca kalau agent perlu detail.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/troubleshooting/"><span>Sebelumnya</span><b>Troubleshooting</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#apakah-saya-harus-menjalankan-python">Apakah saya harus menjalankan Python?</a></li>
+<li class="lvl2"><a href="#apakah-skill-aktif-otomatis-setiap-kali-agent-jalan">Apakah skill aktif otomatis setiap kali agent jalan?</a></li>
+<li class="lvl2"><a href="#kalau-tidak-mau-sepanjang-ini-cukup-satu-perintah">Kalau tidak mau sepanjang ini, cukup satu perintah?</a></li>
+<li class="lvl2"><a href="#installer-ini-bisa-untuk-selain-hermes">Installer ini bisa untuk selain Hermes?</a></li>
+<li class="lvl2"><a href="#bisa-langsung-pakai-wilsenchironclad">Bisa langsung pakai wilsench/ironclad?</a></li>
+<li class="lvl2"><a href="#apakah-curl-bash-aman">Apakah curl | bash aman?</a></li>
+<li class="lvl2"><a href="#apakah-bisa-dipakai-tanpa-git">Apakah bisa dipakai tanpa Git?</a></li>
+<li class="lvl2"><a href="#kenapa-tidak-pakai-enum-saja">Kenapa tidak pakai enum saja?</a></li>
+<li class="lvl2"><a href="#kalau-kodenya-88-99-bukan-0-1-2">Kalau kodenya 88, 99, bukan 0, 1, 2?</a></li>
+<li class="lvl2"><a href="#apakah-ini-menggantikan-review-code">Apakah ini menggantikan review code?</a></li>
+<li class="lvl2"><a href="#kalau-aturan-perusahaan-kami-berbeda">Kalau aturan perusahaan kami berbeda?</a></li>
+<li class="lvl2"><a href="#apakah-ada-auto-update">Apakah ada auto-update?</a></li>
+<li class="lvl2"><a href="#berapa-biaya-konteksnya">Berapa biaya konteksnya?</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

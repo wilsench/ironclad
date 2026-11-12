@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Memperluas — Ironclad</title>
+<meta name="description" content="Menambah domain aturan baru — API, keamanan, performa — tanpa menyentuh aturan database yang sudah ada.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/extending/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/" class="active" aria-current="page">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Referensi / <b>Memperluas</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="memperluas">Memperluas</h1>
+<p>Aturan database adalah contoh yang sudah jadi. Bentuk yang sama dipakai untuk domain lain: ID berawalan, kebijakan di repo, pemeriksaan yang bisa diotomatiskan.</p>
+<h2 id="langkah-1-pilih-awalan-dan-nomor">Langkah 1 — Pilih awalan dan nomor</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Awalan</th>
+<th>Domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DB-</code></td>
+<td>database &amp; schema</td>
+</tr>
+<tr>
+<td><code>API-</code></td>
+<td>kontrak HTTP: versi, bentuk error, pagination</td>
+</tr>
+<tr>
+<td><code>SEC-</code></td>
+<td>rahasia, otorisasi, validasi input</td>
+</tr>
+<tr>
+<td><code>PERF-</code></td>
+<td>query N+1, indeks, batas ukuran respons</td>
+</tr>
+</tbody>
+</table></div>
+<p>Nomor tidak pernah dipakai ulang, walau aturannya dihapus. Kalau <code>DB-03</code> dicabut, nomor itu pensiun — bukan diberikan ke aturan baru, karena komentar review lama akan menunjuk aturan yang salah.</p>
+<h2 id="langkah-2-tambahkan-ke-kebijakan-repo">Langkah 2 — Tambahkan ke kebijakan repo</h2>
+<p><code>.agent/standards.md</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-markdown">### API-01 — Every list endpoint is paginated
+
+An unpaginated list is a production incident waiting for a data set large enough.
+
+    ✗  GET /orders                → 200 [{...}]  (all rows)
+    ✓  GET /orders?cursor=…       → 200 {data, next_cursor}
+</code></pre></div>
+<p>Format yang terbukti berguna: <strong>satu paragraf alasan</strong>, lalu contoh salah/benar. Agent memakai contoh, reviewer memakai alasan.</p>
+<h2 id="langkah-3-tambahkan-ke-config-presets">Langkah 3 — Tambahkan ke config presets</h2>
+<p><code>assets/presets/balanced.yml</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">rules:
+  API-01: error
+  API-02: warn
+</code></pre></div>
+<p>Tanpa entri di config, aturan tetap ada di dokumen tapi tidak pernah diperiksa — dan aturan yang tidak diperiksa akan dilupakan.</p>
+<h2 id="langkah-4-tulis-pemeriksanya">Langkah 4 — Tulis pemeriksanya</h2>
+<p>Dua pilihan, dari yang paling murah:</p>
+<p><strong>A. Regex, di checker yang sudah ada.</strong> Cocok untuk pola sintaksis (<code>app.get('/orders',</code> tanpa <code>.limit(</code>).</p>
+<p><strong>B. Skrip terpisah.</strong> Cocok kalau butuh parsing nyata. Simpan di <code>scripts/</code> skill, panggil dari CI yang sama:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --json
+python3 scripts/check_api.py . --json
+</code></pre></div>
+<p>Jangan memaksakan semuanya ke satu skrip. Dua checker kecil yang jelas lebih baik daripada satu skrip yang menebak-nebak.</p>
+<h2 id="langkah-5-uji-dengan-fixture">Langkah 5 — Uji dengan fixture</h2>
+<p>Setiap aturan butuh dua berkas: satu yang harus gagal, satu yang harus lolos.</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>examples/good.sql      → exit 0 di semua preset
+examples/bad.sql       → exit 1 di balanced &amp; strict
+</code></pre></div>
+<p>Tanpa keduanya, kamu tidak tahu apakah aturannya bekerja atau hanya kebetulan tidak menemukan apa pun. CI repo ini menguji keduanya setiap push.</p>
+<h2 id="contoh-nyata-aturan-keamanan">Contoh nyata: aturan keamanan</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-markdown">### SEC-01 — No secrets in tracked files
+
+    ✗  const API_KEY = &quot;sk-live-...&quot;
+    ✓  const API_KEY = process.env.API_KEY
+</code></pre></div>
+<p>Pemeriksa sederhana: regex terhadap pola kunci populer, dilewati untuk <code>.env.example</code> dan fixture. Ini menangkap kesalahan yang paling mahal dan paling sering — dan tidak butuh AST.</p>
+<h2 id="batas-yang-perlu-diakui">Batas yang perlu diakui</h2>
+<p>Semakin jauh dari sintaksis, semakin lemah pemeriksaan otomatis:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Aturan</th>
+<th>Bisa diperiksa mesin?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enum</code> di schema</td>
+<td>Ya, andal</td>
+</tr>
+<tr>
+<td>Uang sebagai float</td>
+<td>Ya, andal</td>
+</tr>
+<tr>
+<td>Endpoint tanpa pagination</td>
+<td>Sebagian — hanya pola yang dikenal</td>
+</tr>
+<tr>
+<td>"Error response konsisten"</td>
+<td>Sulit; butuh skema OpenAPI</td>
+</tr>
+<tr>
+<td>"Arsitektur layer benar"</td>
+<td>Tidak. Ini tugas review, bukan linter</td>
+</tr>
+</tbody>
+</table></div>
+<p>Kalau sebuah aturan tidak bisa diperiksa, itu tidak berarti aturannya buruk — hanya berarti penegakannya manusia. Tulis tetap di <code>.agent/standards.md</code>, tandai sebagai <em>review-only</em>, supaya agent tetap membacanya sebagai niat tim.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/checker/"><span>Sebelumnya</span><b>Checker</b></a>
+<a class="next" href="/ironclad/ci/"><span>Berikutnya</span><b>CI & pre-commit</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#langkah-1-pilih-awalan-dan-nomor">Langkah 1 — Pilih awalan dan nomor</a></li>
+<li class="lvl2"><a href="#langkah-2-tambahkan-ke-kebijakan-repo">Langkah 2 — Tambahkan ke kebijakan repo</a></li>
+<li class="lvl2"><a href="#langkah-3-tambahkan-ke-config-presets">Langkah 3 — Tambahkan ke config presets</a></li>
+<li class="lvl2"><a href="#langkah-4-tulis-pemeriksanya">Langkah 4 — Tulis pemeriksanya</a></li>
+<li class="lvl2"><a href="#langkah-5-uji-dengan-fixture">Langkah 5 — Uji dengan fixture</a></li>
+<li class="lvl2"><a href="#contoh-nyata-aturan-keamanan">Contoh nyata: aturan keamanan</a></li>
+<li class="lvl2"><a href="#batas-yang-perlu-diakui">Batas yang perlu diakui</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

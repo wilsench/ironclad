@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ikhtisar — Ironclad</title>
+<meta name="description" content="Ironclad memberi setiap AI coding agent satu rulebook yang sama, plus linter yang menegakkannya di CI.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/overview/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/" class="active" aria-current="page">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Mulai / <b>Ikhtisar</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="ironclad">Ironclad</h1>
+<p>Aturan engineering tim, ditegakkan mesin — bukan ingatan.</p>
+<p>Sepuluh orang memakai AI agent untuk membangun aplikasi yang sama. Tidak ada yang membaca wiki yang sama. Enam bulan kemudian schema-nya jadi museum selera masing-masing: <code>enum</code> di satu tabel, <code>varchar</code> status di tabel lain, <code>boolean</code> untuk konsep yang punya empat keadaan.</p>
+<p>Ironclad memasang tiga lapis untuk mencegahnya:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Lapis</th>
+<th>Berkas</th>
+<th>Ditegakkan oleh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Kebijakan</strong> — apa yang tim mau</td>
+<td><code>.agent/standards.md</code> di repo kamu</td>
+<td>Review + agent</td>
+</tr>
+<tr>
+<td><strong>Prosedur</strong> — bagaimana agent memutuskan</td>
+<td><code>SKILL.md</code> + <code>references/</code></td>
+<td>Agent itu sendiri</td>
+</tr>
+<tr>
+<td><strong>Mekanisme</strong> — apa yang bisa diperiksa mesin</td>
+<td><code>scripts/check_schema.py</code></td>
+<td>CI / pre-commit</td>
+</tr>
+</tbody>
+</table></div>
+<p>Skill saja hanya nasihat; model bisa mengabaikannya. Checker-nya yang membuat standar bertahan lintas dua puluh programmer.</p>
+<h2 id="pasang-dalam-satu-baris">Pasang dalam satu baris</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
+</code></pre></div>
+<p>Itu memasang skill ke <code>~/.agents/skills/ironclad</code> — dibaca Codex, Cursor, opencode, dan Antigravity. Untuk agent lain:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target claude
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --target hermes
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --all
+</code></pre></div>
+<p><a href="/ironclad/install/">Tabel lengkap per agent →</a></p>
+<h2 id="lalu-di-repo-kamu">Lalu di repo kamu</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project .
+</code></pre></div>
+<p>Menulis <code>.agent/standards.md</code>, <code>.agent/standards.yml</code>, <code>scripts/check_schema.py</code>, dan <code>scripts/presets/</code>. Commit semuanya, atau anggota tim berikutnya mendapat rulebook yang berbeda.</p>
+<blockquote>
+<p><strong>Python tidak diperlukan untuk memasang atau menulis kebijakan.</strong> Installer-nya bash + curl. Python 3.8+ hanya dibutuhkan saat menjalankan checker — dan checker itu opsional kalau kamu hanya ingin aturannya dibaca agent.</p>
+</blockquote>
+<h2 id="kenapa-kode-integer-bukan-enum">Kenapa kode integer, bukan <code>enum</code></h2>
+<p><code>enum</code> memaksa perubahan nilai lewat migrasi schema. Di MySQL, menambah satu nilai berarti <code>ALTER TABLE</code>, dan pada tabel besar itu mengunci. Sementara status bisnis selalu tumbuh: "dijadwalkan", "menunggu konfirmasi", "ditunda karena cuaca", "dibatalkan sebagian".</p>
+<p>Kode integer dengan lookup table memberi kebebasan itu tanpa kehilangan integritas:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-sql">CREATE TABLE ref_stock_status (
+  code   smallint PRIMARY KEY,
+  label  text NOT NULL
+);
+INSERT INTO ref_stock_status VALUES (88,'Kosong'),(89,'Menipis'),(90,'Tersedia');
+
+CREATE TABLE product_stock (
+  product_id  bigint NOT NULL REFERENCES products(id),
+  status_code smallint NOT NULL DEFAULT 88 REFERENCES ref_stock_status(code)
+);
+</code></pre></div>
+<p>Kode <code>88</code> itu sah — bukan harus berurutan dari nol. Yang membuatnya aman hanya dua hal: <strong>terdaftar di lookup table</strong> (sehingga <code>87</code> ditolak database), dan <strong>konstanta bernama di kode aplikasi</strong> (bukan <code>if (status === 88)</code> yang berserakan).</p>
+<p><a href="/ironclad/rules/">Aturan lengkapnya →</a></p>
+<h2 id="batasan-yang-perlu-kamu-tahu">Batasan yang perlu kamu tahu</h2>
+<ul>
+<li><strong>Checker berbasis regex</strong>, bukan parser SQL. Ia membaca DDL <code>.sql</code>, migration Laravel, dan <code>.prisma</code>. Ia tidak melihat query builder ORM atau SQL yang dirangkai saat runtime.</li>
+<li><strong>Tidak ada auto-update.</strong> <code>hermes skills update</code> memakai URL saat install; agent lain perlu memasang ulang. Belum ada changelog bertanda versi.</li>
+<li><strong>Tiga preset, bukan konfigurasi bebas.</strong> Kamu bisa menulis preset sendiri, tapi tidak ada GUI.</li>
+<li><strong>Cocok untuk database-centric rule</strong>, dan sekarang juga PR/API lewat <code>references/extending.md</code>. Bukan linter sempurna.</li>
+</ul>
+<h2 id="langkah-berikutnya">Langkah berikutnya</h2>
+<ol>
+<li><a href="/ironclad/install/">Pasang di agent kamu</a> — Hermes, Claude Code, Codex, Cursor, opencode, Antigravity</li>
+<li><a href="/ironclad/how-agents-use-it/">Pahami cara agent memakainya</a> — otomatis atau dipanggil manual</li>
+<li><a href="/ironclad/quickstart/">Quickstart 5 menit</a> di satu repo</li>
+<li><a href="/ironclad/presets/">Pilih tingkat penegakan</a> — jangan langsung <code>strict</code></li>
+</ol>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="next" href="/ironclad/install/"><span>Berikutnya</span><b>Pasang di agent</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#pasang-dalam-satu-baris">Pasang dalam satu baris</a></li>
+<li class="lvl2"><a href="#lalu-di-repo-kamu">Lalu di repo kamu</a></li>
+<li class="lvl2"><a href="#kenapa-kode-integer-bukan-enum">Kenapa kode integer, bukan enum</a></li>
+<li class="lvl2"><a href="#batasan-yang-perlu-kamu-tahu">Batasan yang perlu kamu tahu</a></li>
+<li class="lvl2"><a href="#langkah-berikutnya">Langkah berikutnya</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

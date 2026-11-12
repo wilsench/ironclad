@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CI & pre-commit — Ironclad</title>
+<meta name="description" content="Memasang checker sebagai gate yang tidak membuat semua PR merah — gate hanya file yang berubah.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/ci/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/" class="active" aria-current="page">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Operasional / <b>CI & pre-commit</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="ci-pre-commit">CI &amp; pre-commit</h1>
+<p>Checker yang memblokir seluruh repo di hari pertama akan dihapus dari CI di hari yang sama. Yang bekerja: <strong>gate hanya file yang berubah</strong>.</p>
+<h2 id="github-actions">GitHub Actions</h2>
+<p><code>.github/workflows/standards.yml</code> di repo kamu:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">name: standards
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # butuh history untuk git diff
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: &quot;3.11&quot;
+
+      - name: Report existing debt
+        run: |
+          python scripts/check_schema.py . --json &gt; report.json || true
+          python - &lt;&lt;'PY'
+          import json, pathlib
+          d = json.loads(pathlib.Path(&quot;report.json&quot;).read_text() or &quot;{}&quot;)
+          print(f&quot;{d.get('files',0)} file, {d.get('errors',0)} error, {d.get('warnings',0)} warning&quot;)
+          PY
+
+      - name: Gate changed files
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags --depth=1 origin &quot;${{ github.base_ref }}&quot;
+          CHANGED=$(git diff --name-only --diff-filter=d &quot;origin/${{ github.base_ref }}&quot;...HEAD \
+            | grep -E '\.(sql|php|prisma)$' || true)
+          if [ -z &quot;$CHANGED&quot; ]; then echo &quot;no schema files changed&quot;; exit 0; fi
+          echo &quot;checking: $CHANGED&quot;
+          python scripts/check_schema.py $CHANGED
+</code></pre></div>
+<p>Kuncinya dua baris: <code>--diff-filter=d</code> (file yang dihapus tidak diperiksa) dan <code>$CHANGED</code> (hanya yang berubah yang digate).</p>
+<h2 id="pre-commit">Pre-commit</h2>
+<p><code>.pre-commit-config.yaml</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">repos:
+  - repo: local
+    hooks:
+      - id: ironclad
+        name: ironclad schema conventions
+        entry: python scripts/check_schema.py
+        language: system
+        files: '\.(sql|php|prisma)$'
+        pass_filenames: true
+</code></pre></div>
+<p>Hook lokal lebih cepat memberi umpan balik, tapi <strong>jangan</strong> menjadikannya satu-satunya gate — hook bisa dilewati dengan <code>--no-verify</code>. CI tetap wajib.</p>
+<h2 id="gitlab-ci">GitLab CI</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">standards:
+  image: python:3.11
+  script:
+    - git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME || true
+    - |
+      CHANGED=$(git diff --name-only --diff-filter=d \
+        origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME...HEAD | grep -E '\.(sql|php|prisma)$' || true)
+      [ -z &quot;$CHANGED&quot; ] &amp;&amp; exit 0
+      python scripts/check_schema.py $CHANGED
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+</code></pre></div>
+<h2 id="menyetel-tingkat-gate">Menyetel tingkat gate</h2>
+<p>CI membaca <code>.agent/standards.yml</code>, jadi mengubah tingkat penegakan <strong>tidak menyentuh workflow</strong>. Satu baris PR di repo:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">rules:
+  DB-03: error      # dari warn
+</code></pre></div>
+<p>Kalau sebuah PR mengubah severity dan sekaligus menambah pelanggaran baru, reviewer melihat keduanya di diff — dan itulah tujuannya.</p>
+<h2 id="saat-gate-terus-merah">Saat gate terus merah</h2>
+<p>Urutan penyelesaian yang benar:</p>
+<ol>
+<li><strong>Perbaiki schema-nya.</strong> Kalau kolom memang status, jadikan kode integer + lookup. Ini yang seharusnya terjadi pada 90% kasus.</li>
+<li><strong>Turunkan satu aturan ke <code>warn</code></strong>, dengan alasan di PR. Sah, tercatat, dan bisa dikembalikan nanti.</li>
+<li><strong>Matikan aturan</strong> hanya kalau aturannya memang salah untuk repo itu — dan ubah juga <code>.agent/standards.md</code> supaya dokumen dan mesin tidak bertentangan.</li>
+</ol>
+<p>Yang <strong>tidak</strong> boleh: menambahkan <code>|| true</code> di workflow. Itu bukan pengecualian, itu menghapus alatnya sambil pura-pura masih memakainya.</p>
+<h2 id="melaporkan-ke-pr">Melaporkan ke PR</h2>
+<p>Kalau ingin anotasi baris di GitHub, pakai format <code>file:line:</code>, yang sudah dikenali banyak alat:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>bad.sql:4: [DB-01] ERROR SQL/prisma enum column
+</code></pre></div>
+<p>Atau hasilkan SARIF untuk integrasi penuh:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python scripts/check_schema.py . --json | jq '{...}' &gt; results.sarif
+</code></pre></div>
+<p>Belum ada konverter SARIF bawaan — kalau kamu butuh, itu pekerjaan setengah hari dan masuk akal untuk organisasi besar.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/extending/"><span>Sebelumnya</span><b>Memperluas</b></a>
+<a class="next" href="/ironclad/troubleshooting/"><span>Berikutnya</span><b>Troubleshooting</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#github-actions">GitHub Actions</a></li>
+<li class="lvl2"><a href="#pre-commit">Pre-commit</a></li>
+<li class="lvl2"><a href="#gitlab-ci">GitLab CI</a></li>
+<li class="lvl2"><a href="#menyetel-tingkat-gate">Menyetel tingkat gate</a></li>
+<li class="lvl2"><a href="#saat-gate-terus-merah">Saat gate terus merah</a></li>
+<li class="lvl2"><a href="#melaporkan-ke-pr">Melaporkan ke PR</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>

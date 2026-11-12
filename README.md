@@ -6,32 +6,38 @@ A skill for AI coding agents. Ten people vibe-code the same app, nobody reads th
 
 Ships a worked database policy as the headline example — **integer codes + lookup table + FK, not `enum`** — because that is the drift that hurts most and shows up latest.
 
-## Quick start (three steps, ~2 minutes)
+## Two commands, no Python
 
 ```bash
-# 1. install the skill into the agent
-hermes skills install <owner>/ironclad/skills/ironclad
+# 1. install the skill — auto-detects the agent on your machine
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 
-# 2. bootstrap the policy into YOUR repo (asks the strictness, balanced pre-picked)
-cd your-project && python3 scripts/init_standards.py . --with-checker
-
-# 3. run it
-python3 scripts/check_schema.py .
+# 2. adopt the policy in your repo
+cd your-project
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project .
 ```
 
-Step 2 writes `.agent/standards.md` + `.agent/standards.yml` + `scripts/check_schema.py` + `scripts/presets/`. Commit all four. From then on the agent reads the policy before writing DDL, and CI reads the same file to decide what blocks.
+That is the whole setup. Python is **not** required to install or to write the policy — the installer is bash + curl. Python 3.8+ is needed only to *run* the checker:
+
+```bash
+python3 scripts/check_schema.py .        # exit 0 clean, 1 violations
+```
+
+Step 2 writes `.agent/standards.md`, `.agent/standards.yml`, `scripts/check_schema.py`, and `scripts/presets/`. Commit all four. From then on the agent reads the policy before writing DDL, and CI reads the same file to decide what blocks.
+
+**Targets:** `agents` (Codex, Cursor, opencode, Antigravity — default), `claude`, `hermes`, `gemini`, `opencode`, or `--all`. Docs: <https://wilsench.my.id/ironclad/>
 
 ## One command
 
 ```bash
-# Hermes
-hermes skills install <owner>/ironclad/skills/ironclad
+# Hermes hub (once the GitHub repo is public)
+hermes skills install wilsench/ironclad/skills/ironclad
 
-# Claude Code / Codex / Cursor / any SKILL.md agent
-curl -fsSL https://raw.githubusercontent.com/<owner>/ironclad/main/install.sh | bash
+# any agent that reads SKILL.md
+curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash
 ```
 
-The installer auto-detects `~/.hermes`, `~/.claude`, or `~/.agents`, or takes `--target hermes|claude|agents` / `--dir /path/to/skills`. Format is [agentskills.io](https://agentskills.io/specification), so it is not Hermes-only.
+Format is [agentskills.io](https://agentskills.io/specification), so the same folder works in Hermes, Claude Code, Codex, Cursor, opencode, and Antigravity.
 
 ## Then, in your repo
 

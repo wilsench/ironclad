@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preset — Ironclad</title>
+<meta name="description" content="Tiga tingkat penegakan, satu default otomatis. Pilih sekali saat install, ubah kapan saja lewat satu baris di repo.">
+<link rel="canonical" href="https://wilsench.my.id/ironclad/presets/">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="/ironclad/assets/docs.css?v=0.4.0-9728b8a7">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke isi</a>
+
+<div class="shell">
+
+  <aside class="side" id="side">
+    <a class="brand" href="/ironclad/">
+      <span class="mark" aria-hidden="true">IC</span>
+      <span>
+        <b>Ironclad</b>
+        <i>v0.4.0-9728b8a7 · MIT</i>
+      </span>
+    </a>
+
+    <button class="searchbtn" type="button" id="searchbtn">
+      <span>Cari dokumentasi</span><kbd>/</kbd>
+    </button>
+
+    <nav class="nav" aria-label="Dokumentasi">
+      <div class="navgroup"><div class="navlabel"><span>01</span>Mulai</div><ul>
+<li><a href="/ironclad/overview/">Ikhtisar</a></li>
+<li><a href="/ironclad/install/">Pasang di agent</a></li>
+<li><a href="/ironclad/how-agents-use-it/">Cara agent memakainya</a></li>
+<li><a href="/ironclad/quickstart/">Quickstart</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>02</span>Konsep</div><ul>
+<li><a href="/ironclad/three-layers/">Tiga lapis</a></li>
+<li><a href="/ironclad/presets/" class="active" aria-current="page">Preset</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>03</span>Referensi</div><ul>
+<li><a href="/ironclad/rules/">Aturan DB-01…DB-07</a></li>
+<li><a href="/ironclad/checker/">Checker</a></li>
+<li><a href="/ironclad/extending/">Memperluas</a></li>
+</ul></div>
+<div class="navgroup"><div class="navlabel"><span>04</span>Operasional</div><ul>
+<li><a href="/ironclad/ci/">CI & pre-commit</a></li>
+<li><a href="/ironclad/troubleshooting/">Troubleshooting</a></li>
+<li><a href="/ironclad/faq/">FAQ</a></li>
+</ul></div>
+    </nav>
+
+    <div class="sidefoot">
+      <a href="https://github.com/wilsench/ironclad">GitHub</a>
+      <a href="https://wilsench.my.id/">wilsench.my.id</a>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main id="main">
+    <header class="topbar">
+      <button class="burger" type="button" id="burger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <span class="crumb">Konsep / <b>Preset</b></span>
+      <button class="searchmini" type="button" id="searchmini" aria-label="Cari">/<span>Cari</span></button>
+    </header>
+
+    <div class="pagegrid">
+      <article class="prose">
+        <h1 id="preset-guardrail-yang-bisa-disetel">Preset — guardrail yang bisa disetel</h1>
+<p>Masalah nyata sebuah linter perusahaan: repo lama punya ratusan pelanggaran, dan gate yang menyala di hari pertama akan dimatikan di hari yang sama. Preset ada supaya kamu bisa <strong>mulai longgar, lalu mengencangkan</strong> tanpa mengubah kode.</p>
+<h2 id="tiga-preset">Tiga preset</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Preset</th>
+<th>Memblokir</th>
+<th>Hanya warning</th>
+<th>Untuk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>legacy-friendly</code></td>
+<td>—</td>
+<td>semua</td>
+<td>repo yang sudah punya utang teknis</td>
+</tr>
+<tr>
+<td><code>balanced</code> <strong>(default)</strong></td>
+<td>DB-01, DB-02, DB-04</td>
+<td>sisanya</td>
+<td>pekerjaan produk normal</td>
+</tr>
+<tr>
+<td><code>strict</code></td>
+<td>semua</td>
+<td>—</td>
+<td>keuangan, kesehatan, sistem yang diaudit</td>
+</tr>
+</tbody>
+</table></div>
+<p>Angka nyata dari fixture yang sama (<code>examples/bad.sql</code>):</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>balanced           errors=3 warns=2
+legacy-friendly    errors=0 warns=7
+strict             errors=7 warns=0
+</code></pre></div>
+<h2 id="default-otomatis">Default otomatis</h2>
+<p>Wizard memilih <code>balanced</code> lebih dulu dan menandainya:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>Choose a preset [1]:
+  1) balanced         Balanced — recommended default  (default)
+  2) legacy-friendly  Legacy-friendly — brownfield
+  3) strict           Strict — regulated
+</code></pre></div>
+<p>Kalau stdin bukan TTY — misalnya agent yang menjalankannya — tidak ada pertanyaan sama sekali:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>$ printf '' | init_standards.py .
+non-interactive: using preset 'balanced'
+</code></pre></div>
+<p>Ini penting: agent tidak boleh menggantung menunggu jawaban yang tidak akan datang.</p>
+<h2 id="memilih-saat-install">Memilih saat install</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">curl -fsSL https://wilsench.my.id/ironclad/install.sh | bash -s -- --project . --preset strict
+</code></pre></div>
+<p>Atau lewat bootstrap:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/init_standards.py . --preset strict --with-checker
+</code></pre></div>
+<h2 id="mengubah-setelah-install">Mengubah setelah install</h2>
+<p>Pilihanmu hidup di <code>.agent/standards.yml</code> <strong>di dalam repo</strong>, bukan di dalam skill. Tiga cara mengubahnya, semuanya sah:</p>
+<p><strong>1. Tulis ulang dari preset:</strong></p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/init_standards.py . --preset strict --force
+</code></pre></div>
+<p><strong>2. Edit langsung — tujuh baris, bisa di-review di PR:</strong></p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">name: balanced
+rules:
+  DB-01: error      # enum dilarang
+  DB-02: error      # magic number pada kolom status
+  DB-03: warn       # status tanpa FK/CHECK
+  DB-04: error      # label manusia disimpan sebagai status
+  DB-05: warn       # boolean untuk konsep non-biner
+  DB-06: warn       # uang sebagai float
+  DB-07: warn       # timestamp tanpa zona waktu
+exceptions: []
+boolean_allowlist:
+  - is_active
+  - is_deleted
+</code></pre></div>
+<p><strong>3. Sekali jalan, tanpa mengubah berkas:</strong></p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --preset legacy-friendly
+</code></pre></div>
+<h2 id="urutan-adopsi-yang-tidak-menyakitkan">Urutan adopsi yang tidak menyakitkan</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Tahap</th>
+<th>Preset</th>
+<th>Yang terjadi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minggu 1</td>
+<td><code>legacy-friendly</code></td>
+<td>semua dilaporkan, build tetap hijau</td>
+</tr>
+<tr>
+<td>Minggu 2–3</td>
+<td><code>balanced</code> + gate hanya file berubah</td>
+<td>temuan baru diblokir, utang lama dibiarkan</td>
+</tr>
+<tr>
+<td>Setelah baseline bersih</td>
+<td><code>strict</code></td>
+<td>semua memblokir</td>
+</tr>
+</tbody>
+</table></div>
+<p>Melewati tahap pertama adalah cara tercepat membuat tim membenci alat ini.</p>
+<h2 id="preset-sendiri">Preset sendiri</h2>
+<p>Buat <code>presets/tim.yml</code>:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-yaml">name: tim
+title: Aturan internal kita
+rules:
+  DB-01: error
+  DB-02: error
+  DB-03: error
+  DB-04: error
+  DB-05: off        # proyek ini memang penuh flag biner
+  DB-06: error
+  DB-07: warn
+exceptions:
+  - migrations/2023_legacy_import.sql
+boolean_allowlist:
+  - is_active
+  - is_deleted
+</code></pre></div>
+<p>Lalu:</p>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code class="language-bash">python3 scripts/check_schema.py . --config presets/tim.yml
+</code></pre></div>
+<blockquote>
+<p><strong><code>off</code> bukan tombol bisu.</strong> Mematikan satu aturan adalah keputusan yang di-review dan dicatat, bukan jalan pintas agar build hijau. Kalau alasannya tidak bisa ditulis dalam satu baris PR, berarti aturannya belum perlu dimatikan.</p>
+</blockquote>
+<h2 id="prioritas-pembacaan">Prioritas pembacaan</h2>
+<div class="codewrap"><button class="copy" type="button" aria-label="Salin perintah">SALIN</button><pre><code>--config  &gt;  --preset  &gt;  .agent/standards.yml  &gt;  built-in balanced
+</code></pre></div>
+<p>Yang paling kanan adalah jaring pengaman: kalau semua berkas hilang, checker tetap jalan dengan <code>balanced</code>, bukan crash.</p>
+        <nav class="pager" aria-label="Halaman berikutnya">
+          <a class="prev" href="/ironclad/three-layers/"><span>Sebelumnya</span><b>Tiga lapis</b></a>
+<a class="next" href="/ironclad/rules/"><span>Berikutnya</span><b>Aturan DB-01…DB-07</b></a>
+        </nav>
+        <footer class="docfoot">
+          <span>Ironclad v0.4.0-9728b8a7</span>
+          <span>MIT</span>
+          <span>Chia Wilsen</span>
+        </footer>
+      </article>
+
+      <aside class="toc" aria-label="Di halaman ini">
+        <div class="navlabel"><span>§</span>Di halaman ini</div>
+        <ul><li class="lvl2"><a href="#tiga-preset">Tiga preset</a></li>
+<li class="lvl2"><a href="#default-otomatis">Default otomatis</a></li>
+<li class="lvl2"><a href="#memilih-saat-install">Memilih saat install</a></li>
+<li class="lvl2"><a href="#mengubah-setelah-install">Mengubah setelah install</a></li>
+<li class="lvl2"><a href="#urutan-adopsi-yang-tidak-menyakitkan">Urutan adopsi yang tidak menyakitkan</a></li>
+<li class="lvl2"><a href="#preset-sendiri">Preset sendiri</a></li>
+<li class="lvl2"><a href="#prioritas-pembacaan">Prioritas pembacaan</a></li></ul>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div class="search" id="search" hidden>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="Cari: install, preset, DB-04, CI…" autocomplete="off" spellcheck="false">
+    <button id="closeSearch" type="button">ESC</button>
+  </div>
+  <ul id="results"></ul>
+  <p class="hint">↑ ↓ pilih · ↵ buka · ESC tutup</p>
+</div>
+
+<script src="/ironclad/assets/docs.js?v=0.4.0-9728b8a7" defer></script>
+<script src="/ironclad/assets/search-index.js?v=0.4.0-9728b8a7" defer></script>
+</body>
+</html>
