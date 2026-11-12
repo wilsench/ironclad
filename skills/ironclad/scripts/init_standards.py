@@ -83,7 +83,7 @@ def ask(prompt, default=None, valid=None):
 
 
 def wizard(presets):
-    print("\nCompany engineering standards — setup\n")
+    print("\nIronclad — engineering standards setup\n")
     print("Pick the guardrail level. This is the default; you can change it later")
     print("by editing .agent/standards.yml — no reinstall, no code change.\n")
     for i, name in enumerate(presets, 1):
