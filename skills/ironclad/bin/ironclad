@@ -211,5 +211,5 @@ PY
   ""|-h|--help|help)
     sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//' ;;
   *)
-    die "unknown command: $1 (try: check | init | preset | status | drill | attach)" ;;
+    die "unknown command: $1 (try: check | init | preset | status | drill | attach | update)" ;;
 esac
