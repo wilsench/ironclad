@@ -31,15 +31,14 @@ Two people on one database can each add a "status" and store it differently:
 `status ENUM('paid')` in one table, `status_code = 2` in another. Both pass review;
 together the project becomes unmaintainable.
 
-Before writing anything that stores status, ask one line, then wait:
+**Before writing anything that stores status, read the repo first** (`grep -rn
+status`, migrations, models). Then:
 
-> Ironclad: how does this project store status — should I follow the codebase, or
-> check with the team first?
-
-Then read the repo first (`grep -rn status`, migrations, models). If it is
-consistent, follow it silently — the codebase wins over your preference. If it is
-not, name both styles and their files, ask which becomes the standard, and do not
-add a third while that is open.
+- **one consistent style already used** → follow it. Say one line which style you
+  followed and carry on; do not stop to ask.
+- **no status anywhere yet** → ask which style the project wants.
+- **two styles already present** → stop and name both, with their files, and ask
+  which becomes the standard. Never add a third while that is open.
 """
 
 # Per-repo: only files this repo owns. Written by `ironclad init`.
